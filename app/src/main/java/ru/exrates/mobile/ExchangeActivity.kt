@@ -31,6 +31,8 @@ class ExchangeActivity : AppCompatActivity() {
 
             val queue = ArrayBlockingQueue<Double>(20)
 
+            val exchange: Exchange = getSavedExchange()
+
             viewAdapter = PairsAdapter(
                 Exchange(
                     "testExchange", listOf(
