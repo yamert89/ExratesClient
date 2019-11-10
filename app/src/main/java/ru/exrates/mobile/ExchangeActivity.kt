@@ -20,6 +20,7 @@ class ExchangeActivity : AppCompatActivity() {
     private lateinit var pairs: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
+    private val app: MyApp = this.application as MyApp
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,105 +32,13 @@ class ExchangeActivity : AppCompatActivity() {
 
             val queue = ArrayBlockingQueue<Double>(20)
 
-            val exchange: Exchange = getSavedExchange()
+            val exchName: String? = savedInstanceState!!.getString(EXCH_NAME)
 
-            viewAdapter = PairsAdapter(
-                Exchange(
-                    "testExchange", listOf(
-                        CurrencyPair(
-                            "btc_ltc",
-                            0.345,
-                            mapOf("1m" to 4453.023, "1w" to 5433.3230),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        ),
-                        CurrencyPair(
-                            "etc_ltc",
-                            0.543,
-                            mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                            queue
-                        )
-                    ),
-                    listOf("1s", "1d")
-                )
-            )
+
+
+            val exchange: Exchange = app.dataProvider.getSavedExchange(this.applicationContext)
+
+            viewAdapter = PairsAdapter(exchange)
             viewManager = LinearLayoutManager(this)
 
             pairs = findViewById<RecyclerView>(R.id.pairs).apply {
