@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout2"
+        android:id="@+id/cur_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -15,43 +15,58 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/currency"
+            android:id="@+id/cur_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
+            android:textSize="20sp"
             android:text="Currency"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/interval"
+        <Button
+            android:id="@+id/cur_interval"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="38dp"
             android:layout_marginTop="24dp"
             android:text="Interval"
-            app:layout_constraintEnd_toStartOf="@+id/textView4"
-            app:layout_constraintStart_toEndOf="@+id/currency"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/cur_exchange"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
+            android:textSize="20sp"
             android:text="Exchange"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/cur_intervalValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="1d"
+            app:layout_constraintEnd_toEndOf="@+id/cur_interval"
+            app:layout_constraintStart_toStartOf="@+id/cur_interval"
+            app:layout_constraintTop_toBottomOf="@+id/cur_interval" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginTop="56dp"
+    <ListView
+        android:id="@+id/cur_exchanges"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/cur_header">
+
+    </ListView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

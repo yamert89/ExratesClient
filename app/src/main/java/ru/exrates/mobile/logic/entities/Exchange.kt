@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 class Exchange(val name: String,
                val pairs: MutableList<CurrencyPair>,
                val changePeriods: List<String>,
-               val showHidden: Boolean) {
+               val showHidden: Boolean = true) {
 
 
 

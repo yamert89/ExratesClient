@@ -29,7 +29,7 @@ class ExchangeActivity : AppCompatActivity() {
             setContentView(R.layout.exchange)
             app = this.application as MyApp
             exchName = findViewById(R.id.exName)
-            intervalBtn = findViewById(R.id.interval)
+            intervalBtn = findViewById(R.id.cur_interval)
             intervalValue = findViewById(R.id.intervalValue)
 
             val queue = ArrayBlockingQueue<Double>(20)
