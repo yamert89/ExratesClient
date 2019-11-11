@@ -41,7 +41,8 @@ class ExchangeActivity : AppCompatActivity() {
             currentExchange = app.dataProvider.getSavedExchange(this.applicationContext)
 
             val currentInterval = Storage(applicationContext).getStoreExchangeStringValue(CURRENT_INTERVAL, "1h")
-            pairsAdapter = PairsAdapter(currentExchange, currentInterval)
+            val pairsOfAdapter = if (currentExchange.showHidden) currentExchange.pairs else currentExchange.pairs.filter{it.visible}.toMutableList()
+            pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval)
             viewManager = LinearLayoutManager(this)
 
             pairs = findViewById<RecyclerView>(R.id.pairs).apply {

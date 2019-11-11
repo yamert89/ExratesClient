@@ -2,6 +2,7 @@ package ru.exrates.mobile.viewmodel
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,7 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 
 
-class PairsAdapter(private val dataExchange: Exchange, var currentInterval: String = "1h") : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
+class PairsAdapter(private val dataPairs: MutableList<CurrencyPair>, var currentInterval: String = "1h") : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PairsViewHolder {
         val linearLayout = LayoutInflater.from(parent.context)
@@ -21,14 +22,14 @@ class PairsAdapter(private val dataExchange: Exchange, var currentInterval: Stri
         return PairsViewHolder(linearLayout)
     }
 
-    override fun getItemCount() = dataExchange.pairs.size
+    override fun getItemCount() = dataPairs.size
 
     override fun onBindViewHolder(holder: PairsViewHolder, position: Int) {
-        val pair = dataExchange.pairs[position]
+        val pair = dataPairs[position]
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = pair.symbol
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toString()
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = pair.priceChange[currentInterval].toString()
-
+        holder.linearLayout.findViewById<CheckBox>(R.id.rec_cur_visible).isChecked = pair.visible
     }
 
 
