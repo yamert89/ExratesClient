@@ -22,7 +22,7 @@ class DataProvider(val exchanges: Map<String, Exchange> = HashMap(), val restSer
     @UnstableDefault
     fun getSavedExchange(context: Context): Exchange {
         val ex = Storage(context).getStoreExchangeStringValue(SAVED_EXCHANGE, DEFAULT_EXCHANGE)!!
-        return if (ex == DEFAULT_EXCHANGE) Exchange("", listOf(CurrencyPair("", 0.0, mapOf("" to 0.0), ArrayBlockingQueue(1))), listOf(""))
+        return if (ex == DEFAULT_EXCHANGE) Exchange("", mutableListOf(CurrencyPair("def", 0.0, mapOf("1d" to 0.0), ArrayBlockingQueue(1))), listOf("4.8"))
         else Json.parse(Exchange.serializer(), ex)
     }
 
