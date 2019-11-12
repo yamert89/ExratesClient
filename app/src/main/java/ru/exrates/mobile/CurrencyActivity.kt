@@ -54,6 +54,8 @@ class CurrencyActivity : AppCompatActivity() {
 
     }
 
+
+
     fun testExchanges(): List<Exchange> {
         val ex1 = Exchange(
             "testExchange",
