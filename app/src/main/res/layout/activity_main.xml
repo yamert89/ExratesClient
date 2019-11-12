@@ -6,18 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/main_currency"
+    <Spinner
+        android:id="@+id/main_currency_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#00BCD4"
-        android:padding="5dp"
-        android:text="BTC_LTC"
-        android:textAlignment="center"
-        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#00BCD4"
+        android:padding="5dp"/>
 
     <TextView
         android:id="@+id/main_cur_price"
@@ -28,21 +25,17 @@
         android:text="0.45323"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_currency" />
+        app:layout_constraintTop_toBottomOf="@+id/main_currency_spinner" />
 
-    <TextView
-        android:id="@+id/main_exchange"
-        android:layout_width="0dp"
+    <Spinner
+        android:id="@+id/main_exch_spinner"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:background="#00BCD4"
-        android:padding="5dp"
-        android:text="Binance"
-        android:textAlignment="center"
-        android:textSize="20dp"
+        android:layout_marginTop="60dp"
+        android:backgroundTint="#220EEB0E"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_currency" />
+        app:layout_constraintTop_toBottomOf="@+id/main_currency_spinner" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_cur_list"
@@ -50,9 +43,8 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_exchange"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/main_exch_spinner"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
