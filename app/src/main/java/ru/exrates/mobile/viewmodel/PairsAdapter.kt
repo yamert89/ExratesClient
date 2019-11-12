@@ -34,9 +34,7 @@ class PairsAdapter(private val dataPairs: MutableList<CurrencyPair>, var current
 
 
 
-    class PairsViewHolder(val linearLayout: LinearLayout): RecyclerView.ViewHolder(linearLayout) {
-
-    }
+    class PairsViewHolder(val linearLayout: LinearLayout): RecyclerView.ViewHolder(linearLayout)
 }
 
 
