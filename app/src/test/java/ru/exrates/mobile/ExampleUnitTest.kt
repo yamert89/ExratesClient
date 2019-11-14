@@ -1,5 +1,9 @@
 package ru.exrates.mobile
 
+import android.content.Context
+
+
+
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -9,8 +13,13 @@ import kotlinx.serialization.stringify
 import org.junit.Test
 
 import org.junit.Assert.*
+import org.junit.Before
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import java.io.BufferedOutputStream
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
+import java.io.OutputStream
 import java.util.concurrent.ArrayBlockingQueue
 
 /**
@@ -18,10 +27,13 @@ import java.util.concurrent.ArrayBlockingQueue
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
-    @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+class ExampleUnitTest{
+
+    lateinit var instrumentationContext: Context
+
+    @Before
+    fun setup() {
+
     }
 
 
@@ -81,4 +93,6 @@ class ExampleUnitTest {
         val map2: Map<String, Exchange> = om.readValue(s, object: TypeReference<Map<String, Exchange>>(){})
         println(map2)
     }
+
+
 }

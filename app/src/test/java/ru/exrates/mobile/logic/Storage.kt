@@ -14,14 +14,9 @@ class Storage(private val context: Context) {
         editor.apply()
     }
 
-    //fun getStoreExchangeStringValue(value: String, def: String) =
+    fun getStoreExchangeStringValue(value: String, def: String) = getStringValue(EXCH_STORAGE, value, def)
 
-
-    //fun saveStoreExchangeStringValue(key: String, value: String) = storeStringValue(EXCH_STORAGE, key, value)
-
-    fun saveObject(obj: T){
-
-    }
+    fun saveStoreExchangeStringValue(key: String, value: String) = storeStringValue(EXCH_STORAGE, key, value)
 
 
 
