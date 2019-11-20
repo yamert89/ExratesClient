@@ -2,6 +2,7 @@ package ru.exrates.mobile.logic
 
 import android.content.Context
 import ru.exrates.mobile.EXCH_STORAGE
+import java.io.*
 
 class Storage(private val context: Context) {
 
@@ -19,8 +20,18 @@ class Storage(private val context: Context) {
 
     //fun saveStoreExchangeStringValue(key: String, value: String) = storeStringValue(EXCH_STORAGE, key, value)
 
-    fun saveObject(obj: T){
+    fun <T> saveObject(obj: T, fileName: String){
+        val os = ObjectOutputStream(FileOutputStream(File(context.filesDir, fileName)))
+        os.writeObject(obj)
+        os.flush()
+        os.close()
+    }
 
+    fun <T> loadObject(fileName: String): T {
+        val _is = ObjectInputStream(FileInputStream(File(context.filesDir, fileName)))
+        val ob = _is.readObject()
+        _is.close()
+        return ob as T
     }
 
 
