@@ -27,11 +27,13 @@ class Storage(private val context: Context) {
         os.close()
     }
 
-    fun <T> loadObject(fileName: String): T {
+    fun <T> loadObject(fileName: String): T? {
+        val file = File(context.filesDir, fileName)
+        if (!file.exists()) return null
         val _is = ObjectInputStream(FileInputStream(File(context.filesDir, fileName)))
         val ob = _is.readObject()
         _is.close()
-        return ob as T
+        return ob as? T
     }
 
 
