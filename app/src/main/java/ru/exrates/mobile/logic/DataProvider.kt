@@ -1,12 +1,9 @@
 package ru.exrates.mobile.logic
 
+
 import android.content.Context
-import kotlinx.serialization.UnstableDefault
-import kotlinx.serialization.json.Json
 import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
-
-
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.rest.RestService
 import java.util.concurrent.ArrayBlockingQueue
@@ -22,6 +19,12 @@ class DataProvider(val exchanges: Map<String, Exchange> = HashMap(),
     fun getSavedExchanges(context: Context): Map<String, Exchange>? = Storage(context).loadObject<Map<String, Exchange>>(STORAGE_EXCHANGES)
 
     fun storeExchanges(exchanges: Map<String, Exchange>, context: Context) = Storage(context).saveObject(exchanges, SAVED_EXCHANGES)
+
+    fun getMainSavedCurrencyNameList(context: Context): List<String> = Storage(context).loadObject<List<String>>(
+        SAVED_CURRENCY_NAME_LIST) ?: listOf(context.resources.getString(R.string.tv_loading))
+
+    fun getMainSavedExchangesNameList(context: Context) = Storage(context).loadObject<List<String>>(
+        SAVED_EXCHANGE_NAME_LIST) ?: listOf(context.resources.getString(R.string.tv_loading))
 
 
 
