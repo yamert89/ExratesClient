@@ -5,11 +5,9 @@ import android.content.Context
 import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.logic.rest.RestService
 import java.util.concurrent.ArrayBlockingQueue
 
-class DataProvider(val exchanges: Map<String, Exchange> = HashMap(),
-                   val restService: RestService = RestService()){
+class DataProvider(val exchanges: Map<String, Exchange> = HashMap()){
 
     fun getSavedExchange(context: Context): Exchange = Storage(context).loadObject(SAVED_EXCHANGE) ?:
         Exchange("", mutableListOf(CurrencyPair("def", 0.0, mapOf("1d" to 0.0), ArrayBlockingQueue(1))), listOf("4.8"))
@@ -25,6 +23,10 @@ class DataProvider(val exchanges: Map<String, Exchange> = HashMap(),
 
     fun getMainSavedExchangesNameList(context: Context) = Storage(context).loadObject<List<String>>(
         SAVED_EXCHANGE_NAME_LIST) ?: listOf(context.resources.getString(R.string.tv_loading))
+
+    fun getMainSavedListCurrencies(context: Context) =
+        Storage(context).loadObject<MutableList<CurrencyPair>>(SAVED_CURRENCIES_LIST) ?:
+        mutableListOf()
 
 
 

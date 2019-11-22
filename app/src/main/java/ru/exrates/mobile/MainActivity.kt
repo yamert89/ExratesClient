@@ -1,16 +1,16 @@
 package ru.exrates.mobile
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
+import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.viewmodel.MainPairsAdapter
-import ru.exrates.mobile.viewmodel.PairsAdapter
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var currenciesRecyclerView: RecyclerView
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var pairsAdapter: MainPairsAdapter
+    private lateinit var curAdapter: ArrayAdapter<String>
+    private lateinit var exchAdapter: ArrayAdapter<String>
     private lateinit var app: MyApp
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,10 +29,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         app = this.application as MyApp
 
-
-
-        val curAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val exchAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
+        curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
+        exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
         val oldExch = app.dataProvider.getSavedExchange(this)
         val oldCur = Storage(applicationContext).loadObject<CurrencyPair>(SAVED_CURRENCY)
 
@@ -49,30 +49,23 @@ class MainActivity : AppCompatActivity() {
         viewManager = LinearLayoutManager(this)
 
 
-        pairsAdapter = MainPairsAdapter() //todo
+        pairsAdapter = MainPairsAdapter(app.dataProvider.getMainSavedListCurrencies(applicationContext))
         currenciesRecyclerView = findViewById<RecyclerView>(R.id.main_cur_list).apply{
             adapter = pairsAdapter
             layoutManager = viewManager
         }
 
+    }
+
+    fun updateExchangeData(exchange: Exchange){
+        curAdapter.clear()
+        curAdapter.addAll(exchange.pairs.map{it.symbol}.toList())
+        curAdapter.notifyDataSetChanged()
 
 
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    fun updateExchangesList(exchNames: String){
 
     }
 }

@@ -1,9 +1,16 @@
 package ru.exrates.mobile.logic.rest
 
+import retrofit2.Call
+import retrofit2.http.GET
+import retrofit2.http.POST
+import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 
-class RestService {
+interface RestService {
 
-    fun getExchanges() : Map<String, Exchange> =
-        hashMapOf() //TODO
+    @POST("rest/exchange")
+    fun getExchanges() : Call<Map<String, Exchange>>
+
+    @GET("rest/pair")
+    fun getPair(): Call<Map<String, CurrencyPair>>
 }
