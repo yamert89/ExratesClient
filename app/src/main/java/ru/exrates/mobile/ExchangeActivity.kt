@@ -10,7 +10,6 @@ import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.viewmodel.PairsAdapter
-import java.lang.Exception
 import java.util.concurrent.ArrayBlockingQueue
 
 class ExchangeActivity : AppCompatActivity() {
@@ -40,7 +39,8 @@ class ExchangeActivity : AppCompatActivity() {
 
             currentExchange = app.dataProvider.getSavedExchange(this.applicationContext)
 
-            val currentInterval = Storage(applicationContext).getStoreExchangeStringValue(CURRENT_INTERVAL, "1h")
+            val currentInterval = Storage(applicationContext).getStringValue(CURRENT_INTERVAL, "1h", "1h")
+
             val pairsOfAdapter = if (currentExchange.showHidden) currentExchange.pairs else currentExchange.pairs.filter{it.visible}.toMutableList()
             pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval)
             viewManager = LinearLayoutManager(this)

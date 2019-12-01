@@ -1,17 +1,19 @@
 package ru.exrates.mobile
 
 import android.content.Context
-import android.util.Log
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import androidx.test.platform.app.InstrumentationRegistry
+import junit.framework.Assert.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
-import org.junit.Before
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.jackson.JacksonConverterFactory
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.rest.RestService
 import java.io.*
 import java.util.concurrent.ArrayBlockingQueue
 
@@ -59,8 +61,29 @@ class ExampleInstrumentedTest {
         val _is = ObjectInputStream(FileInputStream(File(context.filesDir, "exchanges")))
         val newMap = _is.readObject() as Map<String, Exchange>
         _is.close()
-        Log.d("MY", map.toString())
-        Log.d("MY", newMap.toString())
+        //Log.d("MY", map.toString())
+        //Log.d("MY", newMap.toString())
         assertEquals(map.size, newMap.size)
+    }
+
+    @Test
+    fun restTest(){
+        try{
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://enchat.ru:8080/")
+            .addConverterFactory(JacksonConverterFactory.create())
+            .build()
+        val restService = retrofit.create(RestService::class.java)
+        val call: Call<Map<String, Exchange>> = restService.getExchanges("{\"exchange\": \"binanceExchange\", \"timeout\" : 12, \"pairs\":[\"VENBTC\"]}")
+        val exch: Exchange? = call.execute().body()?.get("binanceExchange")
+            println(exch.toString())
+        assertNotNull(exch)
+        assertEquals("binanceExchange", exch?.name)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
+        
+
     }
 }

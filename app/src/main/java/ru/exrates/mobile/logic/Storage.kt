@@ -1,12 +1,11 @@
 package ru.exrates.mobile.logic
 
 import android.content.Context
-import ru.exrates.mobile.EXCH_STORAGE
 import java.io.*
 
 class Storage(private val context: Context) {
 
-    private fun getStringValue(storage: String, value: String, def: String): String =
+    fun getStringValue(storage: String, value: String, def: String): String =
         context.getSharedPreferences(storage, Context.MODE_PRIVATE).getString(value, def) ?: def
 
     private fun storeStringValue(storage: String, key: String, value: String){
@@ -35,6 +34,8 @@ class Storage(private val context: Context) {
         _is.close()
         return ob as? T
     }
+
+
 
 
 

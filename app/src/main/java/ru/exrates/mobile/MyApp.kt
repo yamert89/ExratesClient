@@ -11,7 +11,7 @@ class MyApp(): Application(){
     var restService: RestService
     init {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://enchat.ru/")
+            .baseUrl("http://localhost:8080/")
             .addConverterFactory(JacksonConverterFactory.create())
             .build()
         restService = retrofit.create(RestService::class.java)
