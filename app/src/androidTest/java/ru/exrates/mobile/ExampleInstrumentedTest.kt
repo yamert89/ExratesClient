@@ -9,6 +9,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -24,6 +26,7 @@ import java.util.concurrent.ArrayBlockingQueue
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+    var bool = false
     lateinit var context: Context
     @Before
     fun init(){
@@ -67,7 +70,7 @@ class ExampleInstrumentedTest {
     }
 
     @Test
-    fun restTest(){
+    fun restSyncTest(){
         try{
         val retrofit = Retrofit.Builder()
             .baseUrl("http://enchat.ru:8080/")
@@ -83,7 +86,39 @@ class ExampleInstrumentedTest {
             e.printStackTrace()
         }
 
-        
+    }
+
+    @Test
+    fun restAsyncTest(){
+        try{
+            val retrofit = Retrofit.Builder()
+                .baseUrl("http://enchat.ru:8080/")
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build()
+            val restService = retrofit.create(RestService::class.java)
+            val call: Call<Exchange> = restService.getExchange("{\"exchange\": \"binanceExchange\", \"timeout\" : 12, \"pairs\":[\"VENBTC\"]}")
+            call.enqueue(Some())
+           assertEquals(true, bool)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
 
     }
+
+    class Some: Callback<Exchange>{
+        var bool: Boolean = false
+
+        override fun onFailure(call: Call<Exchange>, t: Throwable) {
+            throw IllegalStateException(call.request().body().toString())
+        }
+
+        override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
+            bool = true
+        }
+
+    }
+
+
+
+
 }

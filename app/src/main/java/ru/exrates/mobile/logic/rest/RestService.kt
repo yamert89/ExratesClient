@@ -12,6 +12,12 @@ interface RestService {
     @POST("rest/exchange")
     fun getExchanges(@Body payload: String) : Call<Map<String, Exchange>>
 
+    @POST("rest/exchange")
+    fun getExchange(@Body payload: ExchangePayload) : Call<Exchange>
+
+    @POST("rest/exchange")
+    fun getExchange(@Body payload: String) : Call<Exchange>
+
     @GET("rest/pair")
     fun getPair(): Call<Map<String, CurrencyPair>>
 }
