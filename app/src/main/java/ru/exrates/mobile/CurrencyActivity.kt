@@ -2,7 +2,6 @@ package ru.exrates.mobile
 
 import android.os.Bundle
 import android.widget.Button
-import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,7 +32,8 @@ class CurrencyActivity : AppCompatActivity() {
             currencyIntervalValue = findViewById(R.id.cur_intervalValue)
 
             val currName = savedInstanceState?.getString(EXTRA_CURRENCY_NAME, "btc_ltc") ?: "btc_ltc"
-            val exchanges = app.dataProvider.exchanges.values.toList()
+            //val exchanges = app.dataProvider.exchanges.values.toList()
+
 
             currencyName.text = currName
 
@@ -58,7 +58,7 @@ class CurrencyActivity : AppCompatActivity() {
 
     fun testExchanges(): List<Exchange> {
         val ex1 = Exchange(
-            "testExchange",
+            "testExchange", 2,
             mutableListOf(
                 CurrencyPair(
                     "btc_ltc",
@@ -71,7 +71,7 @@ class CurrencyActivity : AppCompatActivity() {
         )
 
         val ex2 = Exchange(
-            "testExchange 2",
+            "testExchange 2", 3,
             mutableListOf(
                 CurrencyPair(
                     "btc_ltc",

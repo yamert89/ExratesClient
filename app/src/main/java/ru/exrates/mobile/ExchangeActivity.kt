@@ -31,7 +31,7 @@ class ExchangeActivity : AppCompatActivity() {
             intervalBtn = findViewById(R.id.cur_interval)
             intervalValue = findViewById(R.id.intervalValue)
 
-            val queue = ArrayBlockingQueue<Double>(20)
+            //val queue = ArrayBlockingQueue<Double>(20)
 
             //val exchName: String? = savedInstanceState!!.getString(EXCH_NAME)
 
@@ -66,7 +66,7 @@ class ExchangeActivity : AppCompatActivity() {
     fun getTestExchange(): Exchange {
         val queue = ArrayBlockingQueue<Double>(20)
         return Exchange(
-            "testExchange",
+            "testExchange", 4,
             mutableListOf(
                 CurrencyPair(
                     "btc_ltc",
