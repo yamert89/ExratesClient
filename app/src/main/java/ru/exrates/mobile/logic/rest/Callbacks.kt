@@ -1,5 +1,6 @@
 package ru.exrates.mobile.logic.rest
 
+import android.util.Log
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -9,7 +10,8 @@ import ru.exrates.mobile.logic.entities.Exchange
 
 abstract class ExCallback<T>(protected val mainActivity: MainActivity): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
-        throw IllegalStateException("Request failed")
+        t.printStackTrace()
+        //Log.e("EXRATES", t.message)
     }
 
     fun <T> mainFunc(ob: T?, func: (ob: T) -> Unit){

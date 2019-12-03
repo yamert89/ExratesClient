@@ -73,7 +73,7 @@ class ExampleInstrumentedTest {
     fun restSyncTest(){
         try{
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://enchat.ru:8080/")
+            .baseUrl("http://192.168.1.72:8080/")
             .addConverterFactory(JacksonConverterFactory.create())
             .build()
         val restService = retrofit.create(RestService::class.java)
@@ -92,7 +92,7 @@ class ExampleInstrumentedTest {
     fun restAsyncTest(){
         try{
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://enchat.ru:8080/")
+                .baseUrl("http://192.168.1.72:8080/")
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build()
             val restService = retrofit.create(RestService::class.java)
@@ -109,7 +109,7 @@ class ExampleInstrumentedTest {
         var bool: Boolean = false
 
         override fun onFailure(call: Call<Exchange>, t: Throwable) {
-            throw IllegalStateException(call.request().body().toString())
+            t.printStackTrace()
         }
 
         override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
