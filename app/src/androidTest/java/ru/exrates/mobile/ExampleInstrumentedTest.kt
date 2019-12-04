@@ -31,7 +31,8 @@ import java.util.concurrent.ArrayBlockingQueue
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
     var bool = false
-    val ip = "192.168.0.100"
+    //val ip = "192.168.0.100"
+    val ip = "192.168.1.72"
     lateinit var context: Context
     @Before
     fun init(){
@@ -96,7 +97,7 @@ class ExampleInstrumentedTest {
     @Test
     fun restSyncTest(){
         try{
-            val dur = Duration.ofSeconds(200)
+            val dur = Duration.ofSeconds(300)
             val httpClient = OkHttpClient.Builder()
                 .connectTimeout(dur)
                 .readTimeout(dur)
