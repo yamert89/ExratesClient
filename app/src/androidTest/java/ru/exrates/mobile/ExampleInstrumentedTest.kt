@@ -31,8 +31,8 @@ import java.util.concurrent.ArrayBlockingQueue
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
     var bool = false
-    //val ip = "192.168.0.100"
-    val ip = "192.168.1.72"
+    val ip = "192.168.0.100"
+        //val ip = "192.168.1.72"
     lateinit var context: Context
     @Before
     fun init(){
@@ -121,6 +121,7 @@ class ExampleInstrumentedTest {
             assertEquals("binanceExchange", exchange?.name)
             assertEquals(1, exchange?.id)
         }catch (e: Exception){
+            Log.e("Exrates", e.message ?: "no message")
             e.printStackTrace()
             assertEquals(1,2)
         }
@@ -137,7 +138,7 @@ class ExampleInstrumentedTest {
                 .build()
             val restService = retrofit.create(RestService::class.java)
             val payload = """{"exchange": "binanceExchange", "timeout" : 12, "pairs":["VENBTC"]}"""
-            Log.d("Exrates", payload)
+            //Log.d("Exrates", payload)
             val call: Call<Exchange> = restService.getExchange(payload)
             call.enqueue(Some())
            //assertEquals(true, bool)
