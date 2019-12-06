@@ -51,7 +51,7 @@ class ExampleInstrumentedTest {
 
         val map = HashMap<String, Exchange>()
         val ex1 = Exchange(
-            "testExchange", 5,
+            "testExchange",
             mutableListOf(
                 CurrencyPair(
                     "btc_ltc",
@@ -119,7 +119,7 @@ class ExampleInstrumentedTest {
             assertEquals(200, response.code())
             assertNotNull(exchange)
             assertEquals("binanceExchange", exchange?.name)
-            assertEquals(1, exchange?.id)
+
         }catch (e: Exception){
             Log.e("Exrates", e.message ?: "no message")
             e.printStackTrace()
@@ -161,6 +161,47 @@ class ExampleInstrumentedTest {
         }
 
     }
+
+
+    /*
+   Request:
+   {
+   "exchange" : "binanceExchange",
+   "timeout": "3m",
+   "pairs" : ["BTCUSDT", "ETCBTC"]
+   }
+
+
+
+   Response:
+   {
+   "changePeriods":["3m","5m","15m","30m","1h","4h","6h","8h","12h","1d","3d","1w","1M"],
+   "name":"binanceExchange",
+   "pairs":[
+       {
+           "symbol":"ERDPAX",
+           "price":0.0012527,
+           "priceChange":{
+               "\"4h\"":0.0012527,
+               "\"6h\"":0.0012527,
+               "\"30m\"":0.0012527,
+               "\"1M\"":0.00177985,
+               "\"1d\"":0.0012527,
+               "\"1h\"":0.0012527,
+               "\"12h\"":0.0012527,
+               "\"3d\"":0.00141975,
+               "\"8h\"":0.0012527,
+               "\"5m\"":0.0012527,
+               "\"1w\"":0.0012527,
+               "\"15m\"":0.0012527,
+               "\"3m\"":0.0012527},
+               "priceHistory":[],
+               "lastUse":"2019-12-05T13:08:21.932122600Z",
+               "updateTimes":[1575551295166,0,0]}
+            ]
+    }
+
+   */
 
 
 
