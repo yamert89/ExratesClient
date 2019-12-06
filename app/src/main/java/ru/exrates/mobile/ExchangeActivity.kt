@@ -52,7 +52,7 @@ class ExchangeActivity : AppCompatActivity() {
 
             intervalBtn.setOnClickListener {
                 (pairsAdapter as? PairsAdapter)?.currentInterval = intervalValue.text.toString()
-                currentExchange.pairs.add(CurrencyPair("Temp", 34.454, mapOf("1d" to 53.64), ArrayBlockingQueue(2)))
+                currentExchange.pairs.add(CurrencyPair("Temp", 34.454, mapOf("1d" to 53.64), arrayOf(0L), ArrayBlockingQueue(2)))
                 pairsAdapter.notifyDataSetChanged()
             }
         }catch (e: Exception){
@@ -65,97 +65,113 @@ class ExchangeActivity : AppCompatActivity() {
 
     fun getTestExchange(): Exchange {
         val queue = ArrayBlockingQueue<Double>(20)
+        val arr = arrayOfNulls<Long?>(1)
         return Exchange(
-            "testExchange", 4,
+            "testExchange",
             mutableListOf(
                 CurrencyPair(
                     "btc_ltc",
                     0.345,
                     mapOf("1m" to 4453.023, "1w" to 5433.3230),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 ),
                 CurrencyPair(
                     "etc_ltc",
                     0.543,
                     mapOf("1m" to 324.0323, "1w" to 6673.32340),
+                    arr,
                     queue
                 )
             ),

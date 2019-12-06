@@ -32,6 +32,7 @@ import java.util.concurrent.ArrayBlockingQueue
 class ExampleInstrumentedTest {
     var bool = false
     //val ip = "192.168.0.100"
+       // val ip = "192.168.43.114"
         val ip = "192.168.1.72"
     lateinit var context: Context
     @Before
@@ -57,6 +58,7 @@ class ExampleInstrumentedTest {
                     "btc_ltc",
                     0.345,
                     mapOf("1m" to 4453.023, "1h" to 5433.3230),
+                    arrayOf(0L),
                     ArrayBlockingQueue(2)
                 )
             ),

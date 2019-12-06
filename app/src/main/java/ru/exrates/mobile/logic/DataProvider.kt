@@ -10,7 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue
 class DataProvider(val exchanges: Map<String, Exchange> = HashMap()){
 
     fun getSavedExchange(context: Context): Exchange = Storage(context).loadObject(SAVED_EXCHANGE) ?:
-        Exchange("", 44, mutableListOf(CurrencyPair("def", 0.0, mapOf("1d" to 0.0), ArrayBlockingQueue(1))), listOf("4.8"))
+        Exchange("", mutableListOf(CurrencyPair("def", 0.0, mapOf("1d" to 0.0), arrayOfNulls(1), ArrayBlockingQueue(1))), listOf("4.8"))
 
     fun storeExchange(exchange: Exchange, context: Context) = Storage(context).saveObject(exchange, SAVED_EXCHANGE)
 

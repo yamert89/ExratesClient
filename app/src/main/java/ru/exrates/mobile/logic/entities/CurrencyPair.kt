@@ -1,16 +1,27 @@
 package ru.exrates.mobile.logic.entities
 
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
 import java.util.concurrent.ArrayBlockingQueue
 
-@Serializable
-data class CurrencyPair(val symbol: String,
-                   val price: Double,
-                   val priceChange: Map<String, Double>,
-                   @ContextualSerialization val priceHistory: ArrayBlockingQueue<Double>,
-                   var visible: Boolean = true) : java.io.Serializable{
 
+class CurrencyPair() : java.io.Serializable{ //todo replace with data class
+    lateinit var symbol: String
+    var price: Double = 0.0
+    lateinit var priceChange: Map<String, Double>
+    lateinit var updateTimes: Array<Long?>
+    lateinit var priceHistory: ArrayBlockingQueue<Double>
+    val visible: Boolean = true
+
+    constructor(symbol: String, price: Double, priceChange: Map<String, Double>,
+                updateTimes: Array<Long?>, priceHistory: ArrayBlockingQueue<Double>) : this(){
+        this.symbol = symbol
+        this.price = price
+        this.priceChange = priceChange
+        this.updateTimes = updateTimes
+        this. priceHistory = priceHistory
+    }
 
 }

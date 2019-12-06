@@ -58,12 +58,13 @@ class CurrencyActivity : AppCompatActivity() {
 
     fun testExchanges(): List<Exchange> {
         val ex1 = Exchange(
-            "testExchange", 2,
+            "testExchange",
             mutableListOf(
                 CurrencyPair(
                     "btc_ltc",
                     0.345,
                     mapOf("1m" to 4453.023, "1h" to 5433.3230),
+                    arrayOf(0L),
                     ArrayBlockingQueue(2)
                 )
             ),
@@ -71,12 +72,13 @@ class CurrencyActivity : AppCompatActivity() {
         )
 
         val ex2 = Exchange(
-            "testExchange 2", 3,
+            "testExchange 2",
             mutableListOf(
                 CurrencyPair(
                     "btc_ltc",
                     0.657,
                     mapOf("1m" to 4343.023, "1h" to 45333.3230),
+                    arrayOf(0L),
                     ArrayBlockingQueue(2)
                 )
             ),

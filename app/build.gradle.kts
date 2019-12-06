@@ -48,6 +48,7 @@ dependencies() {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.13.0")
     implementation("com.squareup.retrofit2:retrofit:2.6.2")
     implementation("com.squareup.retrofit2:converter-jackson:2.6.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1")
 }
 
 
