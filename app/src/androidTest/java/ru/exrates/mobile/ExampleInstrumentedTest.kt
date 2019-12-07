@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import okhttp3.OkHttpClient
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -105,10 +107,12 @@ class ExampleInstrumentedTest {
                 .connectTimeout(dur)
                 .readTimeout(dur)
                 .writeTimeout(dur).build()
+            val om = ObjectMapper()
+            om.registerKotlinModule()
             val retrofit = Retrofit.Builder()
                 .client(httpClient)
                 .baseUrl("http://$ip:8080/")
-                .addConverterFactory(JacksonConverterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create(om))
                 .build()
             val restService = retrofit.create(RestService::class.java)
             //val payload = """{"exchange": "binanceExchange", "timeout" : 12, "pairs":["VENBTC"]}"""
