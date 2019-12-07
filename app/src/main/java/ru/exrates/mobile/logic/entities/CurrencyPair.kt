@@ -1,9 +1,6 @@
 package ru.exrates.mobile.logic.entities
 
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import kotlinx.serialization.ContextualSerialization
-import kotlinx.serialization.Serializable
 import java.util.concurrent.ArrayBlockingQueue
 
 

@@ -31,9 +31,9 @@ import java.util.concurrent.ArrayBlockingQueue
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
     var bool = false
-    //val ip = "192.168.0.100"
+    val ip = "192.168.0.100"
        // val ip = "192.168.43.114"
-        val ip = "192.168.1.72"
+        //val ip = "192.168.1.72"
     lateinit var context: Context
     @Before
     fun init(){
@@ -98,6 +98,7 @@ class ExampleInstrumentedTest {
 
     @Test
     fun restSyncTest(){
+
         try{
             val dur = Duration.ofSeconds(300)
             val httpClient = OkHttpClient.Builder()
@@ -114,17 +115,17 @@ class ExampleInstrumentedTest {
             val payload = ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC"))
             //Log.d("Exrates", payload.toString())
             val call: Call<Exchange> = restService.getExchange(payload)
-
             val response = call.execute()
             Log.d("Exrates", "!!!" + response.raw().message())
             val exchange = response.body()
+
             assertEquals(200, response.code())
             assertNotNull(exchange)
             assertEquals("binanceExchange", exchange?.name)
 
         }catch (e: Exception){
             Log.e("Exrates", e.message ?: "no message")
-            e.printStackTrace()
+            e.printStackTrace(System.err)
             assertEquals(1,2)
         }
 
@@ -196,11 +197,13 @@ class ExampleInstrumentedTest {
                "\"5m\"":0.0012527,
                "\"1w\"":0.0012527,
                "\"15m\"":0.0012527,
-               "\"3m\"":0.0012527},
+               "\"3m\"":0.0012527
+               },
                "priceHistory":[],
                "lastUse":"2019-12-05T13:08:21.932122600Z",
-               "updateTimes":[1575551295166,0,0]}
-            ]
+               "updateTimes":[1575551295166,0,0]
+        }
+     ]
     }
 
    */
