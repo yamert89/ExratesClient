@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.logic.rest.ExchangePayload
+import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.rest.OneExchangeCallback
 import ru.exrates.mobile.viewmodel.MainPairsAdapter
 
@@ -64,7 +64,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             val exchangePayload =
-                ExchangePayload(oldExch.name, "1h", arrayOf("BTCLTC")) //todo timeout
+                ExchangePayload(
+                    oldExch.name,
+                    "1h",
+                    arrayOf("BTCLTC")
+                ) //todo timeout
 
             app.restService.getExchange(exchangePayload).enqueue(OneExchangeCallback(this))
         }catch (e: Exception){

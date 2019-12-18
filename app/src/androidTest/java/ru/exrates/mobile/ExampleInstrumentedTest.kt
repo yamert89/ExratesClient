@@ -17,7 +17,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.logic.rest.ExchangePayload
+import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.rest.RestService
 import java.io.*
 import java.time.Duration
@@ -111,7 +111,11 @@ class ExampleInstrumentedTest {
                 .build()
             val restService = retrofit.create(RestService::class.java)
             //val payload = """{"exchange": "binanceExchange", "timeout" : 12, "pairs":["VENBTC"]}"""
-            val payload = ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC"))
+            val payload = ExchangePayload(
+                "binanceExchange",
+                "1h",
+                arrayOf("VENBTC")
+            )
             //Log.d("Exrates", payload.toString())
             val call: Call<Exchange> = restService.getExchange(payload)
 

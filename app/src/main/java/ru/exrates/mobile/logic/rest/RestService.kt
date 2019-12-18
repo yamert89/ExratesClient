@@ -6,6 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.ExchangePayload
 
 interface RestService {
 
