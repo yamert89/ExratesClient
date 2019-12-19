@@ -40,6 +40,7 @@ dependencies() {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
     androidTestImplementation("com.android.support:support-annotations:28.0.0")
     androidTestImplementation("com.android.support.test:runner:1.0.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.1")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
     implementation("com.fasterxml.jackson.core:jackson-core:2.10.1")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.10.1")
@@ -49,6 +50,7 @@ dependencies() {
     implementation("com.squareup.retrofit2:retrofit:2.6.2")
     implementation("com.squareup.retrofit2:converter-jackson:2.6.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1")
+
 }
 
 

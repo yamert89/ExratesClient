@@ -102,7 +102,7 @@ class ExampleInstrumentedTest {
     fun restSyncTest(){
 
         try{
-            val dur = Duration.ofSeconds(300)
+            val dur = Duration.ofSeconds(30)
             val httpClient = OkHttpClient.Builder()
                 .connectTimeout(dur)
                 .readTimeout(dur)
@@ -154,7 +154,7 @@ class ExampleInstrumentedTest {
             call.enqueue(Some())
            //assertEquals(true, bool)
         }catch (e: Exception){
-            e.printStackTrace()
+            Log.e("Exrates", e.message ?: "null message")
         }
 
     }
@@ -168,7 +168,8 @@ class ExampleInstrumentedTest {
         }
 
         override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
-            bool = true
+            Log.d("Exrates", "Async responce succes: ${response.body()} , " +
+                    "callIsCanselled: ${call.isCanceled} , callIsExecuted: ${call.isExecuted} bodyReq: ${call.request().body()}")
         }
 
     }
