@@ -12,9 +12,9 @@ constructor(name: String, pairs: MutableList<CurrencyPair>, changePeriods: List<
     this.changePeriods = changePeriods
 }
 
-
-
-
+    override fun toString(): String {
+        return "$name | ${pairs.size} pairs"
+    }
 }
 
 

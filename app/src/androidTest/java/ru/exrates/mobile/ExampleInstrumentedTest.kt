@@ -33,9 +33,9 @@ import java.util.concurrent.ArrayBlockingQueue
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
     var bool = false
-    val ip = "192.168.0.100"
+    //val ip = "192.168.0.100"
        // val ip = "192.168.43.114"
-        //val ip = "192.168.1.72"
+        val ip = "192.168.1.72"
     lateinit var context: Context
     @Before
     fun init(){
@@ -124,7 +124,7 @@ class ExampleInstrumentedTest {
             //Log.d("Exrates", payload.toString())
             val call: Call<Exchange> = restService.getExchange(payload)
             val response = call.execute()
-            Log.d("Exrates", "!!!" + response.raw().message())
+            Log.d("Exrates", "!!!" + response.body())
             val exchange = response.body()
 
             assertEquals(200, response.code())
