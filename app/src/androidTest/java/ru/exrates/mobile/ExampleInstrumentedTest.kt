@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import okhttp3.OkHttpClient
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -31,9 +33,9 @@ import java.util.concurrent.ArrayBlockingQueue
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
     var bool = false
-    //val ip = "192.168.0.100"
+    val ip = "192.168.0.100"
        // val ip = "192.168.43.114"
-        val ip = "192.168.1.72"
+        //val ip = "192.168.1.72"
     lateinit var context: Context
     @Before
     fun init(){
@@ -98,16 +100,19 @@ class ExampleInstrumentedTest {
 
     @Test
     fun restSyncTest(){
+
         try{
             val dur = Duration.ofSeconds(300)
             val httpClient = OkHttpClient.Builder()
                 .connectTimeout(dur)
                 .readTimeout(dur)
                 .writeTimeout(dur).build()
+            val om = ObjectMapper()
+            om.registerKotlinModule()
             val retrofit = Retrofit.Builder()
                 .client(httpClient)
                 .baseUrl("http://$ip:8080/")
-                .addConverterFactory(JacksonConverterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create(om))
                 .build()
             val restService = retrofit.create(RestService::class.java)
             //val payload = """{"exchange": "binanceExchange", "timeout" : 12, "pairs":["VENBTC"]}"""
@@ -118,17 +123,17 @@ class ExampleInstrumentedTest {
             )
             //Log.d("Exrates", payload.toString())
             val call: Call<Exchange> = restService.getExchange(payload)
-
             val response = call.execute()
             Log.d("Exrates", "!!!" + response.raw().message())
             val exchange = response.body()
+
             assertEquals(200, response.code())
             assertNotNull(exchange)
             assertEquals("binanceExchange", exchange?.name)
 
         }catch (e: Exception){
             Log.e("Exrates", e.message ?: "no message")
-            e.printStackTrace()
+            e.printStackTrace(System.err)
             assertEquals(1,2)
         }
 
@@ -200,11 +205,13 @@ class ExampleInstrumentedTest {
                "\"5m\"":0.0012527,
                "\"1w\"":0.0012527,
                "\"15m\"":0.0012527,
-               "\"3m\"":0.0012527},
+               "\"3m\"":0.0012527
+               },
                "priceHistory":[],
                "lastUse":"2019-12-05T13:08:21.932122600Z",
-               "updateTimes":[1575551295166,0,0]}
-            ]
+               "updateTimes":[1575551295166,0,0]
+        }
+     ]
     }
 
    */
