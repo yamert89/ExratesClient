@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -25,6 +26,7 @@ import java.io.*
 import java.time.Duration
 import java.util.concurrent.ArrayBlockingQueue
 
+
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -33,9 +35,9 @@ import java.util.concurrent.ArrayBlockingQueue
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
     var bool = false
-    //val ip = "192.168.0.100"
+    val ip = "192.168.0.100"
        // val ip = "192.168.43.114"
-        val ip = "192.168.1.72"
+        //val ip = "192.168.1.72"
     lateinit var context: Context
     @Before
     fun init(){
@@ -143,16 +145,24 @@ class ExampleInstrumentedTest {
     @Test
     fun restAsyncTest(){
         try{
+            val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(logging).build()
+
             val retrofit = Retrofit.Builder()
                 .baseUrl("http://$ip:8080/")
                 .addConverterFactory(JacksonConverterFactory.create())
+                .client(client)
                 .build()
             val restService = retrofit.create(RestService::class.java)
-            val payload = """{"exchange": "binanceExchange", "timeout" : 12, "pairs":["VENBTC"]}"""
+            val payload = """{"exchange": "binanceExchange", "timeout" : "1h", "pairs":["VENBTC"]}"""
+            val payload2 = ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC"))
             //Log.d("Exrates", payload)
-            val call: Call<Exchange> = restService.getExchange(payload)
+            val call: Call<Exchange> = restService.getExchange(payload2)
             call.enqueue(Some())
            //assertEquals(true, bool)
+            Log.d("Exrates", "end test body")
         }catch (e: Exception){
             Log.e("Exrates", e.message ?: "null message")
         }
@@ -168,11 +178,27 @@ class ExampleInstrumentedTest {
         }
 
         override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
-            Log.d("Exrates", "Async responce succes: ${response.body()} , " +
-                    "callIsCanselled: ${call.isCanceled} , callIsExecuted: ${call.isExecuted} bodyReq: ${call.request().body()}")
+            Log.d("Exrates", "Async response success: ${response.body()}, code: ${response.code()} ," +
+                    " message: ${response.message()}, callIsExecuted: ${call.isExecuted} , error: ${response.errorBody()}")
+            Log.d("Exrates", "call: " + ObjectMapper().writeValueAsString(call))
+            Log.d("Exrates", "response: " + ObjectMapper().writeValueAsString(response))
         }
 
     }
+
+
+
+    /*class LoggingIntercepror: Interceptor{
+        override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+            val request = chain.request()
+            Log.d("Exrates", "REQUEST: ${request.url} ${chain.connection()} ${request.headers}")
+            val response = chain.proceed(request)
+            Log.d("Exrates", "RESPONSE: ${response.request.url}, ${response.headers}")
+            return response
+        }
+
+    }*/
+
 
 
     /*
