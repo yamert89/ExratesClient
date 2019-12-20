@@ -8,8 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -149,10 +148,12 @@ class ExampleInstrumentedTest {
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(logging).build()
+            val om = ObjectMapper()
+            om.registerKotlinModule()
 
             val retrofit = Retrofit.Builder()
                 .baseUrl("http://$ip:8080/")
-                .addConverterFactory(JacksonConverterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create(om))
                 .client(client)
                 .build()
             val restService = retrofit.create(RestService::class.java)
@@ -160,9 +161,12 @@ class ExampleInstrumentedTest {
             val payload2 = ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC"))
             //Log.d("Exrates", payload)
             val call: Call<Exchange> = restService.getExchange(payload2)
-            call.enqueue(Some())
+            val some = Some()
+            call.enqueue(some)
            //assertEquals(true, bool)
+            Thread.sleep(5000)
             Log.d("Exrates", "end test body")
+            assertTrue(some.bool)
         }catch (e: Exception){
             Log.e("Exrates", e.message ?: "null message")
         }
@@ -179,12 +183,16 @@ class ExampleInstrumentedTest {
 
         override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
             Log.d("Exrates", "Async response success: ${response.body()}, code: ${response.code()} ," +
-                    " message: ${response.message()}, callIsExecuted: ${call.isExecuted} , error: ${response.errorBody()}")
+                    " message: ${response.message()}, callIsExecuted: ${call.isExecuted} , error: ${response.errorBody().toString()}")
             Log.d("Exrates", "call: " + ObjectMapper().writeValueAsString(call))
             Log.d("Exrates", "response: " + ObjectMapper().writeValueAsString(response))
+            bool = true
+
         }
 
     }
+
+
 
 
 
