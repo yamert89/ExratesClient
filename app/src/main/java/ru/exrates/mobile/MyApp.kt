@@ -13,6 +13,9 @@ import ru.exrates.mobile.logic.rest.RestService
 class MyApp(): Application(){
     val dataProvider: DataProvider = DataProvider()
     var restService: RestService
+    val ip = "192.168.0.100"
+    // val ip = "192.168.43.114"
+    //val ip = "192.168.1.72"
     init {
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
@@ -20,7 +23,7 @@ class MyApp(): Application(){
         val om = ObjectMapper()
         om.registerKotlinModule()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://localhost:8080/")
+            .baseUrl("http://$ip:8080/")
             .addConverterFactory(JacksonConverterFactory.create(om))
             .build()
         restService = retrofit.create(RestService::class.java)

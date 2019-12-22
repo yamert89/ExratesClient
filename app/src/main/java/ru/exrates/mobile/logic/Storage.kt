@@ -1,18 +1,35 @@
 package ru.exrates.mobile.logic
 
 import android.content.Context
+import ru.exrates.mobile.DEFAULT_STORAGE
 import java.io.*
 
 class Storage(private val context: Context) {
 
-    fun getStringValue(storage: String, value: String, def: String): String =
-        context.getSharedPreferences(storage, Context.MODE_PRIVATE).getString(value, def) ?: def
 
-    private fun storeStringValue(storage: String, key: String, value: String){
+    fun <T> getValue(key: String, def: T, storage: String = DEFAULT_STORAGE): T{
+       val sp = context.getSharedPreferences(storage, Context.MODE_PRIVATE)
+       return when(def){
+           is String -> sp.getString(key, def) as T ?: def
+           is Int -> sp.getInt(key, def) as T ?: def
+           is Boolean -> sp.getBoolean(key, def) as T ?: def
+           else -> throw UnsupportedOperationException("Not valid type for shared Preference")
+        }
+    }
+
+    fun <T> storeValue(key: String, value: T, storage: String = DEFAULT_STORAGE){
         val editor = context.getSharedPreferences(storage, Context.MODE_PRIVATE).edit()
-        editor.putString(key, value)
+        when(value){
+            is String -> editor.putString(key, value)
+            is Int -> editor.putInt(key, value)
+            is Boolean -> editor.putBoolean(key, value)
+            is Long -> editor.putLong(key, value)
+            else -> throw java.lang.UnsupportedOperationException("Not valid type for shared preference")
+        }
         editor.apply()
     }
+
+
 
     //fun getStoreExchangeStringValue(value: String, def: String) =
 

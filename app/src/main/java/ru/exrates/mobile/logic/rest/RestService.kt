@@ -9,6 +9,8 @@ import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 
 interface RestService {
+    @GET("rest/lists")
+    fun lists(): Call<Map<String, List<String>>>
 
     @POST("rest/exchange")
     fun getExchanges(@Body payload: String) : Call<Map<String, Exchange>>

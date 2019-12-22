@@ -51,6 +51,8 @@ dependencies() {
     implementation("com.squareup.retrofit2:converter-jackson:2.6.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1")
     implementation("com.squareup.okhttp3:logging-interceptor:4.2.1")
+    implementation("com.google.android.material:material:1.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
 
 }
 
