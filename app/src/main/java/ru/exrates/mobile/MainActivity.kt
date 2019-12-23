@@ -74,15 +74,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun test(){
-        GlobalScope.launch(Dispatchers.Main){
-            delay(4000)
-            currencyPrice.text = "Yes"
-
-        }
-
-
-    }
 
     override fun onResume() {
         super.onResume()
