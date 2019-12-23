@@ -39,7 +39,7 @@ class ExchangeActivity : AppCompatActivity() {
 
             currentExchange = app.dataProvider.getSavedExchange(this.applicationContext)
 
-            val currentInterval = Storage(applicationContext).getStringValue(CURRENT_INTERVAL, "1h")
+            val currentInterval = Storage(applicationContext).getValue(CURRENT_INTERVAL, "1h")
 
             val pairsOfAdapter = if (currentExchange.showHidden) currentExchange.pairs else currentExchange.pairs.filter{it.visible}.toMutableList()
             pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval)

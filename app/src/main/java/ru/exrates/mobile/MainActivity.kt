@@ -9,10 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import okhttp3.internal.wait
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
@@ -96,12 +94,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun updateExchangesList(exchNames: List<String>){
+        log_d( "exchNames: $exchNames")
         exchAdapter.clear()
         exchAdapter.addAll(exchNames)
         exchAdapter.notifyDataSetChanged()
     }
 
     fun updateCurrenciesList(curNames: List<String>){
+        log_d( "curNames : $curNames")
         curAdapter.clear()
         curAdapter.addAll(curNames)
         curAdapter.notifyDataSetChanged()
@@ -111,20 +111,31 @@ class MainActivity : AppCompatActivity() {
         //curAdapter.addAll(app.dataProvider.getMainSavedCurrencyNameList(applicationContext))
         //exchAdapter.addAll(app.dataProvider.getMainSavedExchangesNameList(applicationContext))
         //pairsAdapter = MainPairsAdapter(app.dataProvider.getMainSavedListCurrencies(applicationContext))
-        GlobalScope.launch(Dispatchers.Main) {
-            val storage = Storage(applicationContext)
+        var currenciesList: List<String>? = null
+        var exchangesList: List<String>? = null
+        val storage = Storage(applicationContext)
+        val job = GlobalScope.launch(Dispatchers.IO) {
             if(storage.getValue(IS_FIRST_LOAD, true)){
                 storage.storeValue(IS_FIRST_LOAD, false)
                 val lists = app.restService.lists().execute().body()!!
-                val currenciesList = lists["currencies"]
-                val exchangesList = lists["exchanges"]
-                updateCurrenciesList(currenciesList ?: throw NullPointerException("cur list is null"))
-                updateExchangesList(exchangesList ?: throw NullPointerException("exch list is null"))
+                currenciesList = lists["currencies"]
+                exchangesList = lists["exchanges"]
+                launch {
+                    storage.saveObject(currenciesList, SAVED_CURRENCY_NAME_LIST)
+                    storage.saveObject(exchangesList, SAVED_EXCHANGE_NAME_LIST)
+                }
 
-
+            } else{
+                log_d("Saved lists loaded")
+                currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
+                exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
             }
 
         }
+        runBlocking { job.join() }
+
+        updateCurrenciesList(currenciesList ?: throw NullPointerException("cur list is null"))
+        updateExchangesList(exchangesList ?: throw NullPointerException("exch list is null"))
 
 
 
@@ -132,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val oldExch = app.dataProvider.getSavedExchange(this)
+       /* val oldExch = app.dataProvider.getSavedExchange(this)
         val oldCur = Storage(applicationContext).loadObject<CurrencyPair>(SAVED_CURRENCY)
 
 
@@ -153,11 +164,11 @@ class MainActivity : AppCompatActivity() {
                 arrayOf("BTCLTC")
             ) //todo timeout
 
-        app.restService.getExchange(exchangePayload).enqueue(OneExchangeCallback(this))
+        app.restService.getExchange(exchangePayload).enqueue(OneExchangeCallback(this))*/
     }
 
     fun snakBar(){
-        Log.d("Exrates", "Snack started..")
+        log_d( "Snack started..")
         Snackbar.make(currenciesRecyclerView, "Загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
         //todo progressbar
     }

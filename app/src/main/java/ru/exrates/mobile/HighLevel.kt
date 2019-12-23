@@ -1,5 +1,8 @@
 package ru.exrates.mobile
 
+import android.util.Log
+
+const val EXRATES = ":EXRATES:"
 const val EXCH_NAME = "exchName"
 const val EXCH_STORAGE = "exchStorage"
 const val DEFAULT_STORAGE = "defstoraage"
@@ -18,3 +21,6 @@ const val STORAGE_EXCHANGES = "exchanges"
 const val SAVED_CURRENCY = "savedcurrency"
 
 const val IS_FIRST_LOAD = "firstload"
+
+fun log_d(message: String) = Log.d(EXRATES, message)
+fun log_e(message: String) = Log.e(EXRATES, message)

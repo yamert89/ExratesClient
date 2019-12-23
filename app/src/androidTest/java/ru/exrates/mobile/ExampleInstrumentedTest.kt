@@ -122,10 +122,10 @@ class ExampleInstrumentedTest {
                 "1h",
                 arrayOf("VENBTC")
             )
-            //Log.d("Exrates", payload.toString())
+            //log_d( payload.toString())
             val call: Call<Exchange> = restService.getExchange(payload)
             val response = call.execute()
-            Log.d("Exrates", "!!!" + response.body())
+            log_d( "!!!" + response.body())
             val exchange = response.body()
 
             assertEquals(200, response.code())
@@ -159,13 +159,13 @@ class ExampleInstrumentedTest {
             val restService = retrofit.create(RestService::class.java)
             val payload = """{"exchange": "binanceExchange", "timeout" : "1h", "pairs":["VENBTC"]}"""
             val payload2 = ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC"))
-            //Log.d("Exrates", payload)
+            //log_d( payload)
             val call: Call<Exchange> = restService.getExchange(payload2)
             val some = Some()
             call.enqueue(some)
            //assertEquals(true, bool)
             Thread.sleep(5000)
-            Log.d("Exrates", "end test body")
+            log_d( "end test body")
             assertTrue(some.bool)
         }catch (e: Exception){
             Log.e("Exrates", e.message ?: "null message")
@@ -182,10 +182,10 @@ class ExampleInstrumentedTest {
         }
 
         override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
-            Log.d("Exrates", "Async response success: ${response.body()}, code: ${response.code()} ," +
+            log_d( "Async response success: ${response.body()}, code: ${response.code()} ," +
                     " message: ${response.message()}, callIsExecuted: ${call.isExecuted} , error: ${response.errorBody().toString()}")
-            Log.d("Exrates", "call: " + ObjectMapper().writeValueAsString(call))
-            Log.d("Exrates", "response: " + ObjectMapper().writeValueAsString(response))
+            log_d( "call: " + ObjectMapper().writeValueAsString(call))
+            log_d( "response: " + ObjectMapper().writeValueAsString(response))
             bool = true
 
         }
@@ -199,9 +199,9 @@ class ExampleInstrumentedTest {
     /*class LoggingIntercepror: Interceptor{
         override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
             val request = chain.request()
-            Log.d("Exrates", "REQUEST: ${request.url} ${chain.connection()} ${request.headers}")
+            log_d( "REQUEST: ${request.url} ${chain.connection()} ${request.headers}")
             val response = chain.proceed(request)
-            Log.d("Exrates", "RESPONSE: ${response.request.url}, ${response.headers}")
+            log_d( "RESPONSE: ${response.request.url}, ${response.headers}")
             return response
         }
 
