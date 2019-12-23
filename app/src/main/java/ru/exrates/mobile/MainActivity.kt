@@ -61,16 +61,9 @@ class MainActivity : AppCompatActivity() {
             snakBar()
             updateActivity()
 
-
-
-
-
-
         }catch (e: Exception){
             e.printStackTrace()
         }
-
-
 
     }
 
@@ -102,15 +95,29 @@ class MainActivity : AppCompatActivity() {
         //curAdapter.addAll(app.dataProvider.getMainSavedCurrencyNameList(applicationContext))
         //exchAdapter.addAll(app.dataProvider.getMainSavedExchangesNameList(applicationContext))
         //pairsAdapter = MainPairsAdapter(app.dataProvider.getMainSavedListCurrencies(applicationContext))
+        val storage = Storage(applicationContext)
         var currenciesList: List<String>? = null
         var exchangesList: List<String>? = null
-        val storage = Storage(applicationContext)
-        val job = GlobalScope.launch(Dispatchers.IO) {
-            if(storage.getValue(IS_FIRST_LOAD, true)){
+        var curIdx = 0
+        var exIdx = 0
+        var exch: Exchange? = null
+        var cur: CurrencyPair? = null
+
+
+        val listsReq = GlobalScope.launch(Dispatchers.IO) {
+            if(true/*storage.getValue(IS_FIRST_LOAD, true)*/){
+
+
                 storage.storeValue(IS_FIRST_LOAD, false)
                 val lists = app.restService.lists().execute().body()!!
                 currenciesList = lists["currencies"]
                 exchangesList = lists["exchanges"]
+
+                exch = app.restService.getExchange(ExchangePayload(exchangesList?.get(0) ?: "binanceExchange", "1h", emptyArray())).execute().body() //todo null check refactor
+                cur = exch!!.pairs.get(0) //todo check null refactoring
+                //cur = app.restService.getPair().execute().body()
+
+
                 launch {
                     storage.saveObject(currenciesList, SAVED_CURRENCY_NAME_LIST)
                     storage.saveObject(exchangesList, SAVED_EXCHANGE_NAME_LIST)
@@ -118,33 +125,43 @@ class MainActivity : AppCompatActivity() {
 
             } else{
                 log_d("Saved lists loaded")
+                exch = storage.loadObject(SAVED_EXCHANGE)
+                cur = storage.loadObject<CurrencyPair>(SAVED_CURRENCY)
                 currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
                 exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
+                curIdx = storage.getValue(SAVED_CUR_IDX, 0)
+                exIdx = storage.getValue(SAVED_EX_IDX, 0)
             }
 
         }
-        runBlocking { job.join() }
+
+
+        runBlocking { listsReq.join() }
 
         updateCurrenciesList(currenciesList ?: throw NullPointerException("cur list is null"))
         updateExchangesList(exchangesList ?: throw NullPointerException("exch list is null"))
 
 
-
-
-
-
-
-       /* val oldExch = app.dataProvider.getSavedExchange(this)
-        val oldCur = Storage(applicationContext).loadObject<CurrencyPair>(SAVED_CURRENCY)
-
-
         currencyName.setSelection(
             curAdapter.getPosition(
-                oldCur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
+                cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
             )
         )
-        currencyPrice.text = oldCur?.price.toString()
-        exchangeName.setSelection(exchAdapter.getPosition(oldExch.name))
+        currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
+        exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
+
+
+
+
+
+
+
+
+
+       /*
+
+
+
 
 
 

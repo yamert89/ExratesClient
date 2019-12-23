@@ -37,7 +37,7 @@ class ExchangeActivity : AppCompatActivity() {
 
 
 
-            currentExchange = app.dataProvider.getSavedExchange(this.applicationContext)
+            currentExchange = Storage(applicationContext).loadObject(SAVED_EXCHANGE)
 
             val currentInterval = Storage(applicationContext).getValue(CURRENT_INTERVAL, "1h")
 

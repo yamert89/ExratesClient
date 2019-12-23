@@ -10,7 +10,6 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import ru.exrates.mobile.logic.rest.RestService
 
 class MyApp(): Application(){
-    val dataProvider: DataProvider = DataProvider()
     var restService: RestService
     //val ip = "192.168.0.100"
     // val ip = "192.168.43.114"

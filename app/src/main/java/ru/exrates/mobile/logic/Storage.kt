@@ -43,13 +43,13 @@ class Storage(private val context: Context) {
         os.close()
     }
 
-    fun <T> loadObject(fileName: String): T? {
+    fun <T> loadObject(fileName: String, def: T? = null): T {
         val file = File(context.filesDir, fileName)
-        if (!file.exists()) return null
+        if (!file.exists()) if(def != null) return def else throw FileNotFoundException("File $fileName not found in storage")
         val _is = ObjectInputStream(FileInputStream(File(context.filesDir, fileName)))
         val ob = _is.readObject()
         _is.close()
-        return ob as? T
+        return ob as T
     }
 
 
