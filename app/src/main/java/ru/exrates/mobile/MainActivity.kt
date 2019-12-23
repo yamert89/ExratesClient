@@ -8,14 +8,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
-import ru.exrates.mobile.viewmodel.MainPairsAdapter
+import ru.exrates.mobile.viewadapters.MainPairsAdapter
+import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ExratesActivity {
 
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
@@ -26,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
     private lateinit var app: MyApp
+    private lateinit var model: Model
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -33,6 +39,7 @@ class MainActivity : AppCompatActivity() {
             setContentView(R.layout.activity_main)
 
             app = this.application as MyApp
+            model = Model(app, this)
 
             //check first load or not
             currencyName = findViewById(R.id.main_currency_spinner)
@@ -57,6 +64,11 @@ class MainActivity : AppCompatActivity() {
             }
             snakBar()
             loadActivity()
+            Timer().schedule(object :  TimerTask(){
+                override fun run() {
+                    model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC")))
+                }
+            }, 20000L, 20000L)
 
         }catch (e: Exception){
             e.printStackTrace()
@@ -70,18 +82,25 @@ class MainActivity : AppCompatActivity() {
         snakBar()
     }
 
-    fun updateExchangeData(exchange: Exchange){
+    override fun updateExchangeData(exchange: Exchange){
+        val adapter = currenciesRecyclerView.adapter as MainPairsAdapter
+        adapter.dataPairs.clear()
+        adapter.dataPairs.addAll(exchange.pairs)
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun updatePairData(map: Map<String, CurrencyPair>) {
 
     }
 
-    fun updateExchangesList(exchNames: List<String>){
+    private fun updateExchangesList(exchNames: List<String>){
         log_d( "exchNames: $exchNames")
         exchAdapter.clear()
         exchAdapter.addAll(exchNames)
         exchAdapter.notifyDataSetChanged()
     }
 
-    fun updateCurrenciesList(curNames: List<String>){
+    private fun updateCurrenciesList(curNames: List<String>){
         log_d( "curNames : $curNames")
         curAdapter.clear()
         curAdapter.addAll(curNames)
@@ -89,9 +108,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadActivity(){
-        //curAdapter.addAll(app.dataProvider.getMainSavedCurrencyNameList(applicationContext))
-        //exchAdapter.addAll(app.dataProvider.getMainSavedExchangesNameList(applicationContext))
-        //pairsAdapter = MainPairsAdapter(app.dataProvider.getMainSavedListCurrencies(applicationContext))
         val storage = Storage(applicationContext)
         var currenciesList: List<String>? = null
         var exchangesList: List<String>? = null
@@ -132,9 +148,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-
-
-
         runBlocking { listsReq.join() }
         updateCurrenciesList(currenciesList ?: throw NullPointerException("cur list is null"))
         updateExchangesList(exchangesList ?: throw NullPointerException("exch list is null"))
@@ -145,30 +158,6 @@ class MainActivity : AppCompatActivity() {
         )
         exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
         currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
-
-
-
-
-
-       /*
-
-
-
-
-
-
-        val exchangePayload =
-            ExchangePayload(
-                oldExch.name,
-                "1h",
-                arrayOf("BTCLTC")
-            ) //todo timeout
-
-        app.restService.getExchange(exchangePayload).enqueue(OneExchangeCallback(this))*/
-    }
-
-    fun updateActivity(){
-
 
     }
 

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.viewmodel.ExchangesAdapter
+import ru.exrates.mobile.viewadapters.ExchangesAdapter
 import java.util.concurrent.ArrayBlockingQueue
 
 class CurrencyActivity : AppCompatActivity() {

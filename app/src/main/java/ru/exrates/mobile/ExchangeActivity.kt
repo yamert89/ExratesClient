@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.viewmodel.PairsAdapter
+import ru.exrates.mobile.viewadapters.PairsAdapter
 import java.util.concurrent.ArrayBlockingQueue
 
 class ExchangeActivity : AppCompatActivity() {

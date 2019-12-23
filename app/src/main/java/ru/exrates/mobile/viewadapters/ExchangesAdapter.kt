@@ -1,11 +1,8 @@
-package ru.exrates.mobile.viewmodel
+package ru.exrates.mobile.viewadapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.LinearLayout
-import android.widget.ListAdapter
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.R

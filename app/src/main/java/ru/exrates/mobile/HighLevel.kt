@@ -30,3 +30,5 @@ fun log_d(message: String) = Log.d(EXRATES, message)
 fun log_e(message: String) = Log.e(EXRATES, message)
 
 fun Double.toNumeric() = DecimalFormat("####.########################").format(this)
+
+

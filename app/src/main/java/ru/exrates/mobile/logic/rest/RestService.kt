@@ -22,5 +22,5 @@ interface RestService {
     fun getExchange(@Body payload: String) : Call<Exchange>
 
     @GET("rest/pair")
-    fun getPair(): Call<Map<String, CurrencyPair>>
+    fun getPair(@Body pName: String): Call<Map<String, CurrencyPair>>
 }

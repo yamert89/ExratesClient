@@ -1,4 +1,4 @@
-package ru.exrates.mobile.viewmodel
+package ru.exrates.mobile.viewadapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,10 +6,8 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.currency_row.view.*
 import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.entities.CurrencyPair
-import ru.exrates.mobile.logic.entities.Exchange
 
 
 open class PairsAdapter(private val dataPairs: MutableList<CurrencyPair>, var currentInterval: String = "1h") : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
