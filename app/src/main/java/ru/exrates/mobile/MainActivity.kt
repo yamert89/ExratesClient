@@ -1,7 +1,6 @@
 package ru.exrates.mobile
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
@@ -10,12 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
-import okhttp3.internal.wait
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
-import ru.exrates.mobile.logic.rest.OneExchangeCallback
 import ru.exrates.mobile.viewmodel.MainPairsAdapter
 
 class MainActivity : AppCompatActivity() {
@@ -59,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                 layoutManager = viewManager
             }
             snakBar()
-            updateActivity()
+            loadActivity()
 
         }catch (e: Exception){
             e.printStackTrace()
@@ -91,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         curAdapter.notifyDataSetChanged()
     }
 
-    fun updateActivity(){
+    fun loadActivity(){
         //curAdapter.addAll(app.dataProvider.getMainSavedCurrencyNameList(applicationContext))
         //exchAdapter.addAll(app.dataProvider.getMainSavedExchangesNameList(applicationContext))
         //pairsAdapter = MainPairsAdapter(app.dataProvider.getMainSavedListCurrencies(applicationContext))
@@ -136,23 +133,18 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        runBlocking { listsReq.join() }
 
+
+        runBlocking { listsReq.join() }
         updateCurrenciesList(currenciesList ?: throw NullPointerException("cur list is null"))
         updateExchangesList(exchangesList ?: throw NullPointerException("exch list is null"))
-
-
         currencyName.setSelection(
             curAdapter.getPosition(
                 cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
             )
         )
-        currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
         exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
-
-
-
-
+        currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
 
 
 
@@ -173,6 +165,11 @@ class MainActivity : AppCompatActivity() {
             ) //todo timeout
 
         app.restService.getExchange(exchangePayload).enqueue(OneExchangeCallback(this))*/
+    }
+
+    fun updateActivity(){
+
+
     }
 
     fun snakBar(){
