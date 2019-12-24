@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -41,16 +42,12 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
             app = this.application as MyApp
             model = Model(app, this)
 
-            //check first load or not
             currencyName = findViewById(R.id.main_currency_spinner)
             currencyPrice = findViewById(R.id.main_cur_price)
             exchangeName = findViewById(R.id.main_exch_spinner)
 
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
-
-            //curAdapter.addAll(app.dataProvider.getMainSavedCurrencyNameList(applicationContext))
-            //exchAdapter.addAll(app.dataProvider.getMainSavedExchangesNameList(applicationContext))
 
             currencyName.adapter = curAdapter
             exchangeName.adapter = exchAdapter
@@ -77,10 +74,7 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
     }
 
 
-    override fun onResume() {
-        super.onResume()
-        snakBar()
-    }
+
 
     override fun updateExchangeData(exchange: Exchange){
         val adapter = currenciesRecyclerView.adapter as MainPairsAdapter
@@ -90,24 +84,12 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
     }
 
     override fun updatePairData(map: Map<String, CurrencyPair>) {
-
+        var count = 0.0
+        map.forEach { count += it.value.price }
+        currencyPrice.text = (count / map.size).toNumeric()
     }
 
-    private fun updateExchangesList(exchNames: List<String>){
-        log_d( "exchNames: $exchNames")
-        exchAdapter.clear()
-        exchAdapter.addAll(exchNames)
-        exchAdapter.notifyDataSetChanged()
-    }
-
-    private fun updateCurrenciesList(curNames: List<String>){
-        log_d( "curNames : $curNames")
-        curAdapter.clear()
-        curAdapter.addAll(curNames)
-        curAdapter.notifyDataSetChanged()
-    }
-
-    fun loadActivity(){
+    override fun loadActivity(){
         val storage = Storage(applicationContext)
         var currenciesList: List<String>? = null
         var exchangesList: List<String>? = null
@@ -116,11 +98,8 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
         var exch: Exchange? = null
         var cur: CurrencyPair? = null
 
-
         val listsReq = GlobalScope.launch(Dispatchers.IO) {
-            if(true/*storage.getValue(IS_FIRST_LOAD, true)*/){
-
-
+            if(storage.getValue(IS_FIRST_LOAD, true)){
                 storage.storeValue(IS_FIRST_LOAD, false)
                 val lists = app.restService.lists().execute().body()!!
                 currenciesList = lists["currencies"]
@@ -132,8 +111,11 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
 
 
                 launch {
-                    storage.saveObject(currenciesList, SAVED_CURRENCY_NAME_LIST)
-                    storage.saveObject(exchangesList, SAVED_EXCHANGE_NAME_LIST)
+                    saveState(MapEntry(SAVED_CURRENCY_NAME_LIST, currenciesList!!), MapEntry(
+                        SAVED_EXCHANGE_NAME_LIST, exchangesList!!)
+                    )
+                    //storage.saveObject(currenciesList, SAVED_CURRENCY_NAME_LIST)
+                    //storage.saveObject(exchangesList, SAVED_EXCHANGE_NAME_LIST)
                 }
 
             } else{
@@ -161,10 +143,34 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
 
     }
 
+    private fun updateExchangesList(exchNames: List<String>){
+        log_d( "exchNames: $exchNames")
+        exchAdapter.clear()
+        exchAdapter.addAll(exchNames)
+        exchAdapter.notifyDataSetChanged()
+    }
+
+    private fun updateCurrenciesList(curNames: List<String>){
+        log_d( "curNames : $curNames")
+        curAdapter.clear()
+        curAdapter.addAll(curNames)
+        curAdapter.notifyDataSetChanged()
+    }
+
     fun snakBar(){
         log_d( "Snack started..")
         Snackbar.make(currenciesRecyclerView, "Загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
         //todo progressbar
+    }
+
+    override fun saveState(vararg args : MapEntry<String, Any>) {
+        args.forEach { Storage(applicationContext).storeValue(it.key, it.value) }
+        log_d("savestate: ${args.size} objects saved")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        snakBar()
     }
 
 

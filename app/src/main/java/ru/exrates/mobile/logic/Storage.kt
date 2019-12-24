@@ -13,7 +13,9 @@ class Storage(private val context: Context) {
            is String -> sp.getString(key, def) as T ?: def
            is Int -> sp.getInt(key, def) as T ?: def
            is Boolean -> sp.getBoolean(key, def) as T ?: def
-           else -> throw UnsupportedOperationException("Not valid type for shared Preference")
+           else -> {
+               loadObject(key, def)
+           }
         }
     }
 
@@ -24,17 +26,14 @@ class Storage(private val context: Context) {
             is Int -> editor.putInt(key, value)
             is Boolean -> editor.putBoolean(key, value)
             is Long -> editor.putLong(key, value)
-            else -> throw java.lang.UnsupportedOperationException("Not valid type for shared preference")
+            else -> {
+                saveObject(value, key)
+                editor.clear()
+                return
+            }
         }
         editor.apply()
     }
-
-
-
-    //fun getStoreExchangeStringValue(value: String, def: String) =
-
-
-    //fun saveStoreExchangeStringValue(key: String, value: String) = storeStringValue(EXCH_STORAGE, key, value)
 
     fun <T> saveObject(obj: T, fileName: String){
         val os = ObjectOutputStream(FileOutputStream(File(context.filesDir, fileName)))
