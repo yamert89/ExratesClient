@@ -12,7 +12,11 @@ interface ExratesActivity {
 
     fun loadActivity()
 
-    fun saveState(vararg args : MapEntry<String, Any>)
+    fun save(vararg args : MapEntry<String, Any>)
+
+    fun saveState()
+
+
 
 
 }

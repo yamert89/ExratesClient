@@ -7,9 +7,13 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import ru.exrates.mobile.logic.entities.CurrencyPair
+import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.rest.RestService
 
 class MyApp(): Application(){
+    lateinit var currentExchange: Exchange
+    lateinit var currentPairInfo: Map<String, CurrencyPair>
     var restService: RestService
     //val ip = "192.168.0.100"
     // val ip = "192.168.43.114"

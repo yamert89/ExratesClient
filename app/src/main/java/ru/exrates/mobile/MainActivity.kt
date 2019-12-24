@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
     private lateinit var exchAdapter: ArrayAdapter<String>
     private lateinit var app: MyApp
     private lateinit var model: Model
+    private var timer = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -61,11 +62,11 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
             }
             snakBar()
             loadActivity()
-            Timer().schedule(object :  TimerTask(){
+            timer.schedule(object :  TimerTask(){
                 override fun run() {
                     model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC")))
                 }
-            }, 20000L, 20000L)
+            }, 15000L, 180000L)
 
         }catch (e: Exception){
             e.printStackTrace()
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
 
 
     override fun updateExchangeData(exchange: Exchange){
+        app.currentExchange = exchange
         val adapter = currenciesRecyclerView.adapter as MainPairsAdapter
         adapter.dataPairs.clear()
         adapter.dataPairs.addAll(exchange.pairs)
@@ -84,6 +86,7 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
     }
 
     override fun updatePairData(map: Map<String, CurrencyPair>) {
+        app.currentPairInfo = map
         var count = 0.0
         map.forEach { count += it.value.price }
         currencyPrice.text = (count / map.size).toNumeric()
@@ -107,12 +110,14 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
 
                 exch = app.restService.getExchange(ExchangePayload(exchangesList?.get(0) ?: "binanceExchange", "1h", emptyArray())).execute().body() //todo null check refactor
                 cur = exch!!.pairs.get(0) //todo check null refactoring
+                app.currentExchange = exch!!
                 //cur = app.restService.getPair().execute().body()
 
 
                 launch {
-                    saveState(MapEntry(SAVED_CURRENCY_NAME_LIST, currenciesList!!), MapEntry(
-                        SAVED_EXCHANGE_NAME_LIST, exchangesList!!)
+                    save(
+                        MapEntry(SAVED_CURRENCY_NAME_LIST, currenciesList!!),
+                        MapEntry(SAVED_EXCHANGE_NAME_LIST, exchangesList!!)
                     )
                     //storage.saveObject(currenciesList, SAVED_CURRENCY_NAME_LIST)
                     //storage.saveObject(exchangesList, SAVED_EXCHANGE_NAME_LIST)
@@ -145,16 +150,12 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
 
     private fun updateExchangesList(exchNames: List<String>){
         log_d( "exchNames: $exchNames")
-        exchAdapter.clear()
-        exchAdapter.addAll(exchNames)
-        exchAdapter.notifyDataSetChanged()
+        with(exchAdapter){clear(); addAll(exchNames); notifyDataSetChanged()}
     }
 
     private fun updateCurrenciesList(curNames: List<String>){
         log_d( "curNames : $curNames")
-        curAdapter.clear()
-        curAdapter.addAll(curNames)
-        curAdapter.notifyDataSetChanged()
+        with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
     }
 
     fun snakBar(){
@@ -163,14 +164,38 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
         //todo progressbar
     }
 
-    override fun saveState(vararg args : MapEntry<String, Any>) {
+    override fun save(vararg args : MapEntry<String, Any>) {
         args.forEach { Storage(applicationContext).storeValue(it.key, it.value) }
         log_d("savestate: ${args.size} objects saved")
+    }
+
+    override fun saveState() {
+        save(
+            MapEntry(CURRENT_EXCHANGE, app.currentExchange),
+            MapEntry(CURRENT_PAIR_INFO, app.currentPairInfo)
+        )
+        timer.cancel()
     }
 
     override fun onResume() {
         super.onResume()
         snakBar()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveState()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        saveState()
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        saveState()
     }
 
 
