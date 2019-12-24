@@ -8,10 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
@@ -34,6 +31,13 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
     private lateinit var app: MyApp
     private lateinit var model: Model
     private var timer = Timer()
+    private lateinit var storage: Storage
+    private var currenciesList: List<String>? = null
+    private var exchangesList: List<String>? = null
+    private var curIdx = 0
+    private var exIdx = 0
+    private var exch: Exchange? = null
+    private var cur: CurrencyPair? = null
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -61,7 +65,7 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
                 layoutManager = viewManager
             }
             snakBar()
-            loadActivity()
+
             timer.schedule(object :  TimerTask(){
                 override fun run() {
                     model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC")))
@@ -92,59 +96,31 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
         currencyPrice.text = (count / map.size).toNumeric()
     }
 
-    override fun loadActivity(){
-        val storage = Storage(applicationContext)
-        var currenciesList: List<String>? = null
-        var exchangesList: List<String>? = null
-        var curIdx = 0
-        var exIdx = 0
-        var exch: Exchange? = null
-        var cur: CurrencyPair? = null
+    override suspend fun firstLoadActivity(){
+        coroutineScope {
+            storage.storeValue(IS_FIRST_LOAD, false)
+            val lists = app.restService.lists().execute().body()!!
+            currenciesList = lists["currencies"]
+            exchangesList = lists["exchanges"]
 
-        val listsReq = GlobalScope.launch(Dispatchers.IO) {
-            if(storage.getValue(IS_FIRST_LOAD, true)){
-                storage.storeValue(IS_FIRST_LOAD, false)
-                val lists = app.restService.lists().execute().body()!!
-                currenciesList = lists["currencies"]
-                exchangesList = lists["exchanges"]
-
-                exch = app.restService.getExchange(ExchangePayload(exchangesList?.get(0) ?: "binanceExchange", "1h", emptyArray())).execute().body() //todo null check refactor
-                cur = exch!!.pairs.get(0) //todo check null refactoring
-                app.currentExchange = exch!!
-                //cur = app.restService.getPair().execute().body()
-
-
-                launch {
-                    save(
-                        MapEntry(SAVED_CURRENCY_NAME_LIST, currenciesList!!),
-                        MapEntry(SAVED_EXCHANGE_NAME_LIST, exchangesList!!)
-                    )
-                    //storage.saveObject(currenciesList, SAVED_CURRENCY_NAME_LIST)
-                    //storage.saveObject(exchangesList, SAVED_EXCHANGE_NAME_LIST)
-                }
-
-            } else{
-                log_d("Saved lists loaded")
-                exch = storage.loadObject(SAVED_EXCHANGE)
-                cur = storage.loadObject<CurrencyPair>(SAVED_CURRENCY)
-                currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
-                exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
-                curIdx = storage.getValue(SAVED_CUR_IDX, 0)
-                exIdx = storage.getValue(SAVED_EX_IDX, 0)
+            launch {
+                save(
+                    MapEntry(SAVED_CURRENCY_NAME_LIST, currenciesList!!),
+                    MapEntry(SAVED_EXCHANGE_NAME_LIST, exchangesList!!)
+                )
+                log_d("list saved")
+                //storage.saveObject(currenciesList, SAVED_CURRENCY_NAME_LIST)
+                //storage.saveObject(exchangesList, SAVED_EXCHANGE_NAME_LIST)
             }
-
+            log_d("get exchange")
+            exch = app.restService.getExchange(ExchangePayload(exchangesList?.get(0) ?: "binanceExchange", "1h", emptyArray())).execute().body() //todo null check refactor
+            cur = exch!!.pairs.get(0) //todo check null refactoring
+            app.currentExchange = exch!!
+            launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
         }
 
-        runBlocking { listsReq.join() }
-        updateCurrenciesList(currenciesList ?: throw NullPointerException("cur list is null"))
-        updateExchangesList(exchangesList ?: throw NullPointerException("exch list is null"))
-        currencyName.setSelection(
-            curAdapter.getPosition(
-                cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
-            )
-        )
-        exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
-        currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
+        //cur = app.restService.getPair().execute().body()
+
 
     }
 
@@ -170,9 +146,11 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
     }
 
     override fun saveState() {
+        if(app.currentExchange == null || app.currentPairInfo == null) return
         save(
-            MapEntry(CURRENT_EXCHANGE, app.currentExchange),
-            MapEntry(CURRENT_PAIR_INFO, app.currentPairInfo)
+            MapEntry(CURRENT_EXCHANGE, app.currentExchange!!),
+            MapEntry(CURRENT_PAIR_INFO, app.currentPairInfo!!),
+            MapEntry(CURRENT_PAIR, app.currentPairInfo!!.iterator().next().value)
         )
         timer.cancel()
     }
@@ -180,6 +158,33 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
     override fun onResume() {
         super.onResume()
         snakBar()
+        storage = Storage(applicationContext)
+
+        val listsReq = GlobalScope.launch(Dispatchers.IO) {
+            if(storage.getValue(IS_FIRST_LOAD, true)) firstLoadActivity()
+            else{
+                log_d("Saved lists loaded")
+                exch = app.currentExchange ?: storage.loadObject(SAVED_EXCHANGE)
+                cur = storage.loadObject<CurrencyPair>(CURRENT_PAIR) //NULL mb currentPairInfo null
+                currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
+                exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
+                curIdx = storage.getValue(SAVED_CUR_IDX, 0)
+                exIdx = storage.getValue(SAVED_EX_IDX, 0)
+                app.currentExchange = exch
+            }
+
+        }
+
+        runBlocking { listsReq.join() }
+        updateCurrenciesList(currenciesList ?: throw NullPointerException("cur list is null"))
+        updateExchangesList(exchangesList ?: throw NullPointerException("exch list is null"))
+        currencyName.setSelection(
+            curAdapter.getPosition(
+                cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
+            )
+        )
+        exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
+        currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
     }
 
     override fun onPause() {

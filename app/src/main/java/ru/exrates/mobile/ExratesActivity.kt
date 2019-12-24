@@ -10,7 +10,7 @@ interface ExratesActivity {
 
     fun updatePairData(map: Map<String, CurrencyPair>)
 
-    fun loadActivity()
+    suspend fun firstLoadActivity()
 
     fun save(vararg args : MapEntry<String, Any>)
 
