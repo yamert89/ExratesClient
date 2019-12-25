@@ -18,7 +18,7 @@ import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.MainPairsAdapter
 import java.util.*
 
-class MainActivity : AppCompatActivity(), ExratesActivity {
+class MainActivity : ExratesActivity() {
 
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
@@ -28,10 +28,8 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
     private lateinit var pairsAdapter: MainPairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
-    private lateinit var app: MyApp
     private lateinit var model: Model
-    private var timer = Timer()
-    private lateinit var storage: Storage
+
     private var currenciesList: List<String>? = null
     private var exchangesList: List<String>? = null
     private var curIdx = 0
@@ -77,9 +75,6 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
         }
 
     }
-
-
-
 
     override fun updateExchangeData(exchange: Exchange){
         app.currentExchange = exchange
@@ -140,25 +135,9 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
         //todo progressbar
     }
 
-    override fun save(vararg args : MapEntry<String, Any>) {
-        args.forEach { Storage(applicationContext).storeValue(it.key, it.value) }
-        log_d("savestate: ${args.size} objects saved")
-    }
-
-    override fun saveState() {
-        if(app.currentExchange == null || app.currentPairInfo == null) return
-        save(
-            MapEntry(CURRENT_EXCHANGE, app.currentExchange!!),
-            MapEntry(CURRENT_PAIR_INFO, app.currentPairInfo!!),
-            MapEntry(CURRENT_PAIR, app.currentPairInfo!!.iterator().next().value)
-        )
-        timer.cancel()
-    }
-
     override fun onResume() {
         super.onResume()
         snakBar()
-        storage = Storage(applicationContext)
 
         val listsReq = GlobalScope.launch(Dispatchers.IO) {
             if(storage.getValue(IS_FIRST_LOAD, true)) firstLoadActivity()
@@ -187,21 +166,7 @@ class MainActivity : AppCompatActivity(), ExratesActivity {
         currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
     }
 
-    override fun onPause() {
-        super.onPause()
-        saveState()
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        saveState()
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        saveState()
-    }
 
 
 }

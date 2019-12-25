@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -53,11 +54,21 @@
             android:id="@+id/checkBox2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="12dp"
             android:text="SelectAll"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/exch_btn_hide_show"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:text="hide"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -65,7 +76,7 @@
         android:id="@+id/pairs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="76dp"
+        android:layout_marginTop="100dp"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
         tools:layout_editor_absoluteX="0dp" />
 

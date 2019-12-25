@@ -6,40 +6,40 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.viewadapters.PairsAdapter
 import java.util.concurrent.ArrayBlockingQueue
 
-class ExchangeActivity : AppCompatActivity() {
+class ExchangeActivity : ExratesActivity() {
     private lateinit var exchName: TextView
     private lateinit var intervalBtn: Button
     private lateinit var intervalValue: TextView
     private lateinit var pairs: RecyclerView
     private lateinit var pairsAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var app: MyApp
+
     private lateinit var currentExchange: Exchange
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
             setContentView(R.layout.exchange)
-            app = this.application as MyApp
+
             exchName = findViewById(R.id.exName)
             intervalBtn = findViewById(R.id.cur_interval)
             intervalValue = findViewById(R.id.intervalValue)
+
 
             //val queue = ArrayBlockingQueue<Double>(20)
 
             //val exchName: String? = savedInstanceState!!.getString(EXCH_NAME)
 
+            currentExchange = storage.loadObject(SAVED_EXCHANGE)
 
-
-            currentExchange = Storage(applicationContext).loadObject(SAVED_EXCHANGE)
-
-            val currentInterval = Storage(applicationContext).getValue(CURRENT_INTERVAL, "1h")
+            val currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
 
             val pairsOfAdapter = if (currentExchange.showHidden) currentExchange.pairs else currentExchange.pairs.filter{it.visible}.toMutableList()
             pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval)
@@ -63,123 +63,17 @@ class ExchangeActivity : AppCompatActivity() {
 
     }
 
-    fun getTestExchange(): Exchange {
-        val queue = ArrayBlockingQueue<Double>(20)
-        val arr = arrayOfNulls<Long?>(1)
-        return Exchange(
-            "testExchange",
-            mutableListOf(
-                CurrencyPair(
-                    "btc_ltc",
-                    0.345,
-                    mapOf("1m" to 4453.023, "1w" to 5433.3230),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                ),
-                CurrencyPair(
-                    "etc_ltc",
-                    0.543,
-                    mapOf("1m" to 324.0323, "1w" to 6673.32340),
-                    arr,
-                    queue
-                )
-            ),
-            listOf("1s", "1d")
-        )
+    override fun updateExchangeData(exchange: Exchange) {
+
     }
 
+    override fun updatePairData(map: Map<String, CurrencyPair>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    override suspend fun firstLoadActivity() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
 
 
