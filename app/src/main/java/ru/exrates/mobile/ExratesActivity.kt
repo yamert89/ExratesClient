@@ -20,8 +20,10 @@ abstract class ExratesActivity : AppCompatActivity(){
 
     open suspend fun firstLoadActivity(){}
 
+    fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
+
     private fun saveState(){
-        if(app.currentExchange == null || app.currentPairInfo == null) return
+        if(currentDataIsNull()) return
         save(
             MapEntry(CURRENT_EXCHANGE, app.currentExchange!!),
             MapEntry(CURRENT_PAIR_INFO, app.currentPairInfo!!),
@@ -55,6 +57,7 @@ abstract class ExratesActivity : AppCompatActivity(){
         super.onStop()
         saveState()
     }
+
 
 
 

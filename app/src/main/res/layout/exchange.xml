@@ -60,14 +60,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <Switch
             android:id="@+id/exch_btn_hide_show"
             android:layout_width="wrap_content"
-            android:layout_height="38dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginEnd="12dp"
-            android:text="hide"
+            android:layout_marginEnd="16dp"
+            android:text="hide  "
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/checkBox2"
             app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

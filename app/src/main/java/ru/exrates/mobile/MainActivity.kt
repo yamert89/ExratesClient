@@ -4,18 +4,16 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Model
-import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
-import ru.exrates.mobile.viewadapters.MainPairsAdapter
+import ru.exrates.mobile.viewadapters.PairsAdapter
 import java.util.*
 
 class MainActivity : ExratesActivity() {
@@ -25,7 +23,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var exchangeName: Spinner
     private lateinit var currenciesRecyclerView: RecyclerView
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var pairsAdapter: MainPairsAdapter
+    private lateinit var pairsAdapter: PairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
     private lateinit var model: Model
@@ -57,7 +55,7 @@ class MainActivity : ExratesActivity() {
 
             viewManager = LinearLayoutManager(this)
 
-            pairsAdapter = MainPairsAdapter(mutableListOf())
+            pairsAdapter = PairsAdapter(mutableListOf())
             currenciesRecyclerView = findViewById<RecyclerView>(R.id.main_cur_list).apply {
                 adapter = pairsAdapter
                 layoutManager = viewManager
@@ -78,7 +76,7 @@ class MainActivity : ExratesActivity() {
 
     override fun updateExchangeData(exchange: Exchange){
         app.currentExchange = exchange
-        val adapter = currenciesRecyclerView.adapter as MainPairsAdapter
+        val adapter = currenciesRecyclerView.adapter as PairsAdapter
         adapter.dataPairs.clear()
         adapter.dataPairs.addAll(exchange.pairs)
         adapter.notifyDataSetChanged()
