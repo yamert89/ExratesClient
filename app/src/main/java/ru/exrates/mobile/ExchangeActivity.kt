@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.serialization.internal.MapEntry
+import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
 import java.util.concurrent.ArrayBlockingQueue
 
@@ -27,11 +29,15 @@ class ExchangeActivity : ExratesActivity() {
         super.onCreate(savedInstanceState)
         try {
             setContentView(R.layout.exchange)
+            storage = Storage(applicationContext)
+
 
             exchName = findViewById(R.id.exName)
             intervalBtn = findViewById(R.id.cur_interval)
             hideBtn = findViewById(R.id.exch_btn_hide_show)
             intervalValue = findViewById(R.id.intervalValue)
+
+            model = Model(app, this)
 
 
             //val queue = ArrayBlockingQueue<Double>(20)
@@ -63,6 +69,12 @@ class ExchangeActivity : ExratesActivity() {
                 adapter.currentInterval = intervalValue.text.toString()
                 adapter.notifyDataSetChanged()
             }
+
+            val exName = savedInstanceState?.getString(EXTRA_CURRENCY_NAME) ?: throw NullPointerException("extra cur name is null")
+            exchName.text = exName
+            val interval = storage.getValue(CURRENT_INTERVAL, "1h")
+            model.getActualExchange(ExchangePayload(exName, interval, arrayOf()))
+
         }catch (e: Exception){
             e.printStackTrace()
 
@@ -72,16 +84,16 @@ class ExchangeActivity : ExratesActivity() {
     }
 
     override fun updateExchangeData(exchange: Exchange) {
-
+        val adapter = pairs.adapter as PairsAdapter
+        with(adapter.dataPairs){clear(); addAll(exchange.pairs)}
+        adapter.notifyDataSetChanged()
     }
 
     override fun updatePairData(map: Map<String, CurrencyPair>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
-    override suspend fun firstLoadActivity() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+
 
 
 

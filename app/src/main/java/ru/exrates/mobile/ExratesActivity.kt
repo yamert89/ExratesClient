@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.serialization.internal.MapEntry
+import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
@@ -11,14 +12,15 @@ import java.util.*
 
 abstract class ExratesActivity : AppCompatActivity(){
     protected lateinit var app: MyApp
-    protected val storage: Storage = Storage(applicationContext)
+    protected lateinit var storage: Storage
     protected var timer = Timer()
+    protected lateinit var model: Model
 
     abstract fun updateExchangeData(exchange: Exchange)
 
     abstract fun updatePairData(map: Map<String, CurrencyPair>)
 
-    open suspend fun firstLoadActivity(){}
+    open suspend fun firstLoadActivity(): Boolean{return true}
 
     fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
 

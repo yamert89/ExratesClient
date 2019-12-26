@@ -18,7 +18,5 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
         app.restService.getPair(pName).enqueue(PairCallback(activity))
     }
 
-    fun currentDataIsNull(){
 
-    }
 }

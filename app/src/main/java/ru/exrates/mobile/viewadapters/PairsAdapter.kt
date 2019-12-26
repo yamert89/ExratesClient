@@ -15,8 +15,6 @@ open class PairsAdapter(val dataPairs: MutableList<CurrencyPair>, var currentInt
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PairsViewHolder {
         val linearLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.currency_row, parent, false) as LinearLayout
-
-
         return PairsViewHolder(linearLayout)
     }
 
@@ -29,6 +27,8 @@ open class PairsAdapter(val dataPairs: MutableList<CurrencyPair>, var currentInt
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = pair.priceChange[currentInterval].toString()
         holder.linearLayout.findViewById<CheckBox>(R.id.rec_cur_visible).isChecked = pair.visible
     }
+
+
 
 
 
