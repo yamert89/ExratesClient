@@ -1,8 +1,10 @@
 package ru.exrates.mobile
 
 import android.util.Log
+import ru.exrates.mobile.logic.entities.CurrencyPair
 import java.text.DecimalFormat
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 
 const val EXRATES = ":EXRATES:"
 const val EXCH_NAME = "exchName"
@@ -24,6 +26,7 @@ const val CURRENT_EXCHANGE = "CUREXCH"
 const val CURRENT_PAIR_INFO = "CURPINFO"
 const val CURRENT_PAIR = "CURPair"
 const val EXTRA_CURRENCY_NAME = "excrn"
+const val EXTRA_EXCHANGE_NAME = "exEXNAME"
 const val STORAGE_EXCHANGES = "exchanges"
 const val SAVED_CURRENCY = "savedcurrency"
 
@@ -38,5 +41,7 @@ fun Double.toNumeric() = DecimalFormat("####.########################").format(t
 fun Timer.start(){
 
 }
+
+
 
 

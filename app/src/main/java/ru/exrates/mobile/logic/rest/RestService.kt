@@ -4,6 +4,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
@@ -22,5 +23,5 @@ interface RestService {
     fun getExchange(@Body payload: String) : Call<Exchange>
 
     @GET("rest/pair")
-    fun getPair(@Body pName: String): Call<Map<String, CurrencyPair>>
+    fun getPair(@Query("pname") pName: String): Call<Map<String, CurrencyPair>>
 }

@@ -25,6 +25,7 @@ abstract class ExratesActivity : AppCompatActivity(){
     fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
 
     private fun saveState(){
+        log_d("saving state....")
         if(currentDataIsNull()) return
         save(
             MapEntry(CURRENT_EXCHANGE, app.currentExchange!!),
@@ -39,10 +40,12 @@ abstract class ExratesActivity : AppCompatActivity(){
         log_d("savestate: ${args.size} objects saved")
     }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         app = this.application as MyApp
+        log_d("Basic exrates activity created")
     }
+
 
     override fun onPause() {
         super.onPause()

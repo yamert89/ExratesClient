@@ -70,7 +70,7 @@ class ExchangeActivity : ExratesActivity() {
                 adapter.notifyDataSetChanged()
             }
 
-            val exName = savedInstanceState?.getString(EXTRA_CURRENCY_NAME) ?: throw NullPointerException("extra cur name is null")
+            val exName = intent.getStringExtra(EXTRA_EXCHANGE_NAME) ?: throw NullPointerException("extra cur name is null")
             exchName.text = exName
             val interval = storage.getValue(CURRENT_INTERVAL, "1h")
             model.getActualExchange(ExchangePayload(exName, interval, arrayOf()))

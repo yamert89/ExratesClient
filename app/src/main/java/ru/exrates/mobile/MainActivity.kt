@@ -17,6 +17,7 @@ import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
 import java.net.SocketTimeoutException
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 
 class MainActivity : ExratesActivity() {
 
@@ -42,7 +43,7 @@ class MainActivity : ExratesActivity() {
         try {
             setContentView(R.layout.activity_main)
             storage = Storage(applicationContext)
-            app = this.application as MyApp
+
             model = Model(app, this)
 
             currencyName = findViewById(R.id.main_currency_spinner)
@@ -54,20 +55,6 @@ class MainActivity : ExratesActivity() {
 
             currencyName.adapter = curAdapter
             exchangeName.adapter = exchAdapter
-
-            currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    log_d("items was not be selected")
-                }
-
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val curName = (view as Spinner).getItemAtPosition(position)
-                    startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
-                        putExtra(EXTRA_CURRENCY_NAME, curName.toString())
-                    })
-                }
-
-            }
 
             viewManager = LinearLayoutManager(this)
 
@@ -87,6 +74,8 @@ class MainActivity : ExratesActivity() {
                     model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC")))
                 }
             }, 15000L, 180000L)
+
+            log_d("Main activity created")
 
         }catch (e: Exception){
             e.printStackTrace()
@@ -136,6 +125,7 @@ class MainActivity : ExratesActivity() {
             }
             log_d("get exchange")
             exch = app.restService.getExchange(ExchangePayload(exchangesList?.get(0) ?: "binanceExchange", "1h", emptyArray())).execute().body() //todo null check refactor
+            app.currentPairInfo = app.restService.getPair("VENBTC").execute().body() //todo pairName
             cur = exch!!.pairs.get(0) //todo check null refactoring
             app.currentExchange = exch!!
             launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
@@ -167,6 +157,7 @@ class MainActivity : ExratesActivity() {
     override fun onResume() {
         super.onResume()
         try {
+            app = this.application as MyApp
             //snakBar()
             var flag = true
             log_d("before")
@@ -181,13 +172,13 @@ class MainActivity : ExratesActivity() {
                 else {
                     log_d("Saved lists loaded")
                     exch = app.currentExchange ?: storage.loadObject(SAVED_EXCHANGE)
-                    cur =
-                        storage.loadObject<CurrencyPair>(CURRENT_PAIR) //NULL mb currentPairInfo null
+                    cur = storage.loadObject(CURRENT_PAIR, CurrencyPair.createEmptyInstance()) //NULL mb currentPairInfo null
                     currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
                     exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     app.currentExchange = exch
+                    app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
                 }
 
             }
@@ -208,8 +199,25 @@ class MainActivity : ExratesActivity() {
                     cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
                 )
             )
-            exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
+            //exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
             currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
+
+            exchangeName.setSelection(0, true)
+
+            exchangeName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    log_d("items was not be selected")
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val curName = parent?.getItemAtPosition(position)
+                    log_d("item selected pos: $position, name: $curName")
+                    startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
+                        putExtra(EXTRA_EXCHANGE_NAME, curName.toString())
+                    })
+                }
+
+            }
         }catch (e: Exception){e.printStackTrace()}
     }
 
