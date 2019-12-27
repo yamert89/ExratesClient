@@ -69,11 +69,7 @@ class MainActivity : ExratesActivity() {
 
             //snakBar()
 
-            timer.schedule(object :  TimerTask(){
-                override fun run() {
-                    model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC")))
-                }
-            }, 15000L, 180000L)
+
 
             log_d("Main activity created")
 
@@ -91,11 +87,11 @@ class MainActivity : ExratesActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    override fun updatePairData(map: Map<String, CurrencyPair>) {
-        app.currentPairInfo = map
+    override fun updatePairData(list: List<CurrencyPair>) {
+        app.currentPairInfo = list
         var count = 0.0
-        map.forEach { count += it.value.price }
-        currencyPrice.text = (count / map.size).toNumeric()
+        list.forEach { count += it.price }
+        currencyPrice.text = (count / list.size).toNumeric()
     }
 
     override suspend fun firstLoadActivity(): Boolean{

@@ -89,7 +89,7 @@ class ExchangeActivity : ExratesActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    override fun updatePairData(map: Map<String, CurrencyPair>) {
+    override fun updatePairData(list: List<CurrencyPair>) {
 
     }
 

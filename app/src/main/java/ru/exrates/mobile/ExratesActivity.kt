@@ -8,6 +8,7 @@ import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import java.util.*
 
 abstract class ExratesActivity : AppCompatActivity(){
@@ -18,7 +19,7 @@ abstract class ExratesActivity : AppCompatActivity(){
 
     abstract fun updateExchangeData(exchange: Exchange)
 
-    abstract fun updatePairData(map: Map<String, CurrencyPair>)
+    abstract fun updatePairData(list: List<CurrencyPair>)
 
     open suspend fun firstLoadActivity(): Boolean{return true}
 
@@ -30,9 +31,9 @@ abstract class ExratesActivity : AppCompatActivity(){
         save(
             MapEntry(CURRENT_EXCHANGE, app.currentExchange!!),
             MapEntry(CURRENT_PAIR_INFO, app.currentPairInfo!!),
-            MapEntry(CURRENT_PAIR, app.currentPairInfo!!.iterator().next().value)
+            MapEntry(CURRENT_PAIR, app.currentPairInfo!!.iterator().next())
         )
-        timer.cancel()
+
     }
 
     fun save(vararg args : MapEntry<String, Any>){
@@ -46,21 +47,33 @@ abstract class ExratesActivity : AppCompatActivity(){
         log_d("Basic exrates activity created")
     }
 
+    override fun onResume() {
+        super.onResume()
+        timer.schedule(object :  TimerTask(){
+            override fun run() {
+                model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC")))
+            }
+        }, 15000L, 180000L) //todo period
+    }
+
 
     override fun onPause() {
         super.onPause()
         saveState()
+        timer.cancel()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         saveState()
+        timer.cancel()
 
     }
 
     override fun onStop() {
         super.onStop()
         saveState()
+        timer.cancel()
     }
 
 
