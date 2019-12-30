@@ -45,10 +45,16 @@ class Storage(private val context: Context) {
     fun <T> loadObject(fileName: String, def: T? = null): T {
         val file = File(context.filesDir, fileName)
         if (!file.exists()) {
-            if(def != null) return def else throw FileNotFoundException("File < $fileName > not found in storage")
+            if(def != null) return def else throw FileNotFoundException("File < $fileName > not found in storage") //todo logic from exceptions
         }
         val _is = ObjectInputStream(FileInputStream(File(context.filesDir, fileName)))
-        val ob = _is.readObject()
+        val ob: Any
+        try{
+            ob = _is.readObject()
+        }catch (e: InvalidClassException){
+            throw InvalidClassException("Class model was changed: ${e.message}") //todo logic from exceptions
+        }
+
         _is.close()
         return ob as T
     }

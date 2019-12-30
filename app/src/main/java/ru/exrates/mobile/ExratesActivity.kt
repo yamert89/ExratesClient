@@ -2,6 +2,7 @@ package ru.exrates.mobile
 
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Model
@@ -14,12 +15,12 @@ import java.util.*
 abstract class ExratesActivity : AppCompatActivity(){
     protected lateinit var app: MyApp
     protected lateinit var storage: Storage
-    protected var timer = Timer()
+    protected lateinit var timer: Timer
     protected lateinit var model: Model
 
-    abstract fun updateExchangeData(exchange: Exchange)
+    open fun updateExchangeData(exchange: Exchange){log_d("Exchange data updated...")}
 
-    abstract fun updatePairData(list: List<CurrencyPair>)
+    open fun updatePairData(list: List<CurrencyPair>){log_d("Pair data updated...")}
 
     open suspend fun firstLoadActivity(): Boolean{return true}
 
@@ -41,20 +42,28 @@ abstract class ExratesActivity : AppCompatActivity(){
         log_d("savestate: ${args.size} objects saved")
     }
 
+    fun toast(message: String) = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        timer = Timer()
+        storage = Storage(applicationContext)
         app = this.application as MyApp
         log_d("Basic exrates activity created")
     }
 
     override fun onResume() {
         super.onResume()
+        timer = Timer()
         timer.schedule(object :  TimerTask(){
             override fun run() {
-                model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC")))
+                task()
             }
         }, 15000L, 180000L) //todo period
     }
+
+    protected abstract fun task()
 
 
     override fun onPause() {

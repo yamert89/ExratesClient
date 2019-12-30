@@ -1,5 +1,8 @@
 package ru.exrates.mobile.logic
 
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import ru.exrates.mobile.ExratesActivity
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.entities.Exchange
@@ -16,6 +19,19 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
 
     fun getActualPair(pName: String){
         app.restService.getPair(pName).enqueue(PairCallback(activity))
+    }
+
+    fun ping(){
+        app.restService.ping().enqueue(object : Callback<String>{
+            override fun onFailure(call: Call<String>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.code() != 200) activity.toast("Не удалось подключиться к серверу")
+            }
+
+        })
     }
 
 

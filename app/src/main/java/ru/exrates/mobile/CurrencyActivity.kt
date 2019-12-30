@@ -40,18 +40,19 @@ class CurrencyActivity : ExratesActivity() {
                 app.currentExchange = storage.loadObject(CURRENT_EXCHANGE)
                 app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
+                log_d("Loaded saved pair data from storage")
             }
 
             if (currentDataIsNull()) throw NullPointerException("current data is null")
 
 
-            val currName = savedInstanceState?.getString(EXTRA_CURRENCY_NAME, "btc_ltc") ?: "btc_ltc"
+            val currName = intent.getStringExtra(EXTRA_CURRENCY_NAME)
             //val exchanges = app.dataProvider.exchanges.values.toList()
 
 
             currencyName.text = currName
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo!!, currName, currentInterval)
+            exchangesAdapter = ExchangesAdapter(app.currentPairInfo!!, currName!!, currentInterval)  //todo update pair data rest req
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
@@ -68,12 +69,15 @@ class CurrencyActivity : ExratesActivity() {
 
     }
 
-    override fun updateExchangeData(exchange: Exchange) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun updatePairData(list: List<CurrencyPair>) {
+        super.updatePairData(list)
+        val adapter = currencyExchanges.adapter as ExchangesAdapter
+        adapter.interval = currencyIntervalValue.text.toString()
+        adapter.notifyDataSetChanged()
     }
 
-    override fun updatePairData(list: List<CurrencyPair>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun task() {
+        model.getActualPair(currencyName.text.toString())
     }
 
 

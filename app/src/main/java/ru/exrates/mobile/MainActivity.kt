@@ -80,6 +80,7 @@ class MainActivity : ExratesActivity() {
     }
 
     override fun updateExchangeData(exchange: Exchange){
+        super.updateExchangeData(exchange)
         app.currentExchange = exchange
         val adapter = currenciesRecyclerView.adapter as PairsAdapter
         adapter.dataPairs.clear()
@@ -88,14 +89,20 @@ class MainActivity : ExratesActivity() {
     }
 
     override fun updatePairData(list: List<CurrencyPair>) {
+        super.updatePairData(list)
         app.currentPairInfo = list
         var count = 0.0
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
     }
 
+    override fun task() {
+        model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC"))) //todo
+        model.getActualPair("VENBTC") //todo
+    }
+
     override suspend fun firstLoadActivity(): Boolean{
-        var res = true
+        var res = false
         coroutineScope {
             var lists: Map<String, List<String>> = mapOf()
             try {
@@ -104,9 +111,9 @@ class MainActivity : ExratesActivity() {
                 log_d(lists.size.toString())
             }catch (e: Exception){
                 log_e("exception")
-                res = false
                 return@coroutineScope
             }
+            res = true
             currenciesList = lists["currencies"]
             exchangesList = lists["exchanges"]
 
@@ -121,7 +128,7 @@ class MainActivity : ExratesActivity() {
             }
             log_d("get exchange")
             exch = app.restService.getExchange(ExchangePayload(exchangesList?.get(0) ?: "binanceExchange", "1h", emptyArray())).execute().body() //todo null check refactor
-            app.currentPairInfo = app.restService.getPair("VENBTC").execute().body() //todo pairName
+            app.currentPairInfo = app.restService.getPair(currenciesList?.get(0)?: "ETCBTC").execute().body() //todo pairName
             cur = exch!!.pairs.get(0) //todo check null refactoring
             app.currentExchange = exch!!
             launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
@@ -181,20 +188,16 @@ class MainActivity : ExratesActivity() {
 
             runBlocking { listsReq.join() }
             if (!flag) {
-                Toast.makeText(
-                    applicationContext,
-                    "Не удалось подклюситься к серверу",
-                    Toast.LENGTH_LONG
-                ).show()
+                toast("Не удалось подключиться к серверу")
                 return
-            }
+            }else model.ping()
             updateCurrenciesList(currenciesList!!)
             updateExchangesList(exchangesList!!)
-            currencyName.setSelection(
+            /*currencyName.setSelection(
                 curAdapter.getPosition(
                     cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
                 )
-            )
+            )*/
             //exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
             currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
 
@@ -206,14 +209,31 @@ class MainActivity : ExratesActivity() {
                 }
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val curName = parent?.getItemAtPosition(position)
-                    log_d("item selected pos: $position, name: $curName")
+                    val exchName = parent?.getItemAtPosition(position)
+                    log_d("item selected pos: $position, name: $exchName")
                     startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
-                        putExtra(EXTRA_EXCHANGE_NAME, curName.toString())
+                        putExtra(EXTRA_EXCHANGE_NAME, exchName.toString())
                     })
                 }
 
             }
+
+            currencyName.setSelection(0, true)
+
+            currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val curName = parent?.getItemAtPosition(position)
+                    startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
+                        putExtra(EXTRA_CURRENCY_NAME, curName.toString())
+                    })
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+            }
+
+
         }catch (e: Exception){e.printStackTrace()}
     }
 

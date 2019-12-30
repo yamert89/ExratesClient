@@ -10,6 +10,10 @@ import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 
 interface RestService {
+
+    @GET("ping")
+    fun ping(): Call<String>
+
     @GET("rest/lists")
     fun lists(): Call<Map<String, List<String>>>
 
