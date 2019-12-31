@@ -27,5 +27,5 @@ interface RestService {
     fun getExchange(@Body payload: String) : Call<Exchange>
 
     @GET("rest/pair")
-    fun getPair(@Query("pname") pName: String): Call<List<CurrencyPair>>
+    fun getPair(@Query("pname") pName: String): Call<MutableList<CurrencyPair>>
 }

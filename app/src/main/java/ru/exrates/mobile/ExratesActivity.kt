@@ -20,7 +20,7 @@ abstract class ExratesActivity : AppCompatActivity(){
 
     open fun updateExchangeData(exchange: Exchange){log_d("Exchange data updated...")}
 
-    open fun updatePairData(list: List<CurrencyPair>){log_d("Pair data updated...")}
+    open fun updatePairData(list: MutableList<CurrencyPair>){log_d("Pair data updated...")}
 
     open suspend fun firstLoadActivity(): Boolean{return true}
 

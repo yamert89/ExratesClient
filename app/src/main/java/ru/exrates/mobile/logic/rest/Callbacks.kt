@@ -33,10 +33,10 @@ class OneExchangeCallback(activity: ExratesActivity) : ExCallback<Exchange>(acti
 
 }
 
-class PairCallback(activity: ExratesActivity) : ExCallback<List<CurrencyPair>>(activity){
+class PairCallback(activity: ExratesActivity) : ExCallback<MutableList<CurrencyPair>>(activity){
     override fun onResponse(
-        call: Call<List<CurrencyPair>>,
-        response: Response<List<CurrencyPair>>
+        call: Call<MutableList<CurrencyPair>>,
+        response: Response<MutableList<CurrencyPair>>
     ) {
         mainFunc(response.body(), activity::updatePairData)
     }

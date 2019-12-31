@@ -88,7 +88,7 @@ class MainActivity : ExratesActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    override fun updatePairData(list: List<CurrencyPair>) {
+    override fun updatePairData(list: MutableList<CurrencyPair>) {
         super.updatePairData(list)
         app.currentPairInfo = list
         var count = 0.0

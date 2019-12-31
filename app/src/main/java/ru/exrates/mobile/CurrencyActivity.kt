@@ -42,7 +42,6 @@ class CurrencyActivity : ExratesActivity() {
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
                 log_d("Loaded saved pair data from storage")
             }
-
             if (currentDataIsNull()) throw NullPointerException("current data is null")
 
 
@@ -52,7 +51,7 @@ class CurrencyActivity : ExratesActivity() {
 
             currencyName.text = currName
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo!!, currName!!, currentInterval)  //todo update pair data rest req
+            exchangesAdapter = ExchangesAdapter(app.currentPairInfo!!, currName!!, currentInterval)
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
@@ -60,6 +59,14 @@ class CurrencyActivity : ExratesActivity() {
                 layoutManager = viewManager
 
             }
+
+            currencyIntervalValue.setOnClickListener {
+                /*app.currentPairInfo[0].priceChange[currentInterval]
+                app.currentPairInfo[0].priceChange.co*/
+            }
+
+            model.getActualPair(currName)
+
         }catch (e: Exception){
             e.printStackTrace()
         }
@@ -69,11 +76,15 @@ class CurrencyActivity : ExratesActivity() {
 
     }
 
-    override fun updatePairData(list: List<CurrencyPair>) {
+    override fun updatePairData(list: MutableList<CurrencyPair>) {
         super.updatePairData(list)
+        app.currentPairInfo = list
         val adapter = currencyExchanges.adapter as ExchangesAdapter
         adapter.interval = currencyIntervalValue.text.toString()
+        adapter.pairsByExchanges.clear()
+        adapter.pairsByExchanges.addAll(list)
         adapter.notifyDataSetChanged()
+
     }
 
     override fun task() {
