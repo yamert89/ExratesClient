@@ -131,7 +131,7 @@ class MainActivity : ExratesActivity() {
             app.currentPairInfo = app.restService.getPair(currenciesList?.get(0)?: "ETCBTC").execute().body() //todo pairName
             cur = exch!!.pairs.get(0) //todo check null refactoring
             app.currentExchange = exch!!
-           // launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
+            launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
         }
         if (res) storage.storeValue(IS_FIRST_LOAD, false)
         return res

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 
@@ -26,41 +27,46 @@ class UpdateTimesDeserializer: StdDeserializer<TreeMap<String, Double>>(TreeMap:
         ctxt: DeserializationContext?
     ): TreeMap<String, Double> {
         val map = p!!.readValueAs<Map<String, Double>>(object: TypeReference<Map<String, Double>>(){})
-        val comparator = kotlin.Comparator<String>{
-            o1, o2 ->
-            var numToken1 = 0
-            var numToken2 = 0
-            var stringToken1 = ""
-            var stringToken2 = ""
-            var compString = 0
-            var compNum = 0
-            try {
-                val regExp = "(\\d{1,2})(\\D)".toRegex()
-                val groups1 = regExp.find(o1)?.groups ?: throw NullPointerException("Reg exp not found")
-                numToken1 = groups1[1]!!.value.toInt()
-                stringToken1 = groups1[2]!!.value
-                val groups2 = regExp.find(o2)?.groups ?: throw NullPointerException("Reg exp not found")
-                numToken2 = groups2[1]!!.value.toInt()
-                stringToken2 = groups2[2]!!.value
-                compString = stringToken1.compareStringToken(stringToken2)
-                compNum = numToken1.compareIntToken(numToken2)
-
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
-            when {
-                compString > 0 -> 1
-                compString < 0 -> -1
-                else -> compNum
-            }
-
-        }
+        val comparator = KeyComparator()
         val treeMap: MutableMap<String, Double> = TreeMap(comparator)
         treeMap.putAll(map)
         return TreeMap(treeMap as SortedMap)
     }
 
 
+
+
+
+}
+
+class KeyComparator : Comparator<String>, Serializable{
+    override fun compare(o1: String?, o2: String?): Int {
+        var numToken1 = 0
+        var numToken2 = 0
+        var stringToken1 = ""
+        var stringToken2 = ""
+        var compString = 0
+        var compNum = 0
+        try {
+            val regExp = "(\\d{1,2})(\\D)".toRegex()
+            val groups1 = regExp.find(o1!!)?.groups ?: throw NullPointerException("Reg exp not found")
+            numToken1 = groups1[1]!!.value.toInt()
+            stringToken1 = groups1[2]!!.value
+            val groups2 = regExp.find(o2!!)?.groups ?: throw NullPointerException("Reg exp not found")
+            numToken2 = groups2[1]!!.value.toInt()
+            stringToken2 = groups2[2]!!.value
+            compString = stringToken1.compareStringToken(stringToken2)
+            compNum = numToken1.compareIntToken(numToken2)
+
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+        return when {
+            compString > 0 -> 1
+            compString < 0 -> -1
+            else -> compNum
+        }
+    }
     private fun String.compareStringToken(s: String): Int{
         val sequence = "mhdwMY"
         var res = sequence.indexOf(this) - sequence.indexOf(s)

@@ -57,7 +57,8 @@ class CurrencyActivity : ExratesActivity() {
             }
 
             currencyInterval.setOnClickListener {
-                currencyIntervalValue.text = app.currentPairInfo!![0].priceChange.lowerKey(currencyIntervalValue.text.toString())
+                currencyIntervalValue.text = app.currentPairInfo!![0].priceChange
+                    .higherKey(currencyIntervalValue.text.toString()) ?: app.currentPairInfo!![0].priceChange.firstKey()
                 log_d("click")
 
             }
