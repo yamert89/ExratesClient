@@ -3,15 +3,11 @@ package ru.exrates.mobile
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.entities.CurrencyPair
-import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.viewadapters.ExchangesAdapter
-import java.lang.NullPointerException
-import java.util.concurrent.ArrayBlockingQueue
 
 class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyName: TextView
@@ -60,9 +56,10 @@ class CurrencyActivity : ExratesActivity() {
 
             }
 
-            currencyIntervalValue.setOnClickListener {
-                /*app.currentPairInfo[0].priceChange[currentInterval]
-                app.currentPairInfo[0].priceChange.co*/
+            currencyInterval.setOnClickListener {
+                currencyIntervalValue.text = app.currentPairInfo!![0].priceChange.lowerKey(currencyIntervalValue.text.toString())
+                log_d("click")
+
             }
 
             model.getActualPair(currName)

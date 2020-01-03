@@ -4,14 +4,9 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.deser.std.MapDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import ru.exrates.mobile.logic.entities.CurrencyPair
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-import kotlin.collections.ArrayList
 
 class ArrayBlockingDeserializer : JsonDeserializer<ArrayBlockingQueue<Double>>(){
     override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): ArrayBlockingQueue<Double> {
@@ -33,23 +28,57 @@ class UpdateTimesDeserializer: StdDeserializer<TreeMap<String, Double>>(TreeMap:
         val map = p!!.readValueAs<Map<String, Double>>(object: TypeReference<Map<String, Double>>(){})
         val comparator = kotlin.Comparator<String>{
             o1, o2 ->
-            val numToken1 = o1.split("\\D".toRegex())
+            var numToken1 = 0
+            var numToken2 = 0
+            var stringToken1 = ""
+            var stringToken2 = ""
+            var compString = 0
+            var compNum = 0
+            try {
+                val regExp = "(\\d{1,2})(\\D)".toRegex()
+                val groups1 = regExp.find(o1)?.groups ?: throw NullPointerException("Reg exp not found")
+                numToken1 = groups1[1]!!.value.toInt()
+                stringToken1 = groups1[2]!!.value
+                val groups2 = regExp.find(o2)?.groups ?: throw NullPointerException("Reg exp not found")
+                numToken2 = groups2[1]!!.value.toInt()
+                stringToken2 = groups2[2]!!.value
+                compString = stringToken1.compareStringToken(stringToken2)
+                compNum = numToken1.compareIntToken(numToken2)
 
-
-
-
-
-            o1.compareTo(o2)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+            when {
+                compString > 0 -> 1
+                compString < 0 -> -1
+                else -> compNum
+            }
 
         }
         val treeMap: MutableMap<String, Double> = TreeMap(comparator)
         treeMap.putAll(map)
-        return TreeMap(treeMap)
+        return TreeMap(treeMap as SortedMap)
     }
 
-    fun String.compareStringToken(s: String): Int{
+
+    private fun String.compareStringToken(s: String): Int{
         val sequence = "mhdwMY"
-        return sequence.indexOf(this) - sequence.indexOf(s)
+        var res = sequence.indexOf(this) - sequence.indexOf(s)
+        if(res < 0) res = -1
+        if(res > 0) res = 1
+        return when {
+            res < 0 -> -1
+            res > 0 -> 1
+            else -> 0
+        }
+    }
+
+    private fun Int.compareIntToken(v : Int): Int{
+        return when {
+            this == v -> 0
+            this > v -> 1
+            else -> -1
+        }
     }
 
 }

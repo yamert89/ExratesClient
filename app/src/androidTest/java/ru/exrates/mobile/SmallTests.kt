@@ -14,6 +14,6 @@ class SmallTests {
     fun reg(){
         val one = "1h"
 
-        Assert.assertEquals(1, one.split("\\D".toRegex())[0])
+        Assert.assertEquals("1", one.split("\\D".toRegex())[0])
     }
 }

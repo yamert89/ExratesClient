@@ -3,7 +3,10 @@ package ru.exrates.mobile
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -15,9 +18,6 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
-import java.net.SocketTimeoutException
-import java.util.*
-import java.util.concurrent.ArrayBlockingQueue
 
 class MainActivity : ExratesActivity() {
 
@@ -104,7 +104,7 @@ class MainActivity : ExratesActivity() {
     override suspend fun firstLoadActivity(): Boolean{
         var res = false
         coroutineScope {
-            var lists: Map<String, List<String>> = mapOf()
+            var lists: Map<String, List<String>>
             try {
                 log_d("before request")
                 lists = app.restService.lists().execute().body()!! //todo replace with async
@@ -131,7 +131,7 @@ class MainActivity : ExratesActivity() {
             app.currentPairInfo = app.restService.getPair(currenciesList?.get(0)?: "ETCBTC").execute().body() //todo pairName
             cur = exch!!.pairs.get(0) //todo check null refactoring
             app.currentExchange = exch!!
-            launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
+           // launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
         }
         if (res) storage.storeValue(IS_FIRST_LOAD, false)
         return res

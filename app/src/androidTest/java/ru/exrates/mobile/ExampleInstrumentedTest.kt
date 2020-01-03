@@ -23,7 +23,9 @@ import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.rest.RestService
 import java.io.*
 import java.time.Duration
+import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
+import kotlin.collections.HashMap
 
 
 /**
@@ -54,13 +56,16 @@ class ExampleInstrumentedTest {
         val os = ObjectOutputStream(FileOutputStream(File(context.filesDir, "exchanges")))
 
         val map = HashMap<String, Exchange>()
+        val treeMap = TreeMap<String, Double>()
+        treeMap["1m"] = 4453.932
+        treeMap["1h"] = 323.4234
         val ex1 = Exchange(
             "testExchange",
             mutableListOf(
                 CurrencyPair(
                     "btc_ltc",
                     0.345,
-                    mapOf("1m" to 4453.023, "1h" to 5433.3230),
+                    treeMap,
                     arrayOf(0L),
                     ArrayBlockingQueue(2)
                 )

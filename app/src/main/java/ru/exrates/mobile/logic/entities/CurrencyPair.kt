@@ -3,6 +3,7 @@ package ru.exrates.mobile.logic.entities
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import ru.exrates.mobile.logic.entities.json.ArrayBlockingDeserializer
+import ru.exrates.mobile.logic.entities.json.UpdateTimesDeserializer
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 
@@ -10,6 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue
 data class CurrencyPair(
     val symbol: String,
     val price: Double,
+    @JsonDeserialize(using = UpdateTimesDeserializer::class)
     val priceChange: TreeMap<String, Double>,
     val updateTimes: Array<Long?>,
     @JsonDeserialize(using = ArrayBlockingDeserializer::class)
