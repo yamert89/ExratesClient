@@ -3,17 +3,13 @@ package ru.exrates.mobile
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
-import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
-import java.util.concurrent.ArrayBlockingQueue
 
 class ExchangeActivity : ExratesActivity() {
     private lateinit var exchName: TextView
@@ -65,6 +61,8 @@ class ExchangeActivity : ExratesActivity() {
             }
 
             intervalBtn.setOnClickListener {
+                intervalValue.text = app.currentPairInfo!![0].priceChange
+                    .higherKey(intervalValue.text.toString()) ?: app.currentPairInfo!![0].priceChange.firstKey()
                 val adapter = pairs.adapter as PairsAdapter
                 adapter.currentInterval = intervalValue.text.toString()
                 adapter.notifyDataSetChanged()
