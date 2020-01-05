@@ -3,6 +3,7 @@ package ru.exrates.mobile
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Model
@@ -13,6 +14,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyName: TextView
     private lateinit var currencyInterval: Button
     private lateinit var currencyIntervalValue: TextView
+    protected lateinit var progressLayout: ConstraintLayout
     private var currentInterval = "1h"
     private lateinit var currencyExchange: TextView
     private lateinit var currencyExchanges: RecyclerView
@@ -29,6 +31,7 @@ class CurrencyActivity : ExratesActivity() {
             currencyName = findViewById(R.id.cur_name)
             currencyInterval = findViewById(R.id.cur_interval)
             currencyIntervalValue = findViewById(R.id.cur_intervalValue)
+            progressLayout = findViewById(R.id.progressLayout)
 
             model = Model(app, this)
 

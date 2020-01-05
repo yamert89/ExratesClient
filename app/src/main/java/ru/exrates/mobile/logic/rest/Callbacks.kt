@@ -1,5 +1,7 @@
 package ru.exrates.mobile.logic.rest
 
+import android.view.View
+import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,6 +18,7 @@ abstract class ExCallback<T>(protected val activity: ExratesActivity): Callback<
 
     fun <T> mainFunc(ob: T?, func: (ob: T) -> Unit){
         func(ob ?: throw IllegalStateException("Response is null"))
+        activity.progressLayout.visibility = View.INVISIBLE
     }
 }
 

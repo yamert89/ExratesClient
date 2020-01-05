@@ -80,5 +80,6 @@
         android:layout_marginTop="100dp"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
         tools:layout_editor_absoluteX="0dp" />
+    <include layout="@layout/progress"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

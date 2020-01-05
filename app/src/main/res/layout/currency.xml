@@ -67,5 +67,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cur_header" />
+    <include layout="@layout/progress"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

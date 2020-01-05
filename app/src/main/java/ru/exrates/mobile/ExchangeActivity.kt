@@ -3,6 +3,7 @@ package ru.exrates.mobile
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Model
@@ -17,6 +18,7 @@ class ExchangeActivity : ExratesActivity() {
     private lateinit var hideBtn: Button
     private lateinit var intervalValue: TextView
     private lateinit var pairs: RecyclerView
+    private lateinit var progressLayout: ConstraintLayout
     private lateinit var pairsAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var currentInterval = "1h"
@@ -32,6 +34,7 @@ class ExchangeActivity : ExratesActivity() {
             intervalBtn = findViewById(R.id.cur_interval)
             hideBtn = findViewById(R.id.exch_btn_hide_show)
             intervalValue = findViewById(R.id.intervalValue)
+            progressLayout = findViewById(R.id.progressLayout)
 
             model = Model(app, this)
 

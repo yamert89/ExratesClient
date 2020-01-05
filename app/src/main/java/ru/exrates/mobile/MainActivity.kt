@@ -7,6 +7,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -29,6 +30,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var pairsAdapter: PairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
+    private lateinit var progressLayout: ConstraintLayout
 
 
     private var currenciesList: List<String>? = null
@@ -49,6 +51,7 @@ class MainActivity : ExratesActivity() {
             currencyName = findViewById(R.id.main_currency_spinner)
             currencyPrice = findViewById(R.id.main_cur_price)
             exchangeName = findViewById(R.id.main_exch_spinner)
+            progressLayout = findViewById(R.id.progressLayout)
 
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
@@ -67,7 +70,7 @@ class MainActivity : ExratesActivity() {
 
 
 
-            //snakBar()
+            startProgress()
 
 
 
@@ -131,7 +134,7 @@ class MainActivity : ExratesActivity() {
             app.currentPairInfo = app.restService.getPair(currenciesList?.get(0)?: "ETCBTC").execute().body() //todo pairName
             cur = exch!!.pairs.get(0) //todo check null refactoring
             app.currentExchange = exch!!
-            launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
+            //launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
         }
         if (res) storage.storeValue(IS_FIRST_LOAD, false)
         return res
@@ -151,9 +154,11 @@ class MainActivity : ExratesActivity() {
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
     }
 
-    fun snakBar(){
+    fun startProgress(){
+        progressLayout.visibility = View.VISIBLE
         log_d( "Snack started..")
-        Snackbar.make(currenciesRecyclerView, "Загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
+        Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
+
         //todo progressbar
     }
 
@@ -174,14 +179,16 @@ class MainActivity : ExratesActivity() {
 
                 else {
                     log_d("Saved lists loaded")
-                    exch = app.currentExchange ?: storage.loadObject(SAVED_EXCHANGE)
-                    cur = storage.loadObject(CURRENT_PAIR, CurrencyPair.createEmptyInstance()) //NULL mb currentPairInfo null
+                    //exch = app.currentExchange ?: storage.loadObject(SAVED_EXCHANGE)
+                    //cur = storage.loadObject(CURRENT_PAIR, CurrencyPair.createEmptyInstance()) //NULL mb currentPairInfo null
                     currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
                     exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     app.currentExchange = exch
-                    app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
+                    //app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
+
+
                 }
 
             }
