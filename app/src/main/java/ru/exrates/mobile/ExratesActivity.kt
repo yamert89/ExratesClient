@@ -1,8 +1,10 @@
 package ru.exrates.mobile
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
@@ -15,15 +17,20 @@ abstract class ExratesActivity : AppCompatActivity(){
     protected lateinit var storage: Storage
     protected lateinit var timer: Timer
     protected lateinit var model: Model
+    lateinit var progressLayout: ConstraintLayout
 
 
     open fun updateExchangeData(exchange: Exchange){log_d("Exchange data updated...")}
 
     open fun updatePairData(list: MutableList<CurrencyPair>){log_d("Pair data updated...")}
 
+    open fun startProgress(){
+        progressLayout.visibility = View.VISIBLE
+    }
+
     protected open suspend fun firstLoadActivity(): Boolean{return true}
 
-    fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
+    fun currentDataIsNull(): Boolean = app.currencyNameslist == null || app.exchangeNamesList == null
 
     private fun saveState(){
         log_d("saving state....")

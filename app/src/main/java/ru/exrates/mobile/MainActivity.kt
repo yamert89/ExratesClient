@@ -7,7 +7,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -30,7 +29,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var pairsAdapter: PairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
-    private lateinit var progressLayout: ConstraintLayout
+
 
 
     private var currenciesList: List<String>? = null
@@ -56,6 +55,9 @@ class MainActivity : ExratesActivity() {
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
 
+            curAdapter.add("Currency")
+            exchAdapter.add("Exchange")
+
             currencyName.adapter = curAdapter
             exchangeName.adapter = exchAdapter
 
@@ -67,12 +69,7 @@ class MainActivity : ExratesActivity() {
                 layoutManager = viewManager
             }
 
-
-
-
             startProgress()
-
-
 
             log_d("Main activity created")
 
@@ -100,8 +97,14 @@ class MainActivity : ExratesActivity() {
     }
 
     override fun task() {
-        model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC"))) //todo
-        model.getActualPair("VENBTC") //todo
+        log_d("task")
+        if (app.currentExchange == null) throw NullPointerException("data in task is null")
+        model.getActualExchange(ExchangePayload(
+            app.currentExchange!!.name,
+            app.currentInterval!!,
+            app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
+        ))
+        model.getActualPair(app.currentPairInfo!![0].symbol)
     }
 
     override suspend fun firstLoadActivity(): Boolean{
@@ -126,21 +129,19 @@ class MainActivity : ExratesActivity() {
                     MapEntry(SAVED_EXCHANGE_NAME_LIST, exchangesList!!)
                 )
                 log_d("list saved")
-                //storage.saveObject(currenciesList, SAVED_CURRENCY_NAME_LIST)
-                //storage.saveObject(exchangesList, SAVED_EXCHANGE_NAME_LIST)
             }
             log_d("get exchange")
             exch = app.restService.getExchange(ExchangePayload(exchangesList?.get(0) ?: "binanceExchange", "1h", emptyArray())).execute().body() //todo null check refactor
             app.currentPairInfo = app.restService.getPair(currenciesList?.get(0)?: "ETCBTC").execute().body() //todo pairName
             cur = exch!!.pairs.get(0) //todo check null refactoring
             app.currentExchange = exch!!
-            //launch { save(MapEntry(SAVED_EXCHANGE, exch!!)) }
+
         }
         if (res) storage.storeValue(IS_FIRST_LOAD, false)
         return res
+    }
 
-        //cur = app.restService.getPair().execute().body()
-
+    private fun initData(){
 
     }
 
@@ -154,19 +155,16 @@ class MainActivity : ExratesActivity() {
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
     }
 
-    fun startProgress(){
-        progressLayout.visibility = View.VISIBLE
+    override fun startProgress(){
+        super.startProgress()
         log_d( "Snack started..")
         Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
-
-        //todo progressbar
     }
 
     override fun onResume() {
         super.onResume()
         try {
             app = this.application as MyApp
-            //snakBar()
             var flag = true
             log_d("before")
             val listsReq = GlobalScope.launch(Dispatchers.IO) {
@@ -179,16 +177,11 @@ class MainActivity : ExratesActivity() {
 
                 else {
                     log_d("Saved lists loaded")
-                    //exch = app.currentExchange ?: storage.loadObject(SAVED_EXCHANGE)
-                    //cur = storage.loadObject(CURRENT_PAIR, CurrencyPair.createEmptyInstance()) //NULL mb currentPairInfo null
                     currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
                     exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     app.currentExchange = exch
-                    //app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
-
-
                 }
 
             }
@@ -230,6 +223,7 @@ class MainActivity : ExratesActivity() {
             currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val curName = parent?.getItemAtPosition(position)
+                    log_d("item selected pos: $position, name: $curName")
                     startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                         putExtra(EXTRA_CURRENCY_NAME, curName.toString())
                     })

@@ -3,11 +3,11 @@ package ru.exrates.mobile
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
+import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
@@ -18,7 +18,7 @@ class ExchangeActivity : ExratesActivity() {
     private lateinit var hideBtn: Button
     private lateinit var intervalValue: TextView
     private lateinit var pairs: RecyclerView
-    private lateinit var progressLayout: ConstraintLayout
+
     private lateinit var pairsAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var currentInterval = "1h"
@@ -47,14 +47,16 @@ class ExchangeActivity : ExratesActivity() {
 
             //val currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
             if (currentDataIsNull()){
-                app.currentExchange = storage.loadObject(CURRENT_EXCHANGE)
-                app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
+                //app.currentExchange = storage.loadObject(CURRENT_EXCHANGE)
+                //app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
+                app.currencyNameslist = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
+                app.exchangeNamesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
             }
             if (currentDataIsNull()) throw NullPointerException("current data is null")
 
-
-            val pairsOfAdapter = if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.filter{it.visible}.toMutableList()
+            val pairsOfAdapter = if(app.currentExchange == null) mutableListOf<CurrencyPair>() else
+                if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.filter{it.visible}.toMutableList() //todo base filtering on server
             pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval)
             viewManager = LinearLayoutManager(this)
 
@@ -73,8 +75,8 @@ class ExchangeActivity : ExratesActivity() {
 
             val exName = intent.getStringExtra(EXTRA_EXCHANGE_NAME) ?: throw NullPointerException("extra cur name is null")
             exchName.text = exName
-            val interval = storage.getValue(CURRENT_INTERVAL, "1h")
-            model.getActualExchange(ExchangePayload(exName, interval, arrayOf()))
+            model.getActualExchange(ExchangePayload(exName, currentInterval, arrayOf()))
+            startProgress()
 
         }catch (e: Exception){
             e.printStackTrace()
@@ -92,7 +94,14 @@ class ExchangeActivity : ExratesActivity() {
     }
 
     override fun task() {
-        model.getActualExchange(ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC")))
+        if (app.currentExchange == null) throw NullPointerException("current data in task is null")
+        model.getActualExchange(
+            ExchangePayload(
+                app.currentExchange!!.name,
+                currentInterval,
+                app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
+            )
+        )
     }
 
 
