@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -32,9 +31,13 @@ abstract class ExratesActivity : AppCompatActivity(){
 
     fun currentDataIsNull(): Boolean = app.currencyNameslist == null || app.exchangeNamesList == null
 
-    private fun saveState(){
+    open fun saveState(){
         log_d("saving state....")
         if(currentDataIsNull()) return
+        save(
+            CURRENT_EXCHANGE to app.currentExchange!!.name,
+            CURRENT_PAIR to app.currentPairInfo!![0].symbol
+        )
        /* save(
             MapEntry(CURRENT_EXCHANGE, app.currentExchange!!),
             MapEntry(CURRENT_PAIR_INFO, app.currentPairInfo!!),
@@ -43,8 +46,8 @@ abstract class ExratesActivity : AppCompatActivity(){
 
     }
 
-    fun save(vararg args : MapEntry<String, Any>){
-        args.forEach { storage.storeValue(it.key, it.value) }
+    fun save(vararg args : Pair<String, Any>){
+        args.forEach { storage.storeValue(it.first, it.second) }
         log_d("savestate: ${args.size} objects saved")
     }
 

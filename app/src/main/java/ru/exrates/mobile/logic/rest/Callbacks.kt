@@ -1,18 +1,24 @@
 package ru.exrates.mobile.logic.rest
 
 import android.view.View
-import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import ru.exrates.mobile.ExratesActivity
+import ru.exrates.mobile.MainActivity
+import ru.exrates.mobile.log_e
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import java.net.SocketTimeoutException
 
 
 abstract class ExCallback<T>(protected val activity: ExratesActivity): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
-        t.printStackTrace()
+        log_e("failed response")
+        if (t is SocketTimeoutException) activity.toast("Не удалось подключиться к серверу. Превышено время ожидания ответа")
+        else activity.toast("Ошибка подключения ${t.message}")
+        activity.progressLayout.visibility = View.INVISIBLE
+
         //Log.e("EXRATES", t.message)
     }
 
@@ -43,6 +49,14 @@ class PairCallback(activity: ExratesActivity) : ExCallback<MutableList<CurrencyP
     ) {
         mainFunc(response.body(), activity::updatePairData)
     }
+}
 
+class ListsCallback(activity: ExratesActivity) : ExCallback<Map<String, List<String>>>(activity) {
+    override fun onResponse(
+        call: Call<Map<String, List<String>>>,
+        response: Response<Map<String, List<String>>>
+    ) {
+        mainFunc(response.body(), (activity as MainActivity)::initData)
+    }
 
 }

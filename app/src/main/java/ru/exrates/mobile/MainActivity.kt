@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
-import kotlinx.serialization.internal.MapEntry
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -29,14 +28,10 @@ class MainActivity : ExratesActivity() {
     private lateinit var pairsAdapter: PairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
-
-
-
     private var currenciesList: List<String>? = null
     private var exchangesList: List<String>? = null
     private var curIdx = 0
     private var exIdx = 0
-    private var exch: Exchange? = null
     private var cur: CurrencyPair? = null
 
     override fun onCreate(savedInstanceState: Bundle?){
@@ -68,138 +63,6 @@ class MainActivity : ExratesActivity() {
                 adapter = pairsAdapter
                 layoutManager = viewManager
             }
-
-            startProgress()
-
-            log_d("Main activity created")
-
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
-
-    }
-
-    override fun updateExchangeData(exchange: Exchange){
-        super.updateExchangeData(exchange)
-        app.currentExchange = exchange
-        val adapter = currenciesRecyclerView.adapter as PairsAdapter
-        adapter.dataPairs.clear()
-        adapter.dataPairs.addAll(exchange.pairs)
-        adapter.notifyDataSetChanged()
-    }
-
-    override fun updatePairData(list: MutableList<CurrencyPair>) {
-        super.updatePairData(list)
-        app.currentPairInfo = list
-        var count = 0.0
-        list.forEach { count += it.price }
-        currencyPrice.text = (count / list.size).toNumeric()
-    }
-
-    override fun task() {
-        log_d("task")
-        if (app.currentExchange == null) throw NullPointerException("data in task is null")
-        model.getActualExchange(ExchangePayload(
-            app.currentExchange!!.name,
-            app.currentInterval!!,
-            app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
-        ))
-        model.getActualPair(app.currentPairInfo!![0].symbol)
-    }
-
-    override suspend fun firstLoadActivity(): Boolean{
-        var res = false
-        coroutineScope {
-            var lists: Map<String, List<String>>
-            try {
-                log_d("before request")
-                lists = app.restService.lists().execute().body()!! //todo replace with async
-                log_d(lists.size.toString())
-            }catch (e: Exception){
-                log_e("exception")
-                return@coroutineScope
-            }
-            res = true
-            currenciesList = lists["currencies"]
-            exchangesList = lists["exchanges"]
-
-            launch {
-                save(
-                    MapEntry(SAVED_CURRENCY_NAME_LIST, currenciesList!!),
-                    MapEntry(SAVED_EXCHANGE_NAME_LIST, exchangesList!!)
-                )
-                log_d("list saved")
-            }
-            log_d("get exchange")
-            exch = app.restService.getExchange(ExchangePayload(exchangesList?.get(0) ?: "binanceExchange", "1h", emptyArray())).execute().body() //todo null check refactor
-            app.currentPairInfo = app.restService.getPair(currenciesList?.get(0)?: "ETCBTC").execute().body() //todo pairName
-            cur = exch!!.pairs.get(0) //todo check null refactoring
-            app.currentExchange = exch!!
-
-        }
-        if (res) storage.storeValue(IS_FIRST_LOAD, false)
-        return res
-    }
-
-    private fun initData(){
-
-    }
-
-    private fun updateExchangesList(exchNames: List<String>){
-        log_d( "exchNames: $exchNames")
-        with(exchAdapter){clear(); addAll(exchNames); notifyDataSetChanged()}
-    }
-
-    private fun updateCurrenciesList(curNames: List<String>){
-        log_d( "curNames : $curNames")
-        with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
-    }
-
-    override fun startProgress(){
-        super.startProgress()
-        log_d( "Snack started..")
-        Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        try {
-            app = this.application as MyApp
-            var flag = true
-            log_d("before")
-            val listsReq = GlobalScope.launch(Dispatchers.IO) {
-                log_d("start coroutine")
-                if (storage.getValue(IS_FIRST_LOAD, true)) {
-                    log_d("before first load")
-                    flag = firstLoadActivity()
-                    log_d("flaq is $flag")
-                }
-
-                else {
-                    log_d("Saved lists loaded")
-                    currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
-                    exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
-                    curIdx = storage.getValue(SAVED_CUR_IDX, 0)
-                    exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    app.currentExchange = exch
-                }
-
-            }
-
-            runBlocking { listsReq.join() }
-            if (!flag) {
-                toast("Не удалось подключиться к серверу")
-                return
-            }else model.ping()
-            updateCurrenciesList(currenciesList!!)
-            updateExchangesList(exchangesList!!)
-            /*currencyName.setSelection(
-                curAdapter.getPosition(
-                    cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
-                )
-            )*/
-            //exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
-            currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
 
             exchangeName.setSelection(0, true)
 
@@ -233,6 +96,163 @@ class MainActivity : ExratesActivity() {
 
                 }
             }
+
+            startProgress()
+
+            log_d("Main activity created")
+
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
+    }
+
+    override fun updateExchangeData(exchange: Exchange){
+        super.updateExchangeData(exchange)
+        app.currentExchange = exchange
+        val adapter = currenciesRecyclerView.adapter as PairsAdapter
+        adapter.dataPairs.clear()
+        adapter.dataPairs.addAll(exchange.pairs)
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun updatePairData(list: MutableList<CurrencyPair>) {
+        super.updatePairData(list)
+        app.currentPairInfo = list
+        var count = 0.0
+        list.forEach { count += it.price }
+        currencyPrice.text = (count / list.size).toNumeric()
+    }
+
+    override fun task() {
+        log_d("task")
+        if (app.currentExchange == null){
+            log_d("currentExchange is null")
+            return
+        }
+        model.getActualExchange(ExchangePayload(
+            app.currentExchange!!.name,
+            app.currentInterval,
+            app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
+        ))
+        model.getActualPair(app.currentPairInfo!![0].symbol)
+    }
+
+    override suspend fun firstLoadActivity(): Boolean{
+        var res = false
+        coroutineScope {
+            try {
+                log_d("before request")
+                model.getLists()
+            }catch (e: Exception){
+                log_e("exception")
+                return@coroutineScope
+            }
+            res = true
+
+        }
+        if (res) storage.storeValue(IS_FIRST_LOAD, false)
+        return res
+    }
+
+    fun initData(lists: Map<String, List<String>>){
+        log_d("init data")
+        currenciesList = lists["currencies"]
+        exchangesList = lists["exchanges"]
+
+        GlobalScope.launch {
+            save(
+                SAVED_CURRENCY_NAME_LIST to currenciesList!!,
+                SAVED_EXCHANGE_NAME_LIST to exchangesList!!
+
+            )
+            log_d("list saved")
+        }
+        log_d("get exchange")
+        model.getActualExchange(ExchangePayload(exchangesList?.get(1)!!, app.currentInterval, emptyArray()))
+        model.getActualPair(currenciesList?.get(0)!!)
+        updateCurrenciesList(currenciesList!!)
+        updateExchangesList(exchangesList!!)
+
+    }
+
+    private fun updateExchangesList(exchNames: List<String>?){
+        if (exchNames == null) return
+        log_d( "exchNames: $exchNames")
+        with(exchAdapter){clear(); addAll(exchNames); notifyDataSetChanged()}
+        exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
+    }
+
+    private fun updateCurrenciesList(curNames: List<String>?){
+        if (curNames == null) return
+        log_d( "curNames : $curNames")
+        with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
+        currencyName.setSelection(storage.getValue(SAVED_CUR_IDX, 0))
+    }
+
+    override fun startProgress(){
+        super.startProgress()
+        log_d( "Snack started..")
+        Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun saveState() {
+        super.saveState()
+        save(SAVED_EX_IDX to exchangeName.selectedItemPosition,
+            SAVED_CUR_IDX to currencyName.selectedItemPosition)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        try {
+            app = this.application as MyApp
+            var flag = true
+            log_d("on resume")
+            val listsReq = GlobalScope.launch(Dispatchers.IO) {
+                log_d("start coroutine")
+                if (storage.getValue(IS_FIRST_LOAD, true)) {
+                    log_d("before first load")
+                    flag = firstLoadActivity()
+                    log_d("flaq is $flag")
+                }
+
+                else {
+                    log_d("Saved lists loaded")
+                    currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
+                    exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
+                    curIdx = storage.getValue(SAVED_CUR_IDX, 0)
+                    exIdx = storage.getValue(SAVED_EX_IDX, 0)
+                    val pair = storage.getValue(CURRENT_PAIR, "BTCUSDT")
+                    model.getActualExchange(ExchangePayload(
+                        storage.getValue(CURRENT_EXCHANGE, "binanceExchange"),
+                        app.currentInterval,
+                        arrayOf(pair))
+                    )
+                    model.getActualPair(pair)
+
+
+                }
+
+            }
+
+            runBlocking { listsReq.join() }
+            if (!flag) {
+                toast("Не удалось подключиться к серверу")
+                return
+            }else model.ping()
+
+            updateCurrenciesList(currenciesList)
+            updateExchangesList(exchangesList)
+
+            /*currencyName.setSelection(
+                curAdapter.getPosition(
+                    cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
+                )
+            )*/
+            //exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
+            currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
+
+
 
 
         }catch (e: Exception){e.printStackTrace()}
