@@ -88,6 +88,7 @@ class ExchangeActivity : ExratesActivity() {
 
     override fun updateExchangeData(exchange: Exchange) {
         super.updateExchangeData(exchange)
+        app.currentExchange = exchange
         val adapter = pairs.adapter as PairsAdapter
         with(adapter.dataPairs){clear(); addAll(exchange.pairs)}
         adapter.notifyDataSetChanged()

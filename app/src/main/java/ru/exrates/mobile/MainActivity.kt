@@ -126,8 +126,8 @@ class MainActivity : ExratesActivity() {
 
     override fun task() {
         log_d("task")
-        if (app.currentExchange == null){
-            log_d("currentExchange is null")
+        if (app.currentExchange == null || app.currentPairInfo == null){
+            log_d("current data  is null")
             return
         }
         model.getActualExchange(ExchangePayload(
@@ -169,7 +169,7 @@ class MainActivity : ExratesActivity() {
             log_d("list saved")
         }
         log_d("get exchange")
-        model.getActualExchange(ExchangePayload(exchangesList?.get(1)!!, app.currentInterval, emptyArray()))
+        model.getActualExchange(ExchangePayload(exchangesList?.get(0)!!, app.currentInterval, emptyArray()))
         model.getActualPair(currenciesList?.get(0)!!)
         updateCurrenciesList(currenciesList!!)
         updateExchangesList(exchangesList!!)
