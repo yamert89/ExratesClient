@@ -9,8 +9,11 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.anychart.AnyChartView
+import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
+import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -24,6 +27,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
     private lateinit var currenciesRecyclerView: RecyclerView
+    private lateinit var anyChartView: AnyChartView
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var pairsAdapter: PairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
@@ -46,6 +50,7 @@ class MainActivity : ExratesActivity() {
             currencyPrice = findViewById(R.id.main_cur_price)
             exchangeName = findViewById(R.id.main_exch_spinner)
             progressLayout = findViewById(R.id.progressLayout)
+            anyChartView = findViewById(R.id.anyChartView)
 
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
@@ -96,6 +101,25 @@ class MainActivity : ExratesActivity() {
 
                 }
             }
+
+            //val cartesian = AnyChart.line()
+           anyChartView = GraphFactory(anyChartView).getSmallGraph(listOf(
+               ValueDataEntry("12", 5.6),
+               ValueDataEntry("13", 6.3),
+               ValueDataEntry("14", 2.5),
+               ValueDataEntry("15", 6.6)
+           ))
+
+
+
+
+
+
+
+
+
+
+
 
             startProgress()
 

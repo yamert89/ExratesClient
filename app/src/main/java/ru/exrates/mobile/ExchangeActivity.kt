@@ -38,17 +38,7 @@ class ExchangeActivity : ExratesActivity() {
 
             model = Model(app, this)
 
-
-            //val queue = ArrayBlockingQueue<Double>(20)
-
-            //val exchName: String? = savedInstanceState!!.getString(EXCH_NAME)
-
-            //currentExchange =
-
-            //val currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
             if (currentDataIsNull()){
-                //app.currentExchange = storage.loadObject(CURRENT_EXCHANGE)
-                //app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
                 app.currencyNameslist = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
                 app.exchangeNamesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")

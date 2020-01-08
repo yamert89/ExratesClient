@@ -35,8 +35,6 @@ class CurrencyActivity : ExratesActivity() {
             model = Model(app, this)
 
             if(currentDataIsNull()){
-                //app.currentExchange = storage.loadObject(CURRENT_EXCHANGE)
-                //app.currentPairInfo = storage.loadObject(CURRENT_PAIR_INFO)
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
                 log_d("Loaded saved pair data from storage")
             }
