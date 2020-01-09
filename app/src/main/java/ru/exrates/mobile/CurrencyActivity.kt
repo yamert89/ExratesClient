@@ -1,8 +1,8 @@
 package ru.exrates.mobile
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
+import android.view.View
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Model
@@ -19,6 +19,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyExchanges: RecyclerView
     private lateinit var exchangesAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var historyPeriodSpinner: Spinner
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,23 +32,35 @@ class CurrencyActivity : ExratesActivity() {
             currencyInterval = findViewById(R.id.cur_interval)
             currencyIntervalValue = findViewById(R.id.cur_intervalValue)
             progressLayout = findViewById(R.id.progressLayout)
+            historyPeriodSpinner = findViewById(R.id.cur_history_period)
 
             model = Model(app, this)
 
-            if(currentDataIsNull()){
+            if(currentNameListsIsNull()){
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
                 log_d("Loaded saved pair data from storage")
             }
-            if (currentDataIsNull()) throw NullPointerException("current data is null")
+            if (currentNameListsIsNull()) throw NullPointerException("current data is null")
 
 
-            val currName = intent.getStringExtra(EXTRA_CURRENCY_NAME)
-            //val exchanges = app.dataProvider.exchanges.values.toList()
+            val currName: String = intent.getStringExtra(EXTRA_CURRENCY_NAME)!!
+            val defExchName = intent.getStringExtra(EXTRA_EXCHANGE_NAME)!!
 
+            historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
+
+            historyPeriodSpinner.setSelection(0)
+            historyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                override fun onNothingSelected(parent: AdapterView<*>?){}
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val interval = parent?.getItemAtPosition(position) ?: throw NullPointerException("item on position $position not found")
+                    model.getPriceHistory(currName, defExchName, interval as String)
+                }
+            }
 
             currencyName.text = currName
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo!!, currName!!, currentInterval)
+            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), currName, currentInterval)
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
@@ -57,8 +70,8 @@ class CurrencyActivity : ExratesActivity() {
             }
 
             currencyInterval.setOnClickListener {
-                currencyIntervalValue.text = app.currentPairInfo!![0].priceChange
-                    .higherKey(currencyIntervalValue.text.toString()) ?: app.currentPairInfo!![0].priceChange.firstKey()
+                currencyIntervalValue.text = if(currentDataIsNull()) "1h" else
+                    app.currentPairInfo!![0].priceChange.higherKey(currencyIntervalValue.text.toString()) ?: app.currentPairInfo!![0].priceChange.firstKey()
                 val adapter = currencyExchanges.adapter as ExchangesAdapter
                 adapter.interval = currencyIntervalValue.text.toString()
                 adapter.notifyDataSetChanged()
@@ -71,9 +84,6 @@ class CurrencyActivity : ExratesActivity() {
             e.printStackTrace()
         }
 
-
-
-
     }
 
     override fun updatePairData(list: MutableList<CurrencyPair>) {
@@ -84,7 +94,15 @@ class CurrencyActivity : ExratesActivity() {
         adapter.pairsByExchanges.clear()
         adapter.pairsByExchanges.addAll(list)
         adapter.notifyDataSetChanged()
+        updateGraph(list[0].priceHistory) //todo null?
+        val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
+        historyAdapter.addAll(app.currentExchange?.historyPeriods ?: )//todo
+    }
 
+    fun updateGraph(list: List<Double>){
+        val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
+        historyAdapter.addAll(list.mapTo(mutableListOf<String>(), {it.toString()}))
+        historyAdapter.notifyDataSetChanged()
     }
 
     override fun task() {

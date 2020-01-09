@@ -14,14 +14,15 @@ data class CurrencyPair(
     @JsonDeserialize(using = UpdateTimesDeserializer::class)
     val priceChange: TreeMap<String, Double>,
     val updateTimes: Array<Long?>,
-    @JsonDeserialize(using = ArrayBlockingDeserializer::class)
-    val priceHistory: ArrayBlockingQueue<Double>,
+    val priceHistory: List<Double>,
+    val historyPeriods: List<String>?,
     val visible: Boolean = true,
     var exchangeName : String? = null
+
 ) : java.io.Serializable{
 
     companion object{
-        fun createEmptyInstance() = CurrencyPair("", 0.0, TreeMap(), emptyArray(), ArrayBlockingQueue(1))
+        fun createEmptyInstance() = CurrencyPair("", 0.0, TreeMap(), emptyArray(), emptyList(), emptyList())
     }
 
 

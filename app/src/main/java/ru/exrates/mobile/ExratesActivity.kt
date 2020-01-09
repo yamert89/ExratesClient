@@ -11,7 +11,7 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import java.util.*
 
-abstract class ExratesActivity : AppCompatActivity(){
+abstract class ExratesActivity : AppCompatActivity() {
     protected lateinit var app: MyApp
     protected lateinit var storage: Storage
     protected lateinit var timer: Timer
@@ -19,17 +19,25 @@ abstract class ExratesActivity : AppCompatActivity(){
     lateinit var progressLayout: ConstraintLayout
 
 
-    open fun updateExchangeData(exchange: Exchange){log_d("Exchange data updated...")}
+    open fun updateExchangeData(exchange: Exchange) {
+        log_d("Exchange data updated...")
+    }
 
-    open fun updatePairData(list: MutableList<CurrencyPair>){log_d("Pair data updated...")}
+    open fun updatePairData(list: MutableList<CurrencyPair>) {
+        log_d("Pair data updated...")
+    }
 
-    open fun startProgress(){
+    open fun startProgress() {
         progressLayout.visibility = View.VISIBLE
     }
 
-    protected open suspend fun firstLoadActivity(): Boolean{return true}
+    protected open suspend fun firstLoadActivity(): Boolean {
+        return true
+    }
 
-    fun currentDataIsNull(): Boolean = app.currencyNameslist == null || app.exchangeNamesList == null
+    fun currentNameListsIsNull(): Boolean = app.currencyNameslist == null || app.exchangeNamesList == null
+
+    fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
 
     open fun saveState(){
         log_d("saving state....")

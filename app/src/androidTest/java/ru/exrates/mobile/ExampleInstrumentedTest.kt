@@ -67,10 +67,12 @@ class ExampleInstrumentedTest {
                     0.345,
                     treeMap,
                     arrayOf(0L),
-                    ArrayBlockingQueue(2)
+                    emptyList(),
+                    emptyList()
                 )
             ),
-            listOf("1s", "1h")
+            listOf("1s", "1h"),
+            emptyArray()
         )
         map["q"] = ex1
 

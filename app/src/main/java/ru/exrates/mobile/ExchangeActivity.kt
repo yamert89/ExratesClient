@@ -38,14 +38,14 @@ class ExchangeActivity : ExratesActivity() {
 
             model = Model(app, this)
 
-            if (currentDataIsNull()){
+            if (currentNameListsIsNull()){
                 app.currencyNameslist = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
                 app.exchangeNamesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
             }
-            if (currentDataIsNull()) throw NullPointerException("current data is null")
+            if (currentNameListsIsNull()) throw NullPointerException("current data is null")
 
-            val pairsOfAdapter = if(app.currentExchange == null) mutableListOf<CurrencyPair>() else
+            val pairsOfAdapter = if(currentDataIsNull()) mutableListOf<CurrencyPair>() else
                 if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.filter{it.visible}.toMutableList() //todo base filtering on server
             pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval)
             viewManager = LinearLayoutManager(this)
@@ -85,7 +85,7 @@ class ExchangeActivity : ExratesActivity() {
     }
 
     override fun task() {
-        if (app.currentExchange == null) throw NullPointerException("current data in task is null")
+        if (currentDataIsNull()) throw NullPointerException("current data in task is null")
         model.getActualExchange(
             ExchangePayload(
                 app.currentExchange!!.name,

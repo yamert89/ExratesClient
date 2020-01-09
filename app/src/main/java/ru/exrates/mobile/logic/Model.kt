@@ -7,10 +7,7 @@ import ru.exrates.mobile.ExratesActivity
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
-import ru.exrates.mobile.logic.rest.ExCallback
-import ru.exrates.mobile.logic.rest.ListsCallback
-import ru.exrates.mobile.logic.rest.OneExchangeCallback
-import ru.exrates.mobile.logic.rest.PairCallback
+import ru.exrates.mobile.logic.rest.*
 
 class Model(private val app: MyApp, private val activity: ExratesActivity) {
 
@@ -18,9 +15,15 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
         app.restService.getExchange(payload).enqueue(callback)
     }
 
-    fun getActualPair(pName: String){
-        app.restService.getPair(pName).enqueue(PairCallback(activity))
+    fun getActualPair(pname: String, historyinterval: String){
+        app.restService.getPair(pname, historyinterval).enqueue(PairCallback(activity))
     }
+
+    fun getActualPair(pname: String){
+        app.restService.getPair(pname).enqueue(PairCallback(activity))
+    }
+
+
 
     fun getLists(){
         app.restService.lists().enqueue(ListsCallback(activity))
@@ -37,6 +40,10 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
             }
 
         })
+    }
+
+    fun getPriceHistory(pname: String, exchname: String, historyinterval: String){
+        app.restService.getPriceHistory(pname, exchname, historyinterval).enqueue(HistoryCallback(activity))
     }
 
 

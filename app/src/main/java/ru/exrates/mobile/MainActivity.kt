@@ -94,6 +94,7 @@ class MainActivity : ExratesActivity() {
                     log_d("item selected pos: $position, name: $curName")
                     startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                         putExtra(EXTRA_CURRENCY_NAME, curName.toString())
+                        putExtra(EXTRA_EXCHANGE_NAME, exchangeName.selectedItem as String)
                     })
                 }
 
@@ -109,17 +110,6 @@ class MainActivity : ExratesActivity() {
                ValueDataEntry("14", 2.5),
                ValueDataEntry("15", 6.6)
            ))
-
-
-
-
-
-
-
-
-
-
-
 
             startProgress()
 
@@ -150,7 +140,7 @@ class MainActivity : ExratesActivity() {
 
     override fun task() {
         log_d("task")
-        if (app.currentExchange == null || app.currentPairInfo == null){
+        if (currentDataIsNull()){
             log_d("current data  is null")
             return
         }
@@ -191,7 +181,11 @@ class MainActivity : ExratesActivity() {
 
             )
             log_d("list saved")
+
         }
+
+        app.currencyNameslist = currenciesList
+        app.exchangeNamesList = exchangesList
         log_d("get exchange")
         model.getActualExchange(ExchangePayload(exchangesList?.get(0)!!, app.currentInterval, emptyArray()))
         model.getActualPair(currenciesList?.get(0)!!)
