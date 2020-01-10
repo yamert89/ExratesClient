@@ -22,7 +22,7 @@ import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
 
 class MainActivity : ExratesActivity() {
-
+//fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
@@ -32,8 +32,6 @@ class MainActivity : ExratesActivity() {
     private lateinit var pairsAdapter: PairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
-    private var currenciesList: List<String>? = null
-    private var exchangesList: List<String>? = null
     private var curIdx = 0
     private var exIdx = 0
     private var cur: CurrencyPair? = null
@@ -152,7 +150,7 @@ class MainActivity : ExratesActivity() {
         model.getActualPair(app.currentPairInfo!![0].symbol)
     }
 
-    override suspend fun firstLoadActivity(): Boolean{
+    private suspend fun firstLoadActivity(): Boolean{
         var res = false
         coroutineScope {
             try {
@@ -171,33 +169,27 @@ class MainActivity : ExratesActivity() {
 
     fun initData(lists: Map<String, List<String>>){
         log_d("init data")
-        currenciesList = lists["currencies"]
-        exchangesList = lists["exchanges"]
+        app.exchangeNamesList = lists
 
         GlobalScope.launch {
-            save(
-                SAVED_CURRENCY_NAME_LIST to currenciesList!!,
-                SAVED_EXCHANGE_NAME_LIST to exchangesList!!
-
-            )
+            save(SAVED_EXCHANGE_NAME_LIST to lists)
             log_d("list saved")
 
         }
 
-        app.currencyNameslist = currenciesList
-        app.exchangeNamesList = exchangesList
         log_d("get exchange")
-        model.getActualExchange(ExchangePayload(exchangesList?.get(0)!!, app.currentInterval, emptyArray()))
-        model.getActualPair(currenciesList?.get(0)!!)
-        updateCurrenciesList(currenciesList!!)
-        updateExchangesList(exchangesList!!)
+        val defaultExchName = lists.keys.iterator().next()
+        model.getActualExchange(ExchangePayload(defaultExchName, app.currentInterval, emptyArray()))
+        model.getActualPair(lists.getValue(defaultExchName)[0])
+        updateExchangesList(lists.keys)
+        updateCurrenciesList(lists.getValue(defaultExchName))
 
     }
 
-    private fun updateExchangesList(exchNames: List<String>?){
-        if (exchNames == null) return
-        log_d( "exchNames: $exchNames")
-        with(exchAdapter){clear(); addAll(exchNames); notifyDataSetChanged()}
+    private fun updateExchangesList(exchangeNames: Set<String>?){
+        if (exchangeNames == null) return
+        log_d( "exchanges: $exchangeNames")
+        with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
         exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
     }
 
@@ -236,13 +228,15 @@ class MainActivity : ExratesActivity() {
 
                 else {
                     log_d("Saved lists loaded")
-                    currenciesList = storage.loadObject(SAVED_CURRENCY_NAME_LIST)
-                    exchangesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
+                    app.exchangeNamesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val pair = storage.getValue(CURRENT_PAIR, "BTCUSDT")
+                    val pair = storage.getValue(CURRENT_PAIR, "BTCUSDT") //todo for all activities
+                    val exchange = storage.getValue(CURRENT_EXCHANGE, "binanceExchange")
+                    app.currentExchangeName = exchange
+                    app.currentPairName = pair
                     model.getActualExchange(ExchangePayload(
-                        storage.getValue(CURRENT_EXCHANGE, "binanceExchange"),
+                        exchange,
                         app.currentInterval,
                         arrayOf(pair))
                     )
@@ -259,8 +253,8 @@ class MainActivity : ExratesActivity() {
                 return
             }else model.ping()
 
-            updateCurrenciesList(currenciesList)
-            updateExchangesList(exchangesList)
+            updateExchangesList(app.exchangeNamesList?.keys)
+            updateCurrenciesList(app.exchangeNamesList?.get(app.currentExchangeName))
 
             /*currencyName.setSelection(
                 curAdapter.getPosition(

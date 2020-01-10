@@ -5,6 +5,9 @@ import android.view.View
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.anychart.AnyChartView
+import com.anychart.chart.common.dataentry.ValueDataEntry
+import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.viewadapters.ExchangesAdapter
@@ -13,7 +16,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyName: TextView
     private lateinit var currencyInterval: Button
     private lateinit var currencyIntervalValue: TextView
-
+    private lateinit var anyChartView: AnyChartView
     private var currentInterval = "1h"
     private lateinit var currencyExchange: TextView
     private lateinit var currencyExchanges: RecyclerView
@@ -33,6 +36,7 @@ class CurrencyActivity : ExratesActivity() {
             currencyIntervalValue = findViewById(R.id.cur_intervalValue)
             progressLayout = findViewById(R.id.progressLayout)
             historyPeriodSpinner = findViewById(R.id.cur_history_period)
+            anyChartView = findViewById(R.id.anyChartView_cur)
 
             model = Model(app, this)
 
@@ -46,6 +50,8 @@ class CurrencyActivity : ExratesActivity() {
             val currName: String = intent.getStringExtra(EXTRA_CURRENCY_NAME)!!
             val defExchName = intent.getStringExtra(EXTRA_EXCHANGE_NAME)!!
 
+            model.getActualPair(currName)
+
             historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
             historyPeriodSpinner.setSelection(0)
@@ -55,6 +61,7 @@ class CurrencyActivity : ExratesActivity() {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val interval = parent?.getItemAtPosition(position) ?: throw NullPointerException("item on position $position not found")
                     model.getPriceHistory(currName, defExchName, interval as String)
+
                 }
             }
 
@@ -78,8 +85,6 @@ class CurrencyActivity : ExratesActivity() {
 
             }
 
-            model.getActualPair(currName)
-
         }catch (e: Exception){
             e.printStackTrace()
         }
@@ -94,15 +99,22 @@ class CurrencyActivity : ExratesActivity() {
         adapter.pairsByExchanges.clear()
         adapter.pairsByExchanges.addAll(list)
         adapter.notifyDataSetChanged()
-        updateGraph(list[0].priceHistory) //todo null?
+        val pair = list.find { it.exchangeName == (app.currentExchangeName } //todo
+        updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in updatePairData"))
         val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
-        historyAdapter.addAll(app.currentExchange?.historyPeriods ?: )//todo
+        historyAdapter.clear()
+        historyAdapter.addAll(app.currentExchange?.historyPeriods ?: list[0].historyPeriods!!)//todo not null?
+        historyAdapter.notifyDataSetChanged()
+
     }
 
     fun updateGraph(list: List<Double>){
-        val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
+        val data = mutableListOf<ValueDataEntry>()
+        list.forEach { data.add(ValueDataEntry("1", it)) }
+        anyChartView = GraphFactory(anyChartView).getBigGraph(data)
+        /*val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
         historyAdapter.addAll(list.mapTo(mutableListOf<String>(), {it.toString()}))
-        historyAdapter.notifyDataSetChanged()
+        historyAdapter.notifyDataSetChanged()*/
     }
 
     override fun task() {

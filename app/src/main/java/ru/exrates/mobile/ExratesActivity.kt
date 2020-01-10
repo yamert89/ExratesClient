@@ -18,7 +18,6 @@ abstract class ExratesActivity : AppCompatActivity() {
     protected lateinit var model: Model
     lateinit var progressLayout: ConstraintLayout
 
-
     open fun updateExchangeData(exchange: Exchange) {
         log_d("Exchange data updated...")
     }
@@ -31,11 +30,7 @@ abstract class ExratesActivity : AppCompatActivity() {
         progressLayout.visibility = View.VISIBLE
     }
 
-    protected open suspend fun firstLoadActivity(): Boolean {
-        return true
-    }
-
-    fun currentNameListsIsNull(): Boolean = app.currencyNameslist == null || app.exchangeNamesList == null
+    fun currentNameListsIsNull(): Boolean = app.exchangeNamesList == null
 
     fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
 
@@ -46,12 +41,6 @@ abstract class ExratesActivity : AppCompatActivity() {
             CURRENT_EXCHANGE to app.currentExchange!!.name,
             CURRENT_PAIR to app.currentPairInfo!![0].symbol
         )
-       /* save(
-            MapEntry(CURRENT_EXCHANGE, app.currentExchange!!),
-            MapEntry(CURRENT_PAIR_INFO, app.currentPairInfo!!),
-            MapEntry(CURRENT_PAIR, app.currentPairInfo!!.iterator().next())
-        )*/
-
     }
 
     fun save(vararg args : Pair<String, Any>){
@@ -60,7 +49,6 @@ abstract class ExratesActivity : AppCompatActivity() {
     }
 
     fun toast(message: String) = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,9 +69,7 @@ abstract class ExratesActivity : AppCompatActivity() {
         }, 15000L, 180000L) //todo period
     }
 
-
     protected abstract fun task()
-
 
     override fun onPause() {
         super.onPause()

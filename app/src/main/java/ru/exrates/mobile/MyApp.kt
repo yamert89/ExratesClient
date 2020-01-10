@@ -14,8 +14,10 @@ import ru.exrates.mobile.logic.rest.RestService
 class MyApp(): Application(){
     var currentExchange: Exchange? = null
     var currentPairInfo: MutableList<CurrencyPair>? = null
-    var currencyNameslist: List<String>? = null
-    var exchangeNamesList: List<String>? = null
+    var currentExchangeName: String? = null
+    var currentPairName: String? = null
+    //var currencyNameslist: List<String>? = null
+    var exchangeNamesList: Map<String, List<String>>? = null
     var currentInterval: String = "1h"
     var restService: RestService
     //val ip = "192.168.0.102"
