@@ -20,6 +20,10 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
+import java.time.Duration
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class MainActivity : ExratesActivity() {
 //fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
@@ -102,12 +106,7 @@ class MainActivity : ExratesActivity() {
             }
 
             //val cartesian = AnyChart.line()
-           anyChartView = GraphFactory(anyChartView).getSmallGraph(listOf(
-               ValueDataEntry("12", 5.6),
-               ValueDataEntry("13", 6.3),
-               ValueDataEntry("14", 2.5),
-               ValueDataEntry("15", 6.6)
-           ))
+
 
             startProgress()
 
@@ -134,6 +133,36 @@ class MainActivity : ExratesActivity() {
         var count = 0.0
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
+        val cur = list.find { it.exchangeName == app.currentExchangeName }!!
+        var dateInterval = Duration.ZERO
+        var pattern = "HH:mm"
+        var xLabel = "hours"
+        when(app.currentInterval.last()){
+            'm' -> dateInterval = Duration.ofMinutes(1)
+            'h' -> {
+                dateInterval = Duration.ofHours(1)
+            }
+            'w' -> {
+                dateInterval = Duration.ofDays(7)
+                pattern = "dd"
+                xLabel = "days"
+            }
+            'M' -> {
+                dateInterval = Duration.ofDays(30)
+                pattern = "MMMM"
+                xLabel = "months"
+            }
+        }
+
+        var now = ZonedDateTime.now(ZoneId.systemDefault())
+
+        val dataList = ArrayList<ValueDataEntry>()
+        for (element in cur.priceHistory){
+            now = now.minus(dateInterval)
+            dataList.add(0, ValueDataEntry(now.format(DateTimeFormatter.ofPattern(pattern))  , element))
+        }
+
+        anyChartView = GraphFactory(anyChartView).getSmallGraph(dataList, xLabel)
     }
 
     override fun task() {

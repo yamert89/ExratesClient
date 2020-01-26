@@ -14,15 +14,15 @@ import ru.exrates.mobile.logic.rest.RestService
 class MyApp(): Application(){
     var currentExchange: Exchange? = null
     var currentPairInfo: MutableList<CurrencyPair>? = null
-    var currentExchangeName: String? = null
-    var currentPairName: String? = null
+    var currentExchangeName: String = "binanceExchange"
+    var currentPairName: String = "ETCBTC"
     //var currencyNameslist: List<String>? = null
     var exchangeNamesList: Map<String, List<String>>? = null
     var currentInterval: String = "1h"
     var restService: RestService
-    //val ip = "192.168.0.102"
+    val ip = "192.168.0.102"
     // val ip = "192.168.43.114"
-    val ip = "192.168.1.72"
+    //val ip = "192.168.1.72"
     init {
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()

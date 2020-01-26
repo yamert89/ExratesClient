@@ -99,7 +99,7 @@ class CurrencyActivity : ExratesActivity() {
         adapter.pairsByExchanges.clear()
         adapter.pairsByExchanges.addAll(list)
         adapter.notifyDataSetChanged()
-        val pair = list.find { it.exchangeName == (app.currentExchangeName } //todo
+        val pair = list.find { it.exchangeName == (app.currentExchangeName) } //todo
         updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in updatePairData"))
         val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
         historyAdapter.clear()

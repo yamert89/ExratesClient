@@ -15,7 +15,7 @@ import com.anychart.enums.TooltipPositionMode
 class GraphFactory(private val anyChartView: AnyChartView) {
     private val seriesData: MutableList<DataEntry> = ArrayList()
 
-    fun getSmallGraph(seriesDataCollection: Collection<ValueDataEntry>): AnyChartView{
+    fun getSmallGraph(seriesDataCollection: Collection<ValueDataEntry>, xLabel: String): AnyChartView{
         val cartesian: Cartesian = AnyChart.line()
 
         cartesian.animation(true)
@@ -32,7 +32,7 @@ class GraphFactory(private val anyChartView: AnyChartView) {
         //cartesian.title("Trend of Sales of the Most Popular Products of ACME Corp.")
 
         //cartesian.yAxis(0).title("Number of Bottles Sold (thousands)")
-        cartesian.xAxis(0).title("january")
+        cartesian.xAxis(0).title(xLabel)
         cartesian.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
 
         seriesData.addAll(seriesDataCollection)
