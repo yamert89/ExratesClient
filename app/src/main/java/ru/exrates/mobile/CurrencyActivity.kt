@@ -106,6 +106,10 @@ class CurrencyActivity : ExratesActivity() {
         historyAdapter.addAll(app.currentExchange?.historyPeriods ?: list[0].historyPeriods!!)//todo not null?
         historyAdapter.notifyDataSetChanged()
 
+        val cur = list.find { it.exchangeName == app.currentExchangeName }!!
+        val(xLabel, dataList) = createChartValueDataList(cur)
+        anyChartView = GraphFactory(anyChartView).getBigGraph(dataList)
+
     }
 
     fun updateGraph(list: List<Double>){

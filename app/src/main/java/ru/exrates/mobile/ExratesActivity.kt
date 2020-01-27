@@ -5,11 +5,17 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.anychart.chart.common.dataentry.ValueDataEntry
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import java.time.Duration
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 
 abstract class ExratesActivity : AppCompatActivity() {
     protected lateinit var app: MyApp
@@ -50,6 +56,37 @@ abstract class ExratesActivity : AppCompatActivity() {
 
     fun toast(message: String) = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
 
+    fun createChartValueDataList(currency: CurrencyPair): ValueDataList{
+        var dateInterval = Duration.ZERO
+        var pattern = "HH:mm"
+        var xLabel = "hours"
+        when(app.currentInterval.last()){
+            'm' -> dateInterval = Duration.ofMinutes(1)
+            'h' -> {
+                dateInterval = Duration.ofHours(1)
+            }
+            'w' -> {
+                dateInterval = Duration.ofDays(7)
+                pattern = "dd"
+                xLabel = "days"
+            }
+            'M' -> {
+                dateInterval = Duration.ofDays(30)
+                pattern = "MMMM"
+                xLabel = "months"
+            }
+        }
+
+        var now = ZonedDateTime.now(ZoneId.systemDefault())
+        val dataList = ArrayList<ValueDataEntry>()
+        for (element in currency.priceHistory){
+            now = now.minus(dateInterval)
+            dataList.add(0, ValueDataEntry(now.format(DateTimeFormatter.ofPattern(pattern))  , element))
+        }
+        return ValueDataList(xLabel, dataList)
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -89,6 +126,8 @@ abstract class ExratesActivity : AppCompatActivity() {
         saveState()
         timer.cancel()
     }
+
+    data class ValueDataList(val xLabel: String, val dataList: ArrayList<ValueDataEntry>)
 
 
 

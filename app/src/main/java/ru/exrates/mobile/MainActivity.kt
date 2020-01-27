@@ -134,34 +134,7 @@ class MainActivity : ExratesActivity() {
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
-        var dateInterval = Duration.ZERO
-        var pattern = "HH:mm"
-        var xLabel = "hours"
-        when(app.currentInterval.last()){
-            'm' -> dateInterval = Duration.ofMinutes(1)
-            'h' -> {
-                dateInterval = Duration.ofHours(1)
-            }
-            'w' -> {
-                dateInterval = Duration.ofDays(7)
-                pattern = "dd"
-                xLabel = "days"
-            }
-            'M' -> {
-                dateInterval = Duration.ofDays(30)
-                pattern = "MMMM"
-                xLabel = "months"
-            }
-        }
-
-        var now = ZonedDateTime.now(ZoneId.systemDefault())
-
-        val dataList = ArrayList<ValueDataEntry>()
-        for (element in cur.priceHistory){
-            now = now.minus(dateInterval)
-            dataList.add(0, ValueDataEntry(now.format(DateTimeFormatter.ofPattern(pattern))  , element))
-        }
-
+        val(xLabel, dataList) = createChartValueDataList(cur)
         anyChartView = GraphFactory(anyChartView).getSmallGraph(dataList, xLabel)
     }
 
