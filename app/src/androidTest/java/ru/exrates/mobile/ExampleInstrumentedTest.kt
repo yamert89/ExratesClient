@@ -24,7 +24,6 @@ import ru.exrates.mobile.logic.rest.RestService
 import java.io.*
 import java.time.Duration
 import java.util.*
-import java.util.concurrent.ArrayBlockingQueue
 import kotlin.collections.HashMap
 
 
@@ -72,7 +71,7 @@ class ExampleInstrumentedTest {
                 )
             ),
             listOf("1s", "1h"),
-            emptyArray()
+            emptyList()
         )
         map["q"] = ex1
 
