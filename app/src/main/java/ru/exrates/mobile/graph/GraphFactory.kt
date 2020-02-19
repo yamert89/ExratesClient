@@ -74,7 +74,7 @@ class GraphFactory(private val anyChartView: AnyChartView) {
         return anyChartView
     }
 
-    fun getBigGraph(seriesDataCollection: Collection<ValueDataEntry>): AnyChartView {
+    fun getBigGraph(seriesDataCollection: Collection<ValueDataEntry>): Cartesian {
         val cartesian: Cartesian = AnyChart.line()
 
         cartesian.animation(true)
@@ -129,8 +129,8 @@ class GraphFactory(private val anyChartView: AnyChartView) {
         cartesian.legend().fontSize(13.0)
         cartesian.legend().padding(0.0, 0.0, 10.0, 0.0)
 
-        anyChartView.setChart(cartesian)
-        return anyChartView
+        //anyChartView.setChart(cartesian)
+        return cartesian
     }
 
 }

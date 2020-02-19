@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.ValueDataEntry
+import com.anychart.data.Set
 import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -23,6 +24,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var exchangesAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var historyPeriodSpinner: Spinner
+    private val set = Set.instantiate()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,8 +61,9 @@ class CurrencyActivity : ExratesActivity() {
                 override fun onNothingSelected(parent: AdapterView<*>?){}
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val interval = parent?.getItemAtPosition(position) ?: throw NullPointerException("item on position $position not found")
-                    model.getPriceHistory(currName, defExchName, interval as String)
+                    val interval = parent?.getItemAtPosition(position) as String
+                    app.currentInterval = interval
+                    model.getPriceHistory(currName, defExchName, interval)
 
                 }
             }
@@ -100,22 +103,28 @@ class CurrencyActivity : ExratesActivity() {
         adapter.pairsByExchanges.addAll(list)
         adapter.notifyDataSetChanged()
         val pair = list.find { it.exchangeName == (app.currentExchangeName) } //todo
-        updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in updatePairData"))
+        //updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in updatePairData"))
         val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
         historyAdapter.clear()
         historyAdapter.addAll(app.currentExchange?.historyPeriods ?: list[0].historyPeriods!!)//todo not null?
         historyAdapter.notifyDataSetChanged()
 
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
-        val(xLabel, dataList) = createChartValueDataList(cur)
-        anyChartView = GraphFactory(anyChartView).getBigGraph(dataList)
+        val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
+        anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
+        //set.data(dataList as List<ValueDataEntry>)
+        log_d("updating graph from pairData with ${cur.priceHistory.joinToString()}")
 
     }
 
     fun updateGraph(list: List<Double>){
-        val data = mutableListOf<ValueDataEntry>()
-        list.forEach { data.add(ValueDataEntry("1", it)) }
-        anyChartView = GraphFactory(anyChartView).getBigGraph(data)
+        //val data = mutableListOf<ValueDataEntry>()
+        val(xLabel, dataList) = createChartValueDataList(list)
+
+        //list.forEach { data.add(ValueDataEntry("1", it)) }
+        log_d("updating graph with ${list.joinToString()}")
+        //set.data(dataList as List<ValueDataEntry>)
+        anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
         /*val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
         historyAdapter.addAll(list.mapTo(mutableListOf<String>(), {it.toString()}))
         historyAdapter.notifyDataSetChanged()*/

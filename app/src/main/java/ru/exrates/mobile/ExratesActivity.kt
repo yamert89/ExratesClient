@@ -56,7 +56,8 @@ abstract class ExratesActivity : AppCompatActivity() {
 
     fun toast(message: String) = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
 
-    fun createChartValueDataList(currency: CurrencyPair): ValueDataList{
+    fun createChartValueDataList(priceHistory: List<Double>): ValueDataList{
+        log_d("current interval = ${app.currentInterval}")
         var dateInterval = Duration.ZERO
         var pattern = "HH:mm"
         var xLabel = "hours"
@@ -64,6 +65,11 @@ abstract class ExratesActivity : AppCompatActivity() {
             'm' -> dateInterval = Duration.ofMinutes(1)
             'h' -> {
                 dateInterval = Duration.ofHours(1)
+            }
+            'd' -> {
+                dateInterval = Duration.ofDays(1)
+                pattern = "dd"
+                xLabel = "days"
             }
             'w' -> {
                 dateInterval = Duration.ofDays(7)
@@ -79,7 +85,7 @@ abstract class ExratesActivity : AppCompatActivity() {
 
         var now = ZonedDateTime.now(ZoneId.systemDefault())
         val dataList = ArrayList<ValueDataEntry>()
-        for (element in currency.priceHistory){
+        for (element in priceHistory){
             now = now.minus(dateInterval)
             dataList.add(0, ValueDataEntry(now.format(DateTimeFormatter.ofPattern(pattern))  , element))
         }

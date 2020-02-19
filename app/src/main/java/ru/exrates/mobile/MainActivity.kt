@@ -134,7 +134,7 @@ class MainActivity : ExratesActivity() {
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
-        val(xLabel, dataList) = createChartValueDataList(cur)
+        val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         anyChartView = GraphFactory(anyChartView).getSmallGraph(dataList, xLabel)
     }
 
