@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.anychart.chart.common.dataentry.ValueDataEntry
+import lecho.lib.hellocharts.model.PointValue
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -56,7 +57,7 @@ abstract class ExratesActivity : AppCompatActivity() {
 
     fun toast(message: String) = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
 
-    fun createChartValueDataList(priceHistory: List<Double>): ValueDataList{
+    fun createChartValueDataList(priceHistory: List<Double>): List<PointValue>{
         log_d("current interval = ${app.currentInterval}")
         var dateInterval = Duration.ZERO
         var pattern = "HH:mm"
@@ -84,12 +85,13 @@ abstract class ExratesActivity : AppCompatActivity() {
         }
 
         var now = ZonedDateTime.now(ZoneId.systemDefault())
-        val dataList = ArrayList<ValueDataEntry>()
+        val dataList = ArrayList<PointValue>()
         for (element in priceHistory){
             now = now.minus(dateInterval)
-            dataList.add(0, ValueDataEntry(now.format(DateTimeFormatter.ofPattern(pattern))  , element))
+            dataList.add(0, PointValue(now.toEpochSecond().toFloat(), element.toFloat()))
+            //dataList.add(0, ValueDataEntry(now.format(DateTimeFormatter.ofPattern(pattern))  , element))
         }
-        return ValueDataList(xLabel, dataList)
+        return dataList
 
     }
 

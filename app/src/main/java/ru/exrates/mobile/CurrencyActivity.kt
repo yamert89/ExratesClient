@@ -1,13 +1,21 @@
 package ru.exrates.mobile
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anychart.AnyChartView
+import lecho.lib.hellocharts.model.Axis
+/*import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.ValueDataEntry
-import com.anychart.data.Set
+import com.anychart.core.Chart
+import com.anychart.data.Set*/
+import lecho.lib.hellocharts.model.Line
+import lecho.lib.hellocharts.model.LineChartData
+import lecho.lib.hellocharts.model.Viewport
+import lecho.lib.hellocharts.view.Chart
+import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -17,14 +25,14 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyName: TextView
     private lateinit var currencyInterval: Button
     private lateinit var currencyIntervalValue: TextView
-    private lateinit var anyChartView: AnyChartView
+    private lateinit var anyChartView: LineChartView
     private var currentInterval = "1h"
     private lateinit var currencyExchange: TextView
     private lateinit var currencyExchanges: RecyclerView
     private lateinit var exchangesAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var historyPeriodSpinner: Spinner
-    private val set = Set.instantiate()
+    //private val set = Set.instantiate()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,8 +118,36 @@ class CurrencyActivity : ExratesActivity() {
         historyAdapter.notifyDataSetChanged()
 
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
-        val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
-        anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
+        val dataList = createChartValueDataList(cur.priceHistory)
+        val line = Line(dataList).setColor(Color.RED).setCubic(true)
+        line.setHasPoints(false)
+        line.isSquare = true
+        val lineChartData = LineChartData(mutableListOf(line))
+        lineChartData.isValueLabelBackgroundEnabled = true
+        lineChartData.axisYLeft = Axis.generateAxisFromCollection(listOf(cur.priceHistory.first().toFloat(), cur.priceHistory.last().toFloat()), listOf(cur.priceHistory.first().toString(), cur.priceHistory.last().toString()))
+        lineChartData.axisXBottom = Axis.generateAxisFromCollection(dataList.map { it.x })
+
+        lineChartData.axisYLeft.name = "Price"
+        lineChartData.axisXBottom.name = "dates"
+        lineChartData.axisYLeft.maxLabelChars = 5
+        lineChartData.axisYLeft.textSize = 10
+
+
+        val v = Viewport(anyChartView.maximumViewport)
+        v.bottom = 0f
+        v.top = 100f
+        v.left = 0f
+        v.right = 9f
+        anyChartView.maximumViewport = v
+        anyChartView.currentViewport = v
+
+
+
+
+        anyChartView.lineChartData = lineChartData
+        anyChartView.contentDescription = "dfdf"
+
+       // anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
         //set.data(dataList as List<ValueDataEntry>)
         log_d("updating graph from pairData with ${cur.priceHistory.joinToString()}")
 
@@ -119,12 +155,33 @@ class CurrencyActivity : ExratesActivity() {
 
     fun updateGraph(list: List<Double>){
         //val data = mutableListOf<ValueDataEntry>()
-        val(xLabel, dataList) = createChartValueDataList(list)
+        val dataList = createChartValueDataList(list)
+        val line = Line(dataList).setColor(Color.RED).setCubic(true)
+        line.setHasPoints(false)
+        line.isSquare = true
+        val lineChartData = LineChartData(mutableListOf(line))
+        lineChartData.axisYLeft = Axis.generateAxisFromCollection(listOf(list.first().toFloat(), list.last().toFloat()), listOf(list.first().toString(), list.last().toString()))
+        lineChartData.axisXBottom = Axis.generateAxisFromCollection(dataList.map { it.x })
+        lineChartData.axisYLeft.name = "Price"
+        lineChartData.axisXBottom.name = "dates"
+        lineChartData.axisYLeft.textSize = 10
+        lineChartData.axisYLeft.maxLabelChars = 5
+        val v = Viewport(anyChartView.maximumViewport)
+        v.bottom = 0f
+        v.top = 100f
+        v.left = 400f
+        v.right = 100f
+        anyChartView.maximumViewport = v
+        anyChartView.currentViewport = v
+
+        anyChartView.lineChartData = lineChartData
+
 
         //list.forEach { data.add(ValueDataEntry("1", it)) }
         log_d("updating graph with ${list.joinToString()}")
+
         //set.data(dataList as List<ValueDataEntry>)
-        anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
+        //anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
         /*val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
         historyAdapter.addAll(list.mapTo(mutableListOf<String>(), {it.toString()}))
         historyAdapter.notifyDataSetChanged()*/
