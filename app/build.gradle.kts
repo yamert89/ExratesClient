@@ -54,7 +54,7 @@ dependencies() {
     implementation("com.squareup.okhttp3:logging-interceptor:4.2.1")
     implementation("com.google.android.material:material:1.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
-    implementation("com.github.AnyChart:AnyChart-Android:1.1.2")
+    //implementation("com.github.AnyChart:AnyChart-Android:1.1.2")
     compile("com.github.lecho:hellocharts-library:1.5.8@aar")
     //compile("com.github.lecho:hellocharts-android:v1.5.8")
 

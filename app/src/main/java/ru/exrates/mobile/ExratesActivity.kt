@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.anychart.chart.common.dataentry.ValueDataEntry
 import lecho.lib.hellocharts.model.PointValue
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
@@ -15,6 +14,7 @@ import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -57,7 +57,7 @@ abstract class ExratesActivity : AppCompatActivity() {
 
     fun toast(message: String) = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
 
-    fun createChartValueDataList(priceHistory: List<Double>): List<PointValue>{
+    fun createChartValueDataList(priceHistory: List<Double>): ValueDataList{
         log_d("current interval = ${app.currentInterval}")
         var dateInterval = Duration.ZERO
         var pattern = "HH:mm"
@@ -85,13 +85,50 @@ abstract class ExratesActivity : AppCompatActivity() {
         }
 
         var now = ZonedDateTime.now(ZoneId.systemDefault())
+        //var forLabel = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())
+
+        var start = ZonedDateTime.now(ZoneId.systemDefault())
         val dataList = ArrayList<PointValue>()
+        val labelList = ArrayList<String>()
+        val labelValueList = ArrayList<Float>()
         for (element in priceHistory){
             now = now.minus(dateInterval)
-            dataList.add(0, PointValue(now.toEpochSecond().toFloat(), element.toFloat()))
-            //dataList.add(0, ValueDataEntry(now.format(DateTimeFormatter.ofPattern(pattern))  , element))
+            //dataList.add(0, PointValue(now.toEpochSecond().toFloat(), element.toFloat()))
+            val y = now.toEpochSecond().toFloat()
+            dataList.add(0, PointValue(y, element.toFloat()))
+            //labelList.add(now.format(DateTimeFormatter.ofPattern(pattern)))
         }
-        return dataList
+
+        val numberOfDateIntervals = 30 //todo
+        var count = 6 //6 - empiric needs 5min
+        var interval = 30 / 6  //= 5
+
+        val duration = Duration.between(now, start)
+        val seconds = duration.seconds
+        when {
+            seconds < 3600 -> {
+                interval = 10
+                start = ZonedDateTime.of(start.year, start.monthValue, start.dayOfMonth, start.hour + 1, 0, 0, 0, ZoneId.systemDefault())
+            }
+            seconds < 86400 -> {
+                interval = 1
+                start = ZonedDateTime.of(start.year, start.monthValue, start.dayOfMonth, 0, 0, 0, 0, ZoneId.systemDefault())
+            }
+            else -> {
+                interval = 1
+            }
+        }
+
+        while(start > now){
+            start -= Duration.of(interval.toLong(), ChronoUnit.MINUTES)
+            labelList.add(start.format(DateTimeFormatter.ofPattern(pattern)))
+            labelValueList.add(start.toEpochSecond().toFloat())
+        }
+        log_d("labels size: ${labelList.size}  l. values size: ${labelValueList.size}")
+        log_d("labels: ${labelList.joinToString()}")
+        log_d("label values: ${labelValueList.joinToString()}")
+
+        return ValueDataList(dataList, labelList, labelValueList, xLabel)
 
     }
 
@@ -135,7 +172,12 @@ abstract class ExratesActivity : AppCompatActivity() {
         timer.cancel()
     }
 
-    data class ValueDataList(val xLabel: String, val dataList: ArrayList<ValueDataEntry>)
+    data class ValueDataList(
+        val values: List<PointValue>,
+        val xLabels: List<String>,
+        val xAxisLabelValues: List<Float>,
+        val xAxisLabel: String,
+        val yLabels: List<String> = emptyList())
 
 
 
