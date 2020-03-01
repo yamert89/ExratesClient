@@ -108,8 +108,8 @@ class CurrencyActivity : ExratesActivity() {
         historyAdapter.notifyDataSetChanged()
 
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
-        val valueDataList = createChartValueDataList(cur.priceHistory)
-        GraphFactory(anyChartView).createBigGraph(valueDataList)
+
+        GraphFactory(anyChartView, app.currentInterval).createBigGraph(cur.priceHistory)
        // anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
         //set.data(dataList as List<ValueDataEntry>)
         log_d("updating graph from pairData with ${cur.priceHistory.joinToString()}")
@@ -118,8 +118,7 @@ class CurrencyActivity : ExratesActivity() {
 
     fun updateGraph(list: List<Double>){
         //val data = mutableListOf<ValueDataEntry>()
-        val dataList = createChartValueDataList(list)
-        GraphFactory(anyChartView).createBigGraph(dataList)
+        GraphFactory(anyChartView, app.currentInterval).createBigGraph(list)
 
 
         //list.forEach { data.add(ValueDataEntry("1", it)) }
