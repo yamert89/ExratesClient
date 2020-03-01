@@ -17,17 +17,28 @@ import java.time.temporal.ChronoUnit
 class GraphFactory(private val anyChartView: LineChartView, val currentInterval: String) {
 
 
-    fun createSmallGraph(){
-
-
+    fun createSmallGraph(priceHistory: List<Double>){
+        val valueDataList = createChartValueDataList(priceHistory)
+        val line = Line(valueDataList.values).setColor(Color.RED).setCubic(true)
+        //line.isSquare = false
+        line.strokeWidth = 1
+        line.setHasPoints(false)
+        //line.isSquare = true
+        line.isFilled = true
+        createGraph(valueDataList, line)
     }
 
     fun createBigGraph(priceHistory: List<Double>) {
         val valueDataList = createChartValueDataList(priceHistory)
         val line = Line(valueDataList.values).setColor(Color.RED).setCubic(true)
+        line.isSquare = true
+        createGraph(valueDataList, line)
+    }
+
+    private fun createGraph(valueDataList: ValueDataList, line: Line){
+
         log_d(valueDataList.values.joinToString { "x: ${it.x} y: ${it.y}" })
         //line.setHasPoints(false)
-        line.isSquare = true
         val lineChartData = LineChartData(mutableListOf(line))
         lineChartData.isValueLabelBackgroundEnabled = true
         lineChartData.axisYLeft = Axis.generateAxisFromCollection(valueDataList.yAxisLabelValues, valueDataList.yLabels)
@@ -39,7 +50,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
         lineChartData.axisYLeft.maxLabelChars = 10
         lineChartData.axisYLeft.textSize = 10
 
-       /* val v = Viewport(*//*anyChartView.maximumViewport*//*)
+        /* val v = Viewport(*//*anyChartView.maximumViewport*//*)
         *//*v.bottom = 0f
         v.top = 200f
         v.left = 100f
@@ -48,11 +59,11 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
         anyChartView.currentViewport = v*/
 
         anyChartView.lineChartData = lineChartData
-        anyChartView.contentDescription = "dfdf"
+        //anyChartView.contentDescription = "dfdf"
     }
 
     private fun createChartValueDataList(priceHistory: List<Double>): ValueDataList {
-        log_d("current interval = ${currentInterval}")
+        log_d("current interval = $currentInterval")
         var dateInterval = Duration.ZERO
         var pattern = "HH:mm"
         var xLabel = "time"
@@ -110,7 +121,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             labelList.add(start.format(DateTimeFormatter.ofPattern(pattern)))
             labelValueList.add(start.toEpochSecond().toFloat())
         }
-        val maxYL = priceHistory.max()!!.toFloat()
+        val maxYL = priceHistory.max()!!.toFloat() //todo round values
         val minYL = priceHistory.min()!!.toFloat()
         val midYL = maxYL.minus((maxYL.minus(minYL)) / 2)
 

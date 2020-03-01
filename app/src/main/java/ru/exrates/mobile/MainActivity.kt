@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
+import lecho.lib.hellocharts.view.LineChartView
+import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -24,7 +26,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
     private lateinit var currenciesRecyclerView: RecyclerView
-    //private lateinit var anyChartView: AnyChartView
+    private lateinit var anyChartView: LineChartView
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var pairsAdapter: PairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
@@ -45,7 +47,7 @@ class MainActivity : ExratesActivity() {
             currencyPrice = findViewById(R.id.main_cur_price)
             exchangeName = findViewById(R.id.main_exch_spinner)
             progressLayout = findViewById(R.id.progressLayout)
-            //anyChartView = findViewById(R.id.anyChartView)
+            anyChartView = findViewById(R.id.anyChartView)
 
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
@@ -128,7 +130,7 @@ class MainActivity : ExratesActivity() {
         currencyPrice.text = (count / list.size).toNumeric()
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
-        //anyChartView = GraphFactory(anyChartView).getSmallGraph(dataList, xLabel) todo uncomment
+        GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory)
     }
 
     override fun task() {
