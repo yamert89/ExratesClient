@@ -62,24 +62,32 @@ abstract class ExratesActivity : AppCompatActivity() {
         var dateInterval = Duration.ZERO
         var pattern = "HH:mm"
         var xLabel = "hours"
-        when(app.currentInterval.last()){
-            'm' -> dateInterval = Duration.ofMinutes(1)
-            'h' -> {
-                dateInterval = Duration.ofHours(1)
+        val regExp = "(\\d{1,2})(\\D)".toRegex()
+        val groups = regExp.find(app.currentInterval)?.groups ?: throw NullPointerException("Regexp is null")
+        val numToken = groups[1]!!.value.toLong()
+        var offsetTimeUnit = ChronoUnit.MINUTES
+        var numberOfDateIntervals = 5
+
+        when(groups[2]!!.value){
+            "m" -> dateInterval = Duration.ofMinutes(numToken)
+            "h" -> {
+                dateInterval = Duration.ofHours(numToken)
+                offsetTimeUnit = ChronoUnit.HOURS
+                if(numToken == 12L) numberOfDateIntervals = 10
             }
-            'd' -> {
-                dateInterval = Duration.ofDays(1)
+            "d" -> {
+                dateInterval = Duration.ofDays(numToken)
                 pattern = "dd"
-                xLabel = "days"
+                xLabel = "dates"
             }
-            'w' -> {
+            "w" -> {
                 dateInterval = Duration.ofDays(7)
                 pattern = "dd"
-                xLabel = "days"
+                xLabel = "dates"
             }
-            'M' -> {
+            "M" -> {
                 dateInterval = Duration.ofDays(30)
-                pattern = "MMMM"
+                pattern = "LLL"
                 xLabel = "months"
             }
         }
@@ -88,6 +96,8 @@ abstract class ExratesActivity : AppCompatActivity() {
         //var forLabel = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())
 
         var start = ZonedDateTime.now(ZoneId.systemDefault())
+        start.withMinute(0)
+        start = start.withMinute(start.minute - start.minute % 5)
         val dataList = ArrayList<PointValue>()
         val labelList = ArrayList<String>()
         val labelValueList = ArrayList<Float>()
@@ -99,28 +109,17 @@ abstract class ExratesActivity : AppCompatActivity() {
             //labelList.add(now.format(DateTimeFormatter.ofPattern(pattern)))
         }
 
-        val numberOfDateIntervals = 30 //todo
+
         var count = 6 //6 - empiric needs 5min
-        var interval = 30 / 6  //= 5
+
 
         val duration = Duration.between(now, start)
         val seconds = duration.seconds
-        when {
-            seconds < 3600 -> {
-                interval = 10
-                start = ZonedDateTime.of(start.year, start.monthValue, start.dayOfMonth, start.hour + 1, 0, 0, 0, ZoneId.systemDefault())
-            }
-            seconds < 86400 -> {
-                interval = 1
-                start = ZonedDateTime.of(start.year, start.monthValue, start.dayOfMonth, 0, 0, 0, 0, ZoneId.systemDefault())
-            }
-            else -> {
-                interval = 1
-            }
-        }
+        val interval = Duration.of(seconds / numberOfDateIntervals, ChronoUnit.SECONDS)
 
         while(start > now){
-            start -= Duration.of(interval.toLong(), ChronoUnit.MINUTES)
+            start = start.truncatedTo(offsetTimeUnit)
+            start -= interval
             labelList.add(start.format(DateTimeFormatter.ofPattern(pattern)))
             labelValueList.add(start.toEpochSecond().toFloat())
         }
