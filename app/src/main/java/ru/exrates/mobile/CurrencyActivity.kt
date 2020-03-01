@@ -22,7 +22,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var exchangesAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var historyPeriodSpinner: Spinner
-    //private val set = Set.instantiate()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

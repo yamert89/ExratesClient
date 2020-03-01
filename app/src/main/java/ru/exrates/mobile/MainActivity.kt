@@ -83,7 +83,8 @@ class MainActivity : ExratesActivity() {
 
             }
 
-            currencyName.setSelection(0, true)
+            currencyName.setSelection(0, false)
+
 
             currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -194,7 +195,7 @@ class MainActivity : ExratesActivity() {
         if (curNames == null) return
         log_d( "curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
-        currencyName.setSelection(storage.getValue(SAVED_CUR_IDX, 0))
+        currencyName.setSelection(storage.getValue(SAVED_CUR_IDX, 0)) //TODO BAG unexpected intent to cur activity
     }
 
     override fun startProgress(){
