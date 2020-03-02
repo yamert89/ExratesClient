@@ -3,10 +3,7 @@ package ru.exrates.mobile
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -25,6 +22,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
+    private lateinit var goToCurBtn: ImageButton
     private lateinit var currenciesRecyclerView: RecyclerView
     private lateinit var anyChartView: LineChartView
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -48,6 +46,7 @@ class MainActivity : ExratesActivity() {
             exchangeName = findViewById(R.id.main_exch_spinner)
             progressLayout = findViewById(R.id.progressLayout)
             anyChartView = findViewById(R.id.anyChartView)
+            goToCurBtn = findViewById(R.id.go_to_currency)
 
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
@@ -85,20 +84,26 @@ class MainActivity : ExratesActivity() {
 
             currencyName.setSelection(0, false)
 
-
             currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    if (curIdx == position) return
+                    curIdx = position
                     val curName = parent?.getItemAtPosition(position)
-                    log_d("item selected pos: $position, name: $curName")
+                    log_d("item selected pos: $position, name: $curName, id: $id")
                     startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                         putExtra(EXTRA_CURRENCY_NAME, curName.toString())
                         putExtra(EXTRA_EXCHANGE_NAME, exchangeName.selectedItem as String)
                     })
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
 
-                }
+            goToCurBtn.setOnClickListener {
+                startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
+                    putExtra(EXTRA_CURRENCY_NAME, currencyName.getItemAtPosition(curIdx).toString())
+                    putExtra(EXTRA_EXCHANGE_NAME, exchangeName.selectedItem as String)
+                })
             }
 
             //val cartesian = AnyChart.line()
@@ -195,7 +200,7 @@ class MainActivity : ExratesActivity() {
         if (curNames == null) return
         log_d( "curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
-        currencyName.setSelection(storage.getValue(SAVED_CUR_IDX, 0)) //TODO BAG unexpected intent to cur activity
+        currencyName.setSelection(curIdx) //TODO BAG unexpected intent to cur activity
     }
 
     override fun startProgress(){
