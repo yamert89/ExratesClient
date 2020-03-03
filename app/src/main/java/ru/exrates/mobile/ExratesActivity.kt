@@ -30,6 +30,10 @@ abstract class ExratesActivity : AppCompatActivity() {
         progressLayout.visibility = View.VISIBLE
     }
 
+    open fun stopProgress(){
+        progressLayout.visibility = View.INVISIBLE
+    }
+
     fun currentNameListsIsNull(): Boolean = app.exchangeNamesList == null
 
     fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null

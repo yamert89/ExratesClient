@@ -16,6 +16,8 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
+import java.io.FileNotFoundException
+import java.io.InvalidClassException
 
 class MainActivity : ExratesActivity() {
 //fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
@@ -173,13 +175,11 @@ class MainActivity : ExratesActivity() {
     fun initData(lists: Map<String, List<String>>){
         log_d("init data")
         app.exchangeNamesList = lists
-
         GlobalScope.launch {
             save(SAVED_EXCHANGE_NAME_LIST to lists)
             log_d("list saved")
 
         }
-
         log_d("get exchange")
         val defaultExchName = lists.keys.iterator().next()
         model.getActualExchange(ExchangePayload(defaultExchName, app.currentInterval, emptyArray()))
@@ -200,7 +200,7 @@ class MainActivity : ExratesActivity() {
         if (curNames == null) return
         log_d( "curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
-        currencyName.setSelection(curIdx) //TODO BAG unexpected intent to cur activity
+        currencyName.setSelection(curIdx)
     }
 
     override fun startProgress(){
@@ -214,6 +214,12 @@ class MainActivity : ExratesActivity() {
         save(SAVED_EX_IDX to exchangeName.selectedItemPosition,
             SAVED_CUR_IDX to currencyName.selectedItemPosition)
     }
+
+    /*
+    * flag is state indicator
+    * 0 - success first loading
+    * 1 -
+    * */
 
     override fun onResume() {
         super.onResume()
@@ -231,11 +237,21 @@ class MainActivity : ExratesActivity() {
 
                 else {
                     log_d("Saved lists loaded")
-                    app.exchangeNamesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
+                    try{
+                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
+                    }catch (e: FileNotFoundException){
+                        flag = false
+                        stopProgress()
+                        storage.storeValue(IS_FIRST_LOAD, true)
+                        return@launch
+                    }catch (e: InvalidClassException){
+                        log_e("Class model of ex names list deprecated")
+                        flag = firstLoadActivity()
+                    }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val pair = storage.getValue(CURRENT_PAIR, "BTCUSDT") //todo for all activities
-                    val exchange = storage.getValue(CURRENT_EXCHANGE, "binanceExchange")
+                    val pair = storage.getValue(CURRENT_PAIR, "?????") //todo for all activities
+                    val exchange = storage.getValue(CURRENT_EXCHANGE, "??????")
                     app.currentExchangeName = exchange
                     app.currentPairName = pair
                     model.getActualExchange(ExchangePayload(
@@ -252,23 +268,14 @@ class MainActivity : ExratesActivity() {
 
             runBlocking { listsReq.join() }
             if (!flag) {
-                toast("Не удалось подключиться к серверу")
+                toast("Не удалось подключиться к серверу. Проверте интернет подключение и перезапустите приложение")
+
                 return
             }else model.ping()
 
             updateExchangesList(app.exchangeNamesList?.keys)
             updateCurrenciesList(app.exchangeNamesList?.get(app.currentExchangeName))
-
-            /*currencyName.setSelection(
-                curAdapter.getPosition(
-                    cur?.symbol ?: DEFAULT_MAIN_CURRENCY_NAME
-                )
-            )*/
-            //exchangeName.setSelection(exchAdapter.getPosition(exch?.name))
             currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
-
-
-
 
         }catch (e: Exception){e.printStackTrace()}
     }

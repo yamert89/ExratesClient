@@ -121,6 +121,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             labelList.add(start.format(DateTimeFormatter.ofPattern(pattern)))
             labelValueList.add(start.toEpochSecond().toFloat())
         }
+        log_d("price history values: ${if(priceHistory.isEmpty()) "0" else priceHistory.joinToString()}")
         val maxYL = priceHistory.max()!!.toFloat() //todo round values
         val minYL = priceHistory.min()!!.toFloat()
         val midYL = maxYL.minus((maxYL.minus(minYL)) / 2)
