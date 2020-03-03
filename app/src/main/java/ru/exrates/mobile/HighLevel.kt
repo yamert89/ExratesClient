@@ -1,10 +1,8 @@
 package ru.exrates.mobile
 
 import android.util.Log
-import ru.exrates.mobile.logic.entities.CurrencyPair
 import java.text.DecimalFormat
 import java.util.*
-import java.util.concurrent.ArrayBlockingQueue
 
 const val EXRATES = ":EXRATES:"
 const val EXCH_NAME = "exchName"
@@ -31,6 +29,7 @@ const val STORAGE_EXCHANGES = "exchanges"
 const val SAVED_CURRENCY = "savedcurrency"
 
 const val IS_FIRST_LOAD = "firstload"
+const val CURRENCY_HISTORIES_NUMBER = 10
 
 fun log_d(message: String) = Log.d(EXRATES, message)
 

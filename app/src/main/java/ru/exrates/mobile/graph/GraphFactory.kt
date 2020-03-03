@@ -32,6 +32,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
         val valueDataList = createChartValueDataList(priceHistory)
         val line = Line(valueDataList.values).setColor(Color.RED).setCubic(true)
         line.isSquare = true
+        //line.setHasPoints(false)
         createGraph(valueDataList, line)
     }
 
@@ -44,11 +45,15 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
         lineChartData.axisYLeft = Axis.generateAxisFromCollection(valueDataList.yAxisLabelValues, valueDataList.yLabels)
         lineChartData.axisXBottom = Axis.generateAxisFromCollection(valueDataList.xAxisLabelValues, valueDataList.xLabels)
 
+        anyChartView.isValueSelectionEnabled = true
+
+
 
         //lineChartData.axisYLeft.name = "Price"
         lineChartData.axisXBottom.name = valueDataList.xAxisLabel
         lineChartData.axisYLeft.maxLabelChars = 10
         lineChartData.axisYLeft.textSize = 10
+        lineChartData.axisXBottom.textSize = 10
 
         /* val v = Viewport(*//*anyChartView.maximumViewport*//*)
         *//*v.bottom = 0f
@@ -78,12 +83,14 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             "h" -> {
                 dateInterval = Duration.ofHours(numToken)
                 offsetTimeUnit = ChronoUnit.HOURS
-                if(numToken == 12L) numberOfDateIntervals = 10
+                pattern = "ddLLL HH:mm"
+                numberOfDateIntervals = 4
             }
             "d" -> {
                 dateInterval = Duration.ofDays(numToken)
                 pattern = "dd"
                 xLabel = "dates"
+                numberOfDateIntervals = 10
             }
             "w" -> {
                 dateInterval = Duration.ofDays(7)

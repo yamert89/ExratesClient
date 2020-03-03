@@ -15,12 +15,12 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
         app.restService.getExchange(payload).enqueue(callback)
     }
 
-    fun getActualPair(pname: String, historyinterval: String){
-        app.restService.getPair(pname, historyinterval).enqueue(PairCallback(activity))
+    fun getActualPair(pname: String, historyinterval: String, limit: Int){
+        app.restService.getPair(pname, historyinterval, limit).enqueue(PairCallback(activity))
     }
 
-    fun getActualPair(pname: String){
-        app.restService.getPair(pname).enqueue(PairCallback(activity))
+    fun getActualPair(pname: String, limit: Int){
+        app.restService.getPair(pname, limit).enqueue(PairCallback(activity))
     }
 
 
@@ -42,8 +42,8 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
         })
     }
 
-    fun getPriceHistory(pname: String, exchname: String, historyinterval: String){
-        app.restService.getPriceHistory(pname, exchname, historyinterval).enqueue(HistoryCallback(activity))
+    fun getPriceHistory(pname: String, exchname: String, historyinterval: String, limit: Int){
+        app.restService.getPriceHistory(pname, exchname, historyinterval, limit).enqueue(HistoryCallback(activity))
     }
 
 

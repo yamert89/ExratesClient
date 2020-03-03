@@ -50,7 +50,7 @@ class CurrencyActivity : ExratesActivity() {
             val currName: String = intent.getStringExtra(EXTRA_CURRENCY_NAME)!!
             val defExchName = intent.getStringExtra(EXTRA_EXCHANGE_NAME)!!
 
-            model.getActualPair(currName)
+            model.getActualPair(currName, 5)
 
             historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
@@ -61,7 +61,7 @@ class CurrencyActivity : ExratesActivity() {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val interval = parent?.getItemAtPosition(position) as String
                     app.currentInterval = interval
-                    model.getPriceHistory(currName, defExchName, interval)
+                    model.getPriceHistory(currName, defExchName, interval, 5)
 
                 }
             }
@@ -132,7 +132,7 @@ class CurrencyActivity : ExratesActivity() {
     }
 
     override fun task() {
-        model.getActualPair(currencyName.text.toString())
+        model.getActualPair(currencyName.text.toString(), 20)
     }
 
 

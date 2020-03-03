@@ -138,7 +138,7 @@ class MainActivity : ExratesActivity() {
         currencyPrice.text = (count / list.size).toNumeric()
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
-        GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory)
+        GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory.subList(0, 9))
     }
 
     override fun task() {
@@ -152,7 +152,7 @@ class MainActivity : ExratesActivity() {
             app.currentInterval,
             app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
         ))
-        model.getActualPair(app.currentPairInfo!![0].symbol)
+        model.getActualPair(app.currentPairInfo!![0].symbol, "1h", CURRENCY_HISTORIES_NUMBER)
     }
 
     private suspend fun firstLoadActivity(): Boolean{
@@ -183,7 +183,7 @@ class MainActivity : ExratesActivity() {
         log_d("get exchange")
         val defaultExchName = lists.keys.iterator().next()
         model.getActualExchange(ExchangePayload(defaultExchName, app.currentInterval, emptyArray()))
-        model.getActualPair(lists.getValue(defaultExchName)[0])
+        model.getActualPair(lists.getValue(defaultExchName)[0], CURRENCY_HISTORIES_NUMBER)
         updateExchangesList(lists.keys)
         updateCurrenciesList(lists.getValue(defaultExchName))
 
@@ -215,11 +215,6 @@ class MainActivity : ExratesActivity() {
             SAVED_CUR_IDX to currencyName.selectedItemPosition)
     }
 
-    /*
-    * flag is state indicator
-    * 0 - success first loading
-    * 1 -
-    * */
 
     override fun onResume() {
         super.onResume()
@@ -259,7 +254,7 @@ class MainActivity : ExratesActivity() {
                         app.currentInterval,
                         arrayOf(pair))
                     )
-                    model.getActualPair(pair)
+                    model.getActualPair(pair, CURRENCY_HISTORIES_NUMBER)
 
 
                 }
