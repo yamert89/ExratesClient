@@ -83,7 +83,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             "h" -> {
                 dateInterval = Duration.ofHours(numToken)
                 offsetTimeUnit = ChronoUnit.HOURS
-                pattern = "ddLLL HH:mm"
+                pattern = if(numToken == 1L) "HH:mm" else "dd LLL HH:mm"
                 numberOfDateIntervals = 4
             }
             "d" -> {
