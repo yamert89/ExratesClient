@@ -20,7 +20,7 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
     }
 
     fun getActualPair(pname: String, limit: Int){
-        app.restService.getPair(pname, limit).enqueue(PairCallback(activity))
+        app.restService.getPair(pname, truncateLimit(limit)).enqueue(PairCallback(activity))
     }
 
 
@@ -43,7 +43,15 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
     }
 
     fun getPriceHistory(pname: String, exchname: String, historyinterval: String, limit: Int){
-        app.restService.getPriceHistory(pname, exchname, historyinterval, limit).enqueue(HistoryCallback(activity))
+        app.restService.getPriceHistory(pname, exchname, historyinterval, truncateLimit(limit)).enqueue(HistoryCallback(activity))
+    }
+
+    private fun truncateLimit(limit: Int): Int{
+        return when(app.currentInterval.last()){
+            'w' -> 15
+            'M' -> 12
+            else -> limit
+        }
     }
 
 

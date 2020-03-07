@@ -32,7 +32,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
         val valueDataList = createChartValueDataList(priceHistory)
         val line = Line(valueDataList.values).setColor(Color.RED).setCubic(true)
         line.isSquare = true
-        //line.setHasPoints(false)
+        line.setHasPoints(false)
         createGraph(valueDataList, line)
     }
 
@@ -94,7 +94,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             }
             "w" -> {
                 dateInterval = Duration.ofDays(7)
-                pattern = "dd"
+                pattern = "dd LLL"
                 xLabel = "dates"
             }
             "M" -> {
@@ -129,7 +129,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             labelValueList.add(start.toEpochSecond().toFloat())
         }
         log_d("price history values: ${if(priceHistory.isEmpty()) "0" else priceHistory.joinToString()}")
-        val maxYL = priceHistory.max()!!.toFloat() //todo round values
+        val maxYL = priceHistory.max()!!.toFloat() //todo round values todo - offset min and max
         val minYL = priceHistory.min()!!.toFloat()
         val midYL = maxYL.minus((maxYL.minus(minYL)) / 2)
 
