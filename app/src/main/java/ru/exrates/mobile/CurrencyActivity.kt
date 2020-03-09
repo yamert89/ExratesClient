@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
+import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.viewadapters.ExchangesAdapter
 
@@ -16,12 +17,15 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyInterval: Button
     private lateinit var currencyIntervalValue: TextView
     private lateinit var anyChartView: LineChartView
-    private var currentInterval = "1h"
     private lateinit var currencyExchange: TextView
     private lateinit var currencyExchanges: RecyclerView
     private lateinit var exchangesAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var historyPeriodSpinner: Spinner
+    private var currentInterval = "1h" //TODO app.curInt
+    private var currentGraphInterval = "1h" //todo?
+    private var currentGraphIntervalIdx = 0
+        //private var activeExchangeName = "binanceExchange"
 
 
 
@@ -37,6 +41,9 @@ class CurrencyActivity : ExratesActivity() {
             progressLayout = findViewById(R.id.progressLayout)
             historyPeriodSpinner = findViewById(R.id.cur_history_period)
             anyChartView = findViewById(R.id.anyChartView_cur)
+            storage = Storage(applicationContext)
+            currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
+            currentGraphIntervalIdx = storage.getValue(CURRENT_GRAPH_INTERVAL_IDX, 0)
 
             model = Model(app, this)
 
@@ -48,11 +55,12 @@ class CurrencyActivity : ExratesActivity() {
 
 
             val currName: String = intent.getStringExtra(EXTRA_CURRENCY_NAME)!!
-            val defExchName = intent.getStringExtra(EXTRA_EXCHANGE_NAME)!!
+            app.currentExchangeName = intent.getStringExtra(EXTRA_EXCHANGE_NAME)!!
 
-            model.getActualPair(currName, 25)
+            model.getActualPair(currName, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
             historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
+
 
             historyPeriodSpinner.setSelection(0)
             historyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -60,8 +68,9 @@ class CurrencyActivity : ExratesActivity() {
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val interval = parent?.getItemAtPosition(position) as String
-                    app.currentInterval = interval
-                    model.getPriceHistory(currName, defExchName, interval, 25)
+                    currentGraphInterval = interval
+                    currentGraphIntervalIdx = position
+                    model.getPriceHistory(currName, app.currentExchangeName, interval, CURRENCY_HISTORIES_CUR_NUMBER)
 
                 }
             }
@@ -102,10 +111,15 @@ class CurrencyActivity : ExratesActivity() {
         adapter.notifyDataSetChanged()
         val pair = list.find { it.exchangeName == (app.currentExchangeName) } //todo
         //updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in updatePairData"))
-        val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
-        historyAdapter.clear()
-        historyAdapter.addAll(app.currentExchange?.historyPeriods ?: list[0].historyPeriods!!)//todo not null?
-        historyAdapter.notifyDataSetChanged()
+        if (historyPeriodSpinner.adapter.isEmpty) {
+            val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
+            historyAdapter.clear()
+            historyAdapter.addAll(
+                app.currentExchange?.historyPeriods ?: list[0].historyPeriods!!
+            )//todo not null?
+            historyAdapter.notifyDataSetChanged()
+            historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
+        }
 
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
 
@@ -132,7 +146,14 @@ class CurrencyActivity : ExratesActivity() {
     }
 
     override fun task() {
-        model.getActualPair(currencyName.text.toString(), 25)
+        model.getActualPair(currencyName.text.toString(), currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
+    }
+
+    override fun saveState() {
+        super.saveState()
+        storage.storeValue(CURRENT_GRAPH_INTERVAL, currentGraphInterval)
+        storage.storeValue(CURRENT_GRAPH_INTERVAL_IDX, currentGraphIntervalIdx)
+
     }
 
 

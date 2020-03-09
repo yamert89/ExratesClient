@@ -20,6 +20,8 @@ const val DEFAULT_MAIN_CURRENCY_NAME = "DMCN"
 const val DEFAULT_MAIN_EXCHANGE_NAME = "DMEN"
 
 const val CURRENT_INTERVAL = "curIntrvl"
+const val CURRENT_GRAPH_INTERVAL = "CGI"
+const val CURRENT_GRAPH_INTERVAL_IDX = "CGIidx"
 const val CURRENT_EXCHANGE = "CUREXCH"
 const val CURRENT_PAIR_INFO = "CURPINFO"
 const val CURRENT_PAIR = "CURPair"
@@ -29,7 +31,8 @@ const val STORAGE_EXCHANGES = "exchanges"
 const val SAVED_CURRENCY = "savedcurrency"
 
 const val IS_FIRST_LOAD = "firstload"
-const val CURRENCY_HISTORIES_NUMBER = 10
+const val CURRENCY_HISTORIES_MAIN_NUMBER = 10
+const val CURRENCY_HISTORIES_CUR_NUMBER = 25
 
 fun log_d(message: String) = Log.d(EXRATES, message)
 

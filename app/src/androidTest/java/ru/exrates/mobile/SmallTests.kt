@@ -16,4 +16,11 @@ class SmallTests {
 
         Assert.assertEquals("1", one.split("\\D".toRegex())[0])
     }
+
+    @Test
+    fun exponent(){
+        val num = 3.85E-4
+        val res = Math.getExponent(num)
+        Assert.assertEquals(4, res)
+    }
 }
