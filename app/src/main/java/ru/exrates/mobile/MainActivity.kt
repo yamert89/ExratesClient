@@ -138,7 +138,7 @@ class MainActivity : ExratesActivity() {
         currencyPrice.text = (count / list.size).toNumeric()
         val cur = list.find { it.exchangeName == app.currentExchangeName }!!
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
-        GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex))
+        GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 11, cur.priceHistory.lastIndex))
     }
 
     override fun task() {
