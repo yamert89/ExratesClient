@@ -10,6 +10,7 @@ import ru.exrates.mobile.MainActivity
 import ru.exrates.mobile.log_e
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import java.net.SocketTimeoutException
 
 
@@ -61,10 +62,10 @@ class PairCallback(activity: ExratesActivity) : ExCallback<MutableList<CurrencyP
     }
 }
 
-class ListsCallback(activity: ExratesActivity) : ExCallback<Map<String, List<String>>>(activity) {
+class ListsCallback(activity: ExratesActivity) : ExCallback<List<ExchangeNamesObject>>(activity) {
     override fun onResponse(
-        call: Call<Map<String, List<String>>>,
-        response: Response<Map<String, List<String>>>
+        call: Call<List<ExchangeNamesObject>>,
+        response: Response<List<ExchangeNamesObject>>
     ) {
         super.onResponse(call, response)
         activity as MainActivity

@@ -42,7 +42,7 @@ abstract class ExratesActivity : AppCompatActivity() {
         log_d("saving state....")
         if(currentDataIsNull()) return
         save(
-            CURRENT_EXCHANGE to app.currentExchange!!.name,
+            CURRENT_EXCHANGE to app.currentExchange!!.exId,
             CURRENT_PAIR to app.currentPairInfo!![0].symbol
         )
     }

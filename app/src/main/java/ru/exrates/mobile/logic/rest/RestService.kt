@@ -7,6 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 
 interface RestService {
@@ -15,7 +16,7 @@ interface RestService {
     fun ping(): Call<String>
 
     @GET("rest/lists")
-    fun lists(): Call<Map<String, List<String>>>
+    fun lists(): Call<List<ExchangeNamesObject>>
 
     @POST("rest/exchange")
     fun getExchanges(@Body payload: String) : Call<Map<String, Exchange>>
@@ -33,6 +34,6 @@ interface RestService {
     fun getPair(@Query("pname") pName: String, @Query("limit") limit: Int): Call<MutableList<CurrencyPair>>
 
     @GET("rest/pair/history")
-    fun getPriceHistory(@Query("pname") pName: String, @Query("exchname") exchName: String,
+    fun getPriceHistory(@Query("pname") pName: String, @Query("exId") exId: Int,
                         @Query("historyinterval") historyInterval: String, @Query("limit") limit: Int): Call<List<Double>>
 }

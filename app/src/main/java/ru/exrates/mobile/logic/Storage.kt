@@ -1,13 +1,17 @@
 package ru.exrates.mobile.logic
 
 import android.content.Context
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import ru.exrates.mobile.DEFAULT_STORAGE
 import java.io.*
+import java.nio.file.Files
+import java.nio.file.Paths
 
-class Storage(private val context: Context) {
+class Storage(val context: Context) {
 
 
-    fun <T> getValue(key: String, def: T, storage: String = DEFAULT_STORAGE): T{
+    inline fun <reified T> getValue(key: String, def: T, storage: String = DEFAULT_STORAGE): T{
        val sp = context.getSharedPreferences(storage, Context.MODE_PRIVATE)
        return when(def){
            is String -> sp.getString(key, def) as T ?: def
@@ -27,7 +31,11 @@ class Storage(private val context: Context) {
             is Boolean -> editor.putBoolean(key, value)
             is Long -> editor.putLong(key, value)
             else -> {
-                saveObject(value, key)
+                try {
+                    saveObject(value, key)
+                }catch (e: NotSerializableException){
+                    saveObjectAsJson(value, key)
+                }
                 editor.clear()
                 return
             }
@@ -42,17 +50,24 @@ class Storage(private val context: Context) {
         os.close()
     }
 
-    fun <T> loadObject(fileName: String, def: T? = null): T {
+    fun <T> saveObjectAsJson(obj: T, fileName: String){
+        Files.write(Paths.get("${context.filesDir}/$fileName"), ObjectMapper().writeValueAsBytes(obj))
+    }
+
+    inline fun <reified T> loadObject(fileName: String, def: T? = null): T {
         val file = File(context.filesDir, fileName)
         if (!file.exists()) {
             if(def != null) return def else throw FileNotFoundException("File < $fileName > not found in storage")
         }
         val _is = ObjectInputStream(FileInputStream(File(context.filesDir, fileName)))
-        val ob: Any
-        try{
-            ob = _is.readObject()
+        var ob: Any? = null
+        ob = try{
+            _is.readObject()
         }catch (e: InvalidClassException){
             throw InvalidClassException("Class model was changed: ${e.message}")
+        }catch (e: NotSerializableException){
+            ObjectMapper().readValue(File(context.filesDir, fileName), T::class.java)
+            //ob = ObjectMapper().readValue
         }
         _is.close()
         return ob as T

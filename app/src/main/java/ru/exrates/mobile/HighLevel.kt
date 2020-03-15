@@ -27,6 +27,7 @@ const val CURRENT_PAIR_INFO = "CURPINFO"
 const val CURRENT_PAIR = "CURPair"
 const val EXTRA_CURRENCY_NAME = "excrn"
 const val EXTRA_EXCHANGE_NAME = "exEXNAME"
+const val EXTRA_EXCHANGE_ID = "exEXID"
 const val STORAGE_EXCHANGES = "exchanges"
 const val SAVED_CURRENCY = "savedcurrency"
 

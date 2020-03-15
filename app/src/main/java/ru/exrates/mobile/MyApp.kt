@@ -9,18 +9,19 @@ import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.rest.RestService
 
 class MyApp(): Application(){
     var currentExchange: Exchange? = null
     var currentPairInfo: MutableList<CurrencyPair>? = null
-    var currentExchangeName: String = "binanceExchange"
+    var currentExchangeId = 1
     var currentPairName: String = "ETCBTC"
     //var currencyNameslist: List<String>? = null
-    var exchangeNamesList: Map<String, List<String>>? = null
+    var exchangeNamesList: List<ExchangeNamesObject>? = null
     var currentInterval: String = "1h"
     var restService: RestService
-    val ip = "192.168.0.101"
+    val ip = "192.168.0.100"
     // val ip = "192.168.43.114"
     //val ip = "192.168.1.72"
     init {

@@ -64,7 +64,8 @@ class ExchangeActivity : ExratesActivity() {
 
             val exName = intent.getStringExtra(EXTRA_EXCHANGE_NAME) ?: throw NullPointerException("extra cur name is null")
             exchName.text = exName
-            model.getActualExchange(ExchangePayload(exName, currentInterval, arrayOf()))
+            val exId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+            model.getActualExchange(ExchangePayload(exId, currentInterval, arrayOf()))
             startProgress()
 
         }catch (e: Exception){
@@ -87,7 +88,7 @@ class ExchangeActivity : ExratesActivity() {
         if (currentDataIsNull()) throw NullPointerException("current data in task is null")
         model.getActualExchange(
             ExchangePayload(
-                app.currentExchange!!.name,
+                app.currentExchangeId,
                 currentInterval,
                 app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
             )

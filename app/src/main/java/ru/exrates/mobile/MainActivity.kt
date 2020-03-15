@@ -14,6 +14,7 @@ import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
 import java.io.FileNotFoundException
@@ -103,8 +104,10 @@ class MainActivity : ExratesActivity() {
 
             goToCurBtn.setOnClickListener {
                 startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
+                    val exName = exchangeName.selectedItem as String
                     putExtra(EXTRA_CURRENCY_NAME, currencyName.getItemAtPosition(curIdx).toString())
-                    putExtra(EXTRA_EXCHANGE_NAME, exchangeName.selectedItem as String)
+                    putExtra(EXTRA_EXCHANGE_NAME, exName)
+                    putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
                 })
             }
 
@@ -136,11 +139,11 @@ class MainActivity : ExratesActivity() {
         var count = 0.0
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
-        val cur = list.find { it.exchangeName == app.currentExchangeName }!!
+        val cur = list.find { it.exId == app.currentExchangeId }!!
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         log_d("priceHistory:" + cur.priceHistory.joinToString())
-        log_d("priceHistory truncated:" + cur.priceHistory.subList(cur.priceHistory.size - 11, cur.priceHistory.lastIndex).joinToString())
-        GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 11, cur.priceHistory.lastIndex + 1))
+        log_d("priceHistory truncated:" + cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1).joinToString())
+        GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1))
     }
 
     override fun task() {
@@ -150,7 +153,7 @@ class MainActivity : ExratesActivity() {
             return
         }
         model.getActualExchange(ExchangePayload(
-            app.currentExchange!!.name,
+            app.currentExchange!!.exId,
             app.currentInterval,
             app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
         ))
@@ -174,24 +177,24 @@ class MainActivity : ExratesActivity() {
         return res
     }
 
-    fun initData(lists: Map<String, List<String>>){
+    fun initData(exchangeNamesList: List<ExchangeNamesObject>){
         log_d("init data")
-        app.exchangeNamesList = lists
+        app.exchangeNamesList = exchangeNamesList
         GlobalScope.launch {
-            save(SAVED_EXCHANGE_NAME_LIST to lists)
+            save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
             log_d("list saved")
 
         }
         log_d("get exchange")
-        val defaultExchName = lists.keys.iterator().next()
-        model.getActualExchange(ExchangePayload(defaultExchName, app.currentInterval, emptyArray()))
-        model.getActualPair(lists.getValue(defaultExchName)[0], CURRENCY_HISTORIES_MAIN_NUMBER)
-        updateExchangesList(lists.keys)
-        updateCurrenciesList(lists.getValue(defaultExchName))
+        val defaultExchName = exchangeNamesList[0]
+        model.getActualExchange(ExchangePayload(1, app.currentInterval, emptyArray()))
+        model.getActualPair(exchangeNamesList[0].pairs[0], CURRENCY_HISTORIES_MAIN_NUMBER) //todo default exch and pair
+        updateExchangesList(exchangeNamesList.map { it.name })
+        updateCurrenciesList(exchangeNamesList[0].pairs)//todo
 
     }
 
-    private fun updateExchangesList(exchangeNames: Set<String>?){
+    private fun updateExchangesList(exchangeNames: List<String>?){
         if (exchangeNames == null) return
         log_d( "exchanges: $exchangeNames")
         with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
@@ -248,8 +251,8 @@ class MainActivity : ExratesActivity() {
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     val pair = storage.getValue(CURRENT_PAIR, "?????") //todo for all activities
-                    val exchange = storage.getValue(CURRENT_EXCHANGE, "??????")
-                    app.currentExchangeName = exchange
+                    val exchange = storage.getValue(CURRENT_EXCHANGE, 1)
+                    app.currentExchangeId = exchange
                     app.currentPairName = pair
                     model.getActualExchange(ExchangePayload(
                         exchange,
@@ -270,8 +273,8 @@ class MainActivity : ExratesActivity() {
                 return
             }else model.ping()
 
-            updateExchangesList(app.exchangeNamesList?.keys)
-            updateCurrenciesList(app.exchangeNamesList?.get(app.currentExchangeName))
+            updateExchangesList(app.exchangeNamesList?.map { it.name })
+            updateCurrenciesList(app.exchangeNamesList?.find { it.id == app.currentExchangeId }?.pairs)
             currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
 
         }catch (e: Exception){e.printStackTrace()}
