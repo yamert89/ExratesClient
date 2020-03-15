@@ -77,6 +77,7 @@ class MainActivity : ExratesActivity() {
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val exchName = parent?.getItemAtPosition(position)
+                    app.currentExchangeId = app.exchangeNamesList!!.find { it.name == exchName }!!.id
                     log_d("item selected pos: $position, name: $exchName")
                     startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
                         putExtra(EXTRA_EXCHANGE_NAME, exchName.toString())
@@ -238,7 +239,7 @@ class MainActivity : ExratesActivity() {
                 else {
                     log_d("Saved lists loaded")
                     try{
-                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
+                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST)
                     }catch (e: FileNotFoundException){
                         flag = false
                         stopProgress()

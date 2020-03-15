@@ -18,7 +18,8 @@ class Storage(val context: Context) {
            is Int -> sp.getInt(key, def) as T ?: def
            is Boolean -> sp.getBoolean(key, def) as T ?: def
            else -> {
-               loadObject(key, def)
+               //loadObject(key, def) //todo clear?
+               loadObjectFromJson(key, def)
            }
         }
     }
@@ -32,7 +33,8 @@ class Storage(val context: Context) {
             is Long -> editor.putLong(key, value)
             else -> {
                 try {
-                    saveObject(value, key)
+                    //saveObject(value, key) //todo clear?
+                    saveObjectAsJson(value, key)
                 }catch (e: NotSerializableException){
                     saveObjectAsJson(value, key)
                 }
@@ -50,8 +52,17 @@ class Storage(val context: Context) {
         os.close()
     }
 
-    fun <T> saveObjectAsJson(obj: T, fileName: String){
+    private fun <T> saveObjectAsJson(obj: T, fileName: String){
         Files.write(Paths.get("${context.filesDir}/$fileName"), ObjectMapper().writeValueAsBytes(obj))
+    }
+
+    inline fun <reified T> loadObjectFromJson(fileName: String, def: T? = null): T{
+        val file = File(context.filesDir, fileName)
+        if (!file.exists()) {
+            if(def != null) return def else throw FileNotFoundException("File < $fileName > not found in storage")
+        }
+        val ob: Any? = ObjectMapper().readValue(File(context.filesDir, fileName), T::class.java)
+        return ob as T
     }
 
     inline fun <reified T> loadObject(fileName: String, def: T? = null): T {

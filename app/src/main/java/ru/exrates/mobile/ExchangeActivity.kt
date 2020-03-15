@@ -39,7 +39,7 @@ class ExchangeActivity : ExratesActivity() {
             model = Model(app, this)
 
             if (currentNameListsIsNull()){
-                app.exchangeNamesList = storage.loadObject(SAVED_EXCHANGE_NAME_LIST)
+                app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST)
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
             }
             if (currentNameListsIsNull()) throw NullPointerException("current data is null")
