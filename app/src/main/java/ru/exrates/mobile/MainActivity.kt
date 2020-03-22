@@ -62,7 +62,7 @@ class MainActivity : ExratesActivity() {
 
             viewManager = LinearLayoutManager(this)
 
-            pairsAdapter = PairsAdapter(mutableListOf())
+            pairsAdapter = storage.getValue(SAVED_CURRENCIES_ADAPTER, PairsAdapter(mutableListOf()))
             currenciesRecyclerView = findViewById<RecyclerView>(R.id.main_cur_list).apply {
                 adapter = pairsAdapter
                 layoutManager = viewManager
@@ -127,7 +127,9 @@ class MainActivity : ExratesActivity() {
 
     override fun updateExchangeData(exchange: Exchange){
         super.updateExchangeData(exchange)
+        //if(app.currentExchange != null) exchange.pairs.addAll(app.currentExchange!!.pairs.intersect(exchange.pairs)) //todo
         app.currentExchange = exchange
+        log_d("incoming pairs: ${exchange.pairs.joinToString{it.symbol}}")
         val adapter = currenciesRecyclerView.adapter as PairsAdapter
         adapter.dataPairs.clear()
         adapter.dataPairs.addAll(exchange.pairs)
@@ -153,6 +155,7 @@ class MainActivity : ExratesActivity() {
             log_d("current data  is null")
             return
         }
+        log_d( "pairs: " + app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray().joinToString())
         model.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
@@ -218,7 +221,8 @@ class MainActivity : ExratesActivity() {
     override fun saveState() {
         super.saveState()
         save(SAVED_EX_IDX to exchangeName.selectedItemPosition,
-            SAVED_CUR_IDX to currencyName.selectedItemPosition)
+            SAVED_CUR_IDX to currencyName.selectedItemPosition,
+            SAVED_CURRENCIES_ADAPTER to currenciesRecyclerView.adapter!!)
     }
 
 
