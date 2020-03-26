@@ -6,11 +6,13 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import kotlinx.serialization.Transient
 import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.toNumeric
 
-
+@JsonIgnoreProperties("itemCount")
 open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
     lateinit var dataPairs: MutableList<CurrencyPair>
     lateinit var currentInterval: String

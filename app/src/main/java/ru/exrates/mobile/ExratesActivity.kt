@@ -60,8 +60,8 @@ abstract class ExratesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         timer = Timer()
-        storage = Storage(applicationContext, app.om)
         app = this.application as MyApp
+        storage = Storage(applicationContext, app.om)
         log_d("Basic exrates activity created")
     }
 
