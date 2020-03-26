@@ -255,7 +255,9 @@ class MainActivity : ExratesActivity() {
                 else {
                     log_d("Saved lists loaded")
                     try{
-                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST)
+                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST, ArrayList<ExchangeNamesObject>())
+                        log_d("ds")
+
                     }catch (e: FileNotFoundException){
                         flag = false
                         stopProgress()

@@ -56,7 +56,7 @@ class Storage(val context: Context, val om: ObjectMapper) {
         Files.write(Paths.get("${context.filesDir}/$fileName"), om.writeValueAsBytes(obj))
     }
 
-    inline fun <reified T> loadObjectFromJson(fileName: String, def: T? = null): T{
+    inline fun <reified T> loadObjectFromJson(fileName: String, def: T? = null): T{ //todo Pair adapter needs complex type
         val file = File(context.filesDir, fileName)
         if (!file.exists()) {
             if(def != null) return def else throw FileNotFoundException("File < $fileName > not found in storage")
