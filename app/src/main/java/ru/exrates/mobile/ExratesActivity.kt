@@ -60,7 +60,7 @@ abstract class ExratesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         timer = Timer()
-        storage = Storage(applicationContext)
+        storage = Storage(applicationContext, app.om)
         app = this.application as MyApp
         log_d("Basic exrates activity created")
     }
@@ -79,6 +79,7 @@ abstract class ExratesActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        log_d("root onpause")
         saveState()
         timer.cancel()
     }
@@ -87,11 +88,13 @@ abstract class ExratesActivity : AppCompatActivity() {
         super.onDestroy()
         saveState()
         timer.cancel()
+        log_d("root ondestroy")
 
     }
 
     override fun onStop() {
         super.onStop()
+        log_d("root ondestop")
         saveState()
         timer.cancel()
     }

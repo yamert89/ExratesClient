@@ -41,7 +41,7 @@ class CurrencyActivity : ExratesActivity() {
             progressLayout = findViewById(R.id.progressLayout)
             historyPeriodSpinner = findViewById(R.id.cur_history_period)
             anyChartView = findViewById(R.id.anyChartView_cur)
-            storage = Storage(applicationContext)
+            //storage = Storage(applicationContext)
             currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
             currentGraphIntervalIdx = storage.getValue(CURRENT_GRAPH_INTERVAL_IDX, 0)
 

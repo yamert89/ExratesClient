@@ -8,7 +8,7 @@ import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class Storage(val context: Context) {
+class Storage(val context: Context, val om: ObjectMapper) {
 
 
     inline fun <reified T> getValue(key: String, def: T, storage: String = DEFAULT_STORAGE): T{
@@ -53,7 +53,7 @@ class Storage(val context: Context) {
     }
 
     private fun <T> saveObjectAsJson(obj: T, fileName: String){
-        Files.write(Paths.get("${context.filesDir}/$fileName"), ObjectMapper().writeValueAsBytes(obj))
+        Files.write(Paths.get("${context.filesDir}/$fileName"), om.writeValueAsBytes(obj))
     }
 
     inline fun <reified T> loadObjectFromJson(fileName: String, def: T? = null): T{
@@ -61,7 +61,7 @@ class Storage(val context: Context) {
         if (!file.exists()) {
             if(def != null) return def else throw FileNotFoundException("File < $fileName > not found in storage")
         }
-        val ob: Any? = ObjectMapper().readValue(File(context.filesDir, fileName), T::class.java)
+        val ob: Any? = om.readValue(File(context.filesDir, fileName), T::class.java)
         return ob as T
     }
 

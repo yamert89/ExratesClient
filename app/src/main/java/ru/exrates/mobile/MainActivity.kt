@@ -39,8 +39,9 @@ class MainActivity : ExratesActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         try {
+            log_d("main oncreate")
             setContentView(R.layout.activity_main)
-            storage = Storage(applicationContext)
+            //storage = Storage(applicationContext, app.om)
 
             model = Model(app, this)
 
@@ -126,6 +127,7 @@ class MainActivity : ExratesActivity() {
     }
 
     override fun updateExchangeData(exchange: Exchange){
+        log_d("updateExData")
         super.updateExchangeData(exchange)
         //if(app.currentExchange != null) exchange.pairs.addAll(app.currentExchange!!.pairs.intersect(exchange.pairs)) //todo
         app.currentExchange = exchange
@@ -137,12 +139,14 @@ class MainActivity : ExratesActivity() {
     }
 
     override fun updatePairData(list: MutableList<CurrencyPair>) {
+        log_d("updatePairData")
         super.updatePairData(list)
         app.currentPairInfo = list
         var count = 0.0
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
         val cur = list.find { it.exId == app.currentExchangeId }!!
+        log_d("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         log_d("priceHistory:" + cur.priceHistory.joinToString())
         log_d("priceHistory truncated:" + cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1).joinToString())
@@ -183,18 +187,26 @@ class MainActivity : ExratesActivity() {
 
     fun initData(exchangeNamesList: List<ExchangeNamesObject>){
         log_d("init data")
-        app.exchangeNamesList = exchangeNamesList
-        GlobalScope.launch {
-            save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
-            log_d("list saved")
+        try {
+            app.exchangeNamesList = exchangeNamesList
+            GlobalScope.launch {
+                save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
+                log_d("list saved")
 
+            }
+            log_d("get exchange")
+            val defaultExchName = exchangeNamesList[0]
+            model.getActualExchange(ExchangePayload(1, app.currentInterval, emptyArray()))
+            model.getActualPair(
+                exchangeNamesList[0].pairs[0],
+                CURRENCY_HISTORIES_MAIN_NUMBER
+            ) //todo default exch and pair
+            updateExchangesList(exchangeNamesList.map { it.name })
+            updateCurrenciesList(exchangeNamesList[0].pairs)//todo
+        }catch (e: Exception){
+            log_e("exception in init method")
+            log_e(e.message.toString())
         }
-        log_d("get exchange")
-        val defaultExchName = exchangeNamesList[0]
-        model.getActualExchange(ExchangePayload(1, app.currentInterval, emptyArray()))
-        model.getActualPair(exchangeNamesList[0].pairs[0], CURRENCY_HISTORIES_MAIN_NUMBER) //todo default exch and pair
-        updateExchangesList(exchangeNamesList.map { it.name })
-        updateCurrenciesList(exchangeNamesList[0].pairs)//todo
 
     }
 
@@ -231,7 +243,7 @@ class MainActivity : ExratesActivity() {
         try {
             app = this.application as MyApp
             var flag = true
-            log_d("on resume")
+            log_d("main onresume")
             val listsReq = GlobalScope.launch(Dispatchers.IO) {
                 log_d("start coroutine")
                 if (storage.getValue(IS_FIRST_LOAD, true)) {
@@ -252,10 +264,12 @@ class MainActivity : ExratesActivity() {
                     }catch (e: InvalidClassException){
                         log_e("Class model of ex names list deprecated")
                         flag = firstLoadActivity()
+                    }catch (e: Exception){
+                        log_e(e.message.toString())
                     }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val pair = storage.getValue(CURRENT_PAIR, "?????") //todo for all activities
+                    val pair = storage.getValue(CURRENT_PAIR, "ETCBTC") //todo for all activities
                     val exchange = storage.getValue(CURRENT_EXCHANGE, 1)
                     app.currentExchangeId = exchange
                     app.currentPairName = pair

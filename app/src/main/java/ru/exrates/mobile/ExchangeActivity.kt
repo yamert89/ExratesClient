@@ -27,7 +27,7 @@ class ExchangeActivity : ExratesActivity() {
         super.onCreate(savedInstanceState)
         try {
             setContentView(R.layout.exchange)
-            storage = Storage(applicationContext)
+            //storage = Storage(applicationContext)
 
 
             exchName = findViewById(R.id.exName)

@@ -1,6 +1,6 @@
 package ru.exrates.mobile.logic.entities
 
-class Exchange(val exId: Int, val name: String, val pairs: MutableList<CurrencyPair>,
+data class Exchange(val exId: Int, val name: String, val pairs: MutableList<CurrencyPair>,
                     val changePeriods: List<String>,
                     val historyPeriods: List<String>,
                     val showHidden: Boolean = true

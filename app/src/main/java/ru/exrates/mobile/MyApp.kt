@@ -21,6 +21,7 @@ class MyApp(): Application(){
     var exchangeNamesList: List<ExchangeNamesObject>? = null
     var currentInterval: String = "1h"
     var restService: RestService
+    val om = ObjectMapper()
     val ip = "192.168.0.100"
     // val ip = "192.168.43.114"
     //val ip = "192.168.1.72"
@@ -28,7 +29,6 @@ class MyApp(): Application(){
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
             .addInterceptor(logging).build()
-        val om = ObjectMapper()
         om.registerKotlinModule()
         val retrofit = Retrofit.Builder()
             .baseUrl("http://$ip:8080/")

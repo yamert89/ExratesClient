@@ -11,7 +11,17 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.toNumeric
 
 
-open class PairsAdapter(val dataPairs: MutableList<CurrencyPair>, var currentInterval: String = "1h") : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
+open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
+    lateinit var dataPairs: MutableList<CurrencyPair>
+    lateinit var currentInterval: String
+
+    constructor(dataPairs: MutableList<CurrencyPair>, currentInterval: String = "1h") : this(){
+        this.dataPairs = dataPairs
+        this.currentInterval = currentInterval
+
+    }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PairsViewHolder {
         val linearLayout = LayoutInflater.from(parent.context)
