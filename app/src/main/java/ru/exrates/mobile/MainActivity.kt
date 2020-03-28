@@ -115,9 +115,6 @@ class MainActivity : ExratesActivity() {
 
             //val cartesian = AnyChart.line()
 
-
-            startProgress()
-
             log_d("Main activity created")
 
         }catch (e: Exception){
@@ -170,6 +167,7 @@ class MainActivity : ExratesActivity() {
 
     private suspend fun firstLoadActivity(): Boolean{
         var res = false
+        startProgress()
         coroutineScope {
             try {
                 log_d("before request")

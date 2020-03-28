@@ -1,6 +1,7 @@
 package ru.exrates.mobile.logic
 
 import android.content.Context
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.exrates.mobile.DEFAULT_STORAGE
@@ -61,7 +62,8 @@ class Storage(val context: Context, val om: ObjectMapper) {
         if (!file.exists()) {
             if(def != null) return def else throw FileNotFoundException("File < $fileName > not found in storage")
         }
-        val ob: Any? = om.readValue(File(context.filesDir, fileName), T::class.java)
+        val ob: Any? = om.readValue(File(context.filesDir, fileName), object : TypeReference<T>(){})
+        //val ob: Any? = om.readValue(File(context.filesDir, fileName), T::class.java)
         return ob as T
     }
 
