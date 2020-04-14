@@ -19,7 +19,7 @@ class MyApp(): Application(){
     var currentPairName: String = "ETCBTC"
     //var currencyNameslist: List<String>? = null
     var exchangeNamesList: List<ExchangeNamesObject>? = null
-    var currentInterval: String = "1h"
+    var currentInterval: String = ""
     var restService: RestService
     val om = ObjectMapper()
     val ip = "192.168.0.100"

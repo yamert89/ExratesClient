@@ -5,6 +5,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.exrates.mobile.ExratesActivity
 import ru.exrates.mobile.MyApp
+import ru.exrates.mobile.log_d
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.rest.*
@@ -12,20 +13,24 @@ import ru.exrates.mobile.logic.rest.*
 class Model(private val app: MyApp, private val activity: ExratesActivity) {
 
     fun getActualExchange(payload: ExchangePayload, callback: ExCallback<Exchange> = OneExchangeCallback(activity)){
+        log_d("REQUEST: actual exchange")
         app.restService.getExchange(payload).enqueue(callback)
     }
 
     fun getActualPair(pname: String, historyinterval: String, limit: Int){
+        log_d("REQUEST: actual pair")
         app.restService.getPair(pname, historyinterval, limit).enqueue(PairCallback(activity))
     }
 
     fun getActualPair(pname: String, limit: Int){
+        log_d("REQUEST: actual pair")
         app.restService.getPair(pname, truncateLimit(limit)).enqueue(PairCallback(activity))
     }
 
 
 
     fun getLists(){
+        log_d("REQUEST: lists")
         app.restService.lists().enqueue(ListsCallback(activity))
     }
 
@@ -43,10 +48,12 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
     }
 
     fun getPriceHistory(pname: String, exchId: Int, historyinterval: String, limit: Int){
+        log_d("REQUEST: price history")
         app.restService.getPriceHistory(pname, exchId, historyinterval, truncateLimit(limit)).enqueue(HistoryCallback(activity))
     }
 
     private fun truncateLimit(limit: Int): Int{
+        if (app.currentInterval.isEmpty()) return limit
         return when(app.currentInterval.last()){
             'w' -> 15
             'M' -> 12

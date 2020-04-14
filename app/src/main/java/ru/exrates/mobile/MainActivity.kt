@@ -203,7 +203,7 @@ class MainActivity : ExratesActivity() {
             updateCurrenciesList(exchangeNamesList[0].pairs)//todo
         }catch (e: Exception){
             log_e("exception in init method")
-            log_e(e.message.toString())
+            e.printStackTrace()
         }
 
     }

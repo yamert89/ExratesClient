@@ -10,7 +10,7 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-
+//fixme gasbtc 4h y axis not showed
 class GraphFactory(private val anyChartView: LineChartView, val currentInterval: String) {
 
 
