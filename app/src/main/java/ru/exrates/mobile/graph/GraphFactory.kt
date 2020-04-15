@@ -159,6 +159,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             f.maximumFractionDigits = 8
             val maxYL = priceHistory.max()!!.toFloat()
             val minYL = priceHistory.min()!!.toFloat()
+            if(maxYL == minYL) return ValueDataList(dataList, labelList,  labelValueList, listOf(f.format(minYL)), listOf(minYL),  xLabel)
             val step = (maxYL - minYL) / 8
             yLabels = ArrayList<String>(8)
             yAxisLabelValues = ArrayList<Float>(8)

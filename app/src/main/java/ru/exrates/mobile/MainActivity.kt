@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
-import ru.exrates.mobile.logic.Storage
+import ru.exrates.mobile.logic.entities.BindedImageView
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
@@ -22,6 +22,7 @@ import java.io.InvalidClassException
 
 class MainActivity : ExratesActivity() {
 //fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
+    //fixme go to currency - clear cur list on main page
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
@@ -64,6 +65,7 @@ class MainActivity : ExratesActivity() {
             viewManager = LinearLayoutManager(this)
 
             pairsAdapter = storage.getValue(SAVED_CURRENCIES_ADAPTER, PairsAdapter(mutableListOf()))
+            pairsAdapter.app = app
             currenciesRecyclerView = findViewById<RecyclerView>(R.id.main_cur_list).apply {
                 adapter = pairsAdapter
                 layoutManager = viewManager
@@ -112,6 +114,8 @@ class MainActivity : ExratesActivity() {
                     putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
                 })
             }
+
+
 
             //val cartesian = AnyChart.line()
 

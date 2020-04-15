@@ -11,6 +11,7 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.rest.RestService
+import java.time.Duration
 
 class MyApp(): Application(){
     var currentExchange: Exchange? = null
@@ -28,11 +29,13 @@ class MyApp(): Application(){
     init {
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
+            .callTimeout(Duration.ofMinutes(3))
             .addInterceptor(logging).build()
         om.registerKotlinModule()
         val retrofit = Retrofit.Builder()
             .baseUrl("http://$ip:8080/")
             .addConverterFactory(JacksonConverterFactory.create(om))
+            .client(client)
             .build()
         restService = retrofit.create(RestService::class.java)
         

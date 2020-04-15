@@ -3,24 +3,28 @@ package ru.exrates.mobile.viewadapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import kotlinx.serialization.Transient
+import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.R
+import ru.exrates.mobile.log_d
+import ru.exrates.mobile.logic.entities.BindedImageView
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.toNumeric
 
-@JsonIgnoreProperties("itemCount")
+@JsonIgnoreProperties("itemCount", "app")
 open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
     lateinit var dataPairs: MutableList<CurrencyPair>
     lateinit var currentInterval: String
+    lateinit var app: MyApp
 
     constructor(dataPairs: MutableList<CurrencyPair>, currentInterval: String = "1h") : this(){
         this.dataPairs = dataPairs
         this.currentInterval = currentInterval
-
     }
 
 
@@ -38,7 +42,13 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = pair.symbol
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = pair.priceChange[currentInterval].toString()
-        holder.linearLayout.findViewById<CheckBox>(R.id.rec_cur_visible).isChecked = pair.visible
+        val cross = holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_delete)
+        cross.setOnClickListener {
+            dataPairs.removeIf {it2 -> it2.symbol == pair.symbol }
+            log_d("${pair.symbol} deleted")
+            notifyDataSetChanged()
+            app.currentExchange?.pairs?.removeIf { it3 -> it3.symbol == pair.symbol }
+        }
     }
 
     class PairsViewHolder(val linearLayout: LinearLayout): RecyclerView.ViewHolder(linearLayout)

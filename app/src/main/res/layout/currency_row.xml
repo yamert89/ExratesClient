@@ -37,11 +37,12 @@
         android:layout_weight="1"
         android:text="+13%" />
 
-    <CheckBox
-        android:id="@+id/rec_cur_visible"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/rec_cur_delete"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_weight="1"
-        android:contentDescription="Visibility" />
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/cross" />
 
 </LinearLayout>
