@@ -22,7 +22,6 @@ import java.io.InvalidClassException
 
 class MainActivity : ExratesActivity() {
 //fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
-    //fixme go to currency - clear cur list on main page
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
@@ -277,10 +276,11 @@ class MainActivity : ExratesActivity() {
                     val exchange = storage.getValue(CURRENT_EXCHANGE, 1)
                     app.currentExchangeId = exchange
                     app.currentPairName = pair
+
                     model.getActualExchange(ExchangePayload(
                         exchange,
                         app.currentInterval,
-                        arrayOf(pair))
+                        app.currentExchange!!.pairs.map { it.symbol }.toTypedArray())
                     )
                     model.getActualPair(pair, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
 

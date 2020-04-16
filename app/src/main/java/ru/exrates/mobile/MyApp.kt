@@ -30,7 +30,7 @@ class MyApp(): Application(){
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
             .callTimeout(Duration.ofMinutes(3))
-            .addInterceptor(logging).build()
+            /*.addInterceptor(logging)*/.build()
         om.registerKotlinModule()
         val retrofit = Retrofit.Builder()
             .baseUrl("http://$ip:8080/")
