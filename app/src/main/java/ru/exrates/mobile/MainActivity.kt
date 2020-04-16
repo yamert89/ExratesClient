@@ -235,7 +235,8 @@ class MainActivity : ExratesActivity() {
         super.saveState()
         save(SAVED_EX_IDX to exchangeName.selectedItemPosition,
             SAVED_CUR_IDX to currencyName.selectedItemPosition,
-            SAVED_CURRENCIES_ADAPTER to currenciesRecyclerView.adapter!!)
+            SAVED_CURRENCIES_ADAPTER to currenciesRecyclerView.adapter!!,
+            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC"))) //todo hardcode
     }
 
 
@@ -274,13 +275,15 @@ class MainActivity : ExratesActivity() {
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     val pair = storage.getValue(CURRENT_PAIR, "ETCBTC") //todo for all activities
                     val exchange = storage.getValue(CURRENT_EXCHANGE, 1)
+                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("ETCBTC")) //todo hardcode
                     app.currentExchangeId = exchange
                     app.currentPairName = pair
+
 
                     model.getActualExchange(ExchangePayload(
                         exchange,
                         app.currentInterval,
-                        app.currentExchange!!.pairs.map { it.symbol }.toTypedArray())
+                        app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: pairs)
                     )
                     model.getActualPair(pair, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
 

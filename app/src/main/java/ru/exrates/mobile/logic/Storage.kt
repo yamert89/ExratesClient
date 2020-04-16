@@ -46,6 +46,7 @@ class Storage(val context: Context, val om: ObjectMapper) {
         editor.apply()
     }
 
+    @Deprecated("old type serialization", ReplaceWith("saveObjectAsJson") )
     fun <T> saveObject(obj: T, fileName: String){
         val os = ObjectOutputStream(FileOutputStream(File(context.filesDir, fileName)))
         os.writeObject(obj)
@@ -67,6 +68,7 @@ class Storage(val context: Context, val om: ObjectMapper) {
         return ob as T
     }
 
+    @Deprecated("old type deserialization", ReplaceWith("loadObjectFromJson") )
     inline fun <reified T> loadObject(fileName: String, def: T? = null): T {
         val file = File(context.filesDir, fileName)
         if (!file.exists()) {
