@@ -167,7 +167,7 @@ class MainActivity : ExratesActivity() {
         model.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
-            app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray()
+            app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
         ))
         model.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
     }
@@ -289,7 +289,8 @@ class MainActivity : ExratesActivity() {
                     model.getActualExchange(ExchangePayload(
                         exchange,
                         app.currentInterval,
-                        app.currentExchange?.pairs?.map { it.baseCurrency + it.quoteCurrency }?.toTypedArray() ?: pairs)
+                        app.currentExchange?.pairs?.map { it.baseCurrency + it.quoteCurrency }?.toTypedArray()?.plus(
+                            arrayOf(app.currentCur1 + app.currentCur2)) ?: pairs)
                     )
                     model.getActualPair(cur1, cur2, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
 
