@@ -41,8 +41,8 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
 
     override fun onBindViewHolder(holder: PairsViewHolder, position: Int) {
         val pair = dataPairs[position]
-        var res =  app.resources.getIdentifier(pair.baseCurrency.toLowerCase(), null, null)
-        if (res == 0) res = R.drawable.cross
+        var res = app.baseContext.resources.getIdentifier(pair.baseCurrency.toLowerCase(), "drawable", app.baseContext.packageName)
+        if (res == 0) res = R.drawable.etc
         holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_ico).setImageDrawable(ResourcesCompat.getDrawable(
             app.resources,
             res,
