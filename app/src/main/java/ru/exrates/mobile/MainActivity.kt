@@ -115,6 +115,8 @@ class MainActivity : ExratesActivity() {
                     putExtra(EXTRA_CURRENCY_NAME_2, curs[1] )
                     putExtra(EXTRA_EXCHANGE_NAME, exName)
                     putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
+                    putExtra(EXTRA_CUR_ICO, app.baseContext.resources.getIdentifier(curs[0].toLowerCase(), "drawable", app.baseContext.packageName))
+
                 })
             }
 

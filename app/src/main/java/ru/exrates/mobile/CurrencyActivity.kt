@@ -3,6 +3,7 @@ package ru.exrates.mobile
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import lecho.lib.hellocharts.view.LineChartView
@@ -17,11 +18,12 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyInterval: Button
     private lateinit var currencyIntervalValue: TextView
     private lateinit var anyChartView: LineChartView
-    private lateinit var currencyExchange: TextView
+    //private lateinit var currencyExchange: TextView
     private lateinit var currencyExchanges: RecyclerView
     private lateinit var exchangesAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var historyPeriodSpinner: Spinner
+    private lateinit var curIco : ImageView
     private var currentInterval = "1h" //TODO app.curInt
     private var currentGraphInterval = "1h" //todo?
     private var currentGraphIntervalIdx = 0
@@ -34,13 +36,14 @@ class CurrencyActivity : ExratesActivity() {
         try{
             setContentView(R.layout.currency)
             app = this.application as MyApp
-            currencyExchange = findViewById(R.id.cur_exchange)
+            //currencyExchange = findViewById(R.id.cur_exchange)
             currencyName = findViewById(R.id.cur_name)
             currencyInterval = findViewById(R.id.cur_interval)
             currencyIntervalValue = findViewById(R.id.cur_intervalValue)
             progressLayout = findViewById(R.id.progressLayout)
             historyPeriodSpinner = findViewById(R.id.cur_history_period)
             anyChartView = findViewById(R.id.anyChartView_cur)
+            curIco = findViewById(R.id.cur_ico)
             //storage = Storage(applicationContext)
             currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
             currentGraphIntervalIdx = storage.getValue(CURRENT_GRAPH_INTERVAL_IDX, 0)
@@ -57,6 +60,9 @@ class CurrencyActivity : ExratesActivity() {
             val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
             val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
             app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+            val curIcoId = intent.getIntExtra(EXTRA_CUR_ICO, 0)
+            curIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, curIcoId, null))
+
 
             model.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
