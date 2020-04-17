@@ -17,6 +17,8 @@ import ru.exrates.mobile.log_d
 import ru.exrates.mobile.logic.entities.BindedImageView
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.toNumeric
+import java.math.BigDecimal
+import java.math.MathContext
 
 @JsonIgnoreProperties("itemCount", "app")
 open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
@@ -48,9 +50,11 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             res,
             null)
         )
-        holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = pair.symbol
+        holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = "${pair.baseCurrency} / ${pair.quoteCurrency}"
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
-        holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = pair.priceChange[currentInterval].toString()
+        var change = BigDecimal(pair.priceChange[currentInterval]!! , MathContext(2)).toDouble().toString()
+        if (change.length > 5) change = "0.0"
+        holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = "$change%"
         val cross = holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_delete)
         cross.setOnClickListener {
             dataPairs.removeIf {it2 -> it2.symbol == pair.symbol }
@@ -60,6 +64,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
         }
 
     }
+
 
     class PairsViewHolder(val linearLayout: LinearLayout): RecyclerView.ViewHolder(linearLayout)
 }

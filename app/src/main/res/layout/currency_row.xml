@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/rec_cur_ico"
         android:layout_width="0dp"
-        android:layout_height="30dp"
+        android:layout_height="27dp"
         android:layout_weight="0.5"
         android:contentDescription="currency logo"
         android:layout_gravity="center"
@@ -22,27 +22,30 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Btc - Eth"
-        android:textSize="18sp" />
+        android:layout_gravity="center"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/rec_cur_price"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_gravity="center"
         android:text="0.00234" />
 
     <TextView
         android:id="@+id/rec_cur_change"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.5"
+        android:layout_gravity="center"
         android:text="+13%" />
 
     <ImageView
         android:id="@+id/rec_cur_delete"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_weight="1"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_weight="0.2"
         android:layout_gravity="center"
         app:srcCompat="@drawable/cross" />
 
