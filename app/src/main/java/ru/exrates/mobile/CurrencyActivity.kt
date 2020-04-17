@@ -54,10 +54,11 @@ class CurrencyActivity : ExratesActivity() {
             if (currentNameListsIsNull()) throw NullPointerException("current data is null")
 
 
-            val currName: String = intent.getStringExtra(EXTRA_CURRENCY_NAME)!!
+            val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
+            val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
             app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
 
-            model.getActualPair(currName, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
+            model.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
             historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
@@ -70,14 +71,14 @@ class CurrencyActivity : ExratesActivity() {
                     val interval = parent?.getItemAtPosition(position) as String
                     currentGraphInterval = interval
                     currentGraphIntervalIdx = position
-                    model.getPriceHistory(currName, app.currentExchangeId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
+                    model.getPriceHistory(currName1 + currName2, app.currentExchangeId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
 
                 }
             }
 
-            currencyName.text = currName
+            currencyName.text = "$currName1/$currName2"
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), currName, currentInterval)
+            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), currentInterval)
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{

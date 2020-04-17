@@ -6,9 +6,11 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import kotlinx.serialization.Transient
+import okhttp3.internal.lockAndWaitNanos
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.R
 import ru.exrates.mobile.log_d
@@ -39,6 +41,13 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
 
     override fun onBindViewHolder(holder: PairsViewHolder, position: Int) {
         val pair = dataPairs[position]
+        var res =  app.resources.getIdentifier(pair.baseCurrency.toLowerCase(), null, null)
+        if (res == 0) res = R.drawable.cross
+        holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_ico).setImageDrawable(ResourcesCompat.getDrawable(
+            app.resources,
+            res,
+            null)
+        )
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = pair.symbol
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
         holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = pair.priceChange[currentInterval].toString()
@@ -49,6 +58,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             notifyDataSetChanged()
             app.currentExchange?.pairs?.removeIf { it3 -> it3.symbol == pair.symbol }
         }
+
     }
 
     class PairsViewHolder(val linearLayout: LinearLayout): RecyclerView.ViewHolder(linearLayout)

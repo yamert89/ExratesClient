@@ -9,6 +9,8 @@ import java.util.concurrent.ArrayBlockingQueue
 
 
 data class CurrencyPair(
+    val baseCurrency: String,
+    val quoteCurrency: String,
     val symbol: String,
     val price: Double,
     @JsonDeserialize(using = UpdateTimesDeserializer::class)
@@ -23,7 +25,7 @@ data class CurrencyPair(
 ) : java.io.Serializable{
 
     companion object{
-        fun createEmptyInstance() = CurrencyPair("", 0.0, TreeMap(), emptyArray(), emptyList(), emptyList(), false, "", 0)
+        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyArray(), emptyList(), emptyList(), false, "", 0)
     }
 
 

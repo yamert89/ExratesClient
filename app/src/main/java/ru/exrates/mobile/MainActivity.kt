@@ -96,8 +96,10 @@ class MainActivity : ExratesActivity() {
                     curIdx = position
                     val curName = parent?.getItemAtPosition(position)
                     log_d("item selected pos: $position, name: $curName, id: $id")
+                    val curs = curName.toString().split("/")
                     startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
-                        putExtra(EXTRA_CURRENCY_NAME, curName.toString())
+                        putExtra(EXTRA_CURRENCY_NAME_1, curs[0])
+                        putExtra(EXTRA_CURRENCY_NAME_2, curs[1])
                         putExtra(EXTRA_EXCHANGE_NAME, exchangeName.selectedItem as String)
                     })
                 }
@@ -108,7 +110,9 @@ class MainActivity : ExratesActivity() {
             goToCurBtn.setOnClickListener {
                 startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                     val exName = exchangeName.selectedItem as String
-                    putExtra(EXTRA_CURRENCY_NAME, currencyName.getItemAtPosition(curIdx).toString())
+                    val curs = currencyName.getItemAtPosition(curIdx).toString().split("/")
+                    putExtra(EXTRA_CURRENCY_NAME_1, curs[0] )
+                    putExtra(EXTRA_CURRENCY_NAME_2, curs[1] )
                     putExtra(EXTRA_EXCHANGE_NAME, exName)
                     putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
                 })
@@ -163,9 +167,9 @@ class MainActivity : ExratesActivity() {
         model.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
-            app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
+            app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray()
         ))
-        model.getActualPair(app.currentPairInfo!![0].symbol, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
+        model.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
     }
 
     private suspend fun firstLoadActivity(): Boolean{
@@ -199,7 +203,7 @@ class MainActivity : ExratesActivity() {
             val defaultExchName = exchangeNamesList[0]
             model.getActualExchange(ExchangePayload(1, app.currentInterval, emptyArray()))
             model.getActualPair(
-                exchangeNamesList[0].pairs[0],
+                "BCC", "BTC", //todo hardcode
                 CURRENCY_HISTORIES_MAIN_NUMBER
             ) //todo default exch and pair
             updateExchangesList(exchangeNamesList.map { it.name })
@@ -273,19 +277,21 @@ class MainActivity : ExratesActivity() {
                     }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val pair = storage.getValue(CURRENT_PAIR, "ETCBTC") //todo for all activities
+                    val cur1 = storage.getValue(CURRENT_CUR_1, "ETCBTC")
+                    val cur2 = storage.getValue(CURRENT_CUR_2, "ETCBTC")
                     val exchange = storage.getValue(CURRENT_EXCHANGE, 1)
                     val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("ETCBTC")) //todo hardcode
                     app.currentExchangeId = exchange
-                    app.currentPairName = pair
+                    app.currentCur1 = cur1
+                    app.currentCur2 = cur2
 
 
                     model.getActualExchange(ExchangePayload(
                         exchange,
                         app.currentInterval,
-                        app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: pairs)
+                        app.currentExchange?.pairs?.map { it.baseCurrency + it.quoteCurrency }?.toTypedArray() ?: pairs)
                     )
-                    model.getActualPair(pair, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
+                    model.getActualPair(cur1, cur2, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
 
 
                 }

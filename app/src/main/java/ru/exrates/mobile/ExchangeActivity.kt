@@ -90,7 +90,7 @@ class ExchangeActivity : ExratesActivity() {
             ExchangePayload(
                 app.currentExchangeId,
                 currentInterval,
-                app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray()
+                app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray()
             )
         )
     }

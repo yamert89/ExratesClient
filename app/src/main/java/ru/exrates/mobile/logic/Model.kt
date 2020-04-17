@@ -17,14 +17,14 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
         app.restService.getExchange(payload).enqueue(callback)
     }
 
-    fun getActualPair(pname: String, historyinterval: String, limit: Int){
+    fun getActualPair(c1: String, c2: String, historyinterval: String, limit: Int){
         log_d("REQUEST: actual pair")
-        app.restService.getPair(pname, historyinterval, limit).enqueue(PairCallback(activity))
+        app.restService.getPair(c1, c2, historyinterval, limit).enqueue(PairCallback(activity))
     }
 
-    fun getActualPair(pname: String, limit: Int){
+    fun getActualPair(c1: String, c2: String, limit: Int){
         log_d("REQUEST: actual pair")
-        app.restService.getPair(pname, truncateLimit(limit)).enqueue(PairCallback(activity))
+        app.restService.getPair(c1, c2, truncateLimit(limit)).enqueue(PairCallback(activity))
     }
 
 

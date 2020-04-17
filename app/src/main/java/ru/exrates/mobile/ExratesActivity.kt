@@ -43,7 +43,8 @@ abstract class ExratesActivity : AppCompatActivity() {
         if(currentDataIsNull()) return
         save(
             CURRENT_EXCHANGE to app.currentExchange!!.exId,
-            CURRENT_PAIR to app.currentPairInfo!![0].symbol
+            CURRENT_CUR_1 to app.currentPairInfo!![0].baseCurrency,
+            CURRENT_CUR_2 to app.currentPairInfo!![0].quoteCurrency
         )
     }
 

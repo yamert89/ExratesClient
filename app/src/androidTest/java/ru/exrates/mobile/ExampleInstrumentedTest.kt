@@ -59,15 +59,21 @@ class ExampleInstrumentedTest {
         treeMap["1m"] = 4453.932
         treeMap["1h"] = 323.4234
         val ex1 = Exchange(
-            "testExchange",
+            1,
+            "binance",
             mutableListOf(
                 CurrencyPair(
+                    "BTC",
+                    "LTC",
                     "btc_ltc",
                     0.345,
                     treeMap,
                     arrayOf(0L),
                     emptyList(),
-                    emptyList()
+                    emptyList(),
+                    true,
+                    "1",
+                    1
                 )
             ),
             listOf("1s", "1h"),
@@ -124,7 +130,7 @@ class ExampleInstrumentedTest {
             val restService = retrofit.create(RestService::class.java)
             //val payload = """{"exchange": "binanceExchange", "timeout" : 12, "pairs":["VENBTC"]}"""
             val payload = ExchangePayload(
-                "binanceExchange",
+                1,
                 "1h",
                 arrayOf("VENBTC")
             )
@@ -164,7 +170,7 @@ class ExampleInstrumentedTest {
                 .build()
             val restService = retrofit.create(RestService::class.java)
             val payload = """{"exchange": "binanceExchange", "timeout" : "1h", "pairs":["VENBTC"]}"""
-            val payload2 = ExchangePayload("binanceExchange", "1h", arrayOf("VENBTC"))
+            val payload2 = ExchangePayload(1, "1h", arrayOf("VENBTC"))
             //log_d( payload)
             val call: Call<Exchange> = restService.getExchange(payload2)
             val some = Some()

@@ -28,10 +28,10 @@ interface RestService {
     fun getExchange(@Body payload: String) : Call<Exchange>
 
     @GET("rest/pair")
-    fun getPair(@Query("pname") pName: String, @Query("historyinterval") historyInterval: String, @Query("limit") limit: Int): Call<MutableList<CurrencyPair>>
+    fun getPair(@Query("c1") c1: String, @Query("c2") c2: String, @Query("historyinterval") historyInterval: String, @Query("limit") limit: Int): Call<MutableList<CurrencyPair>>
 
     @GET("rest/pair")
-    fun getPair(@Query("pname") pName: String, @Query("limit") limit: Int): Call<MutableList<CurrencyPair>>
+    fun getPair(@Query("c1") c1: String, @Query("c2") c2: String, @Query("limit") limit: Int): Call<MutableList<CurrencyPair>>
 
     @GET("rest/pair/history")
     fun getPriceHistory(@Query("pname") pName: String, @Query("exId") exId: Int,
