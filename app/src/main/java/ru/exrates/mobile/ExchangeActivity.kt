@@ -2,7 +2,9 @@ package ru.exrates.mobile
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.logic.Model
@@ -13,12 +15,11 @@ import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.viewadapters.PairsAdapter
 
 class ExchangeActivity : ExratesActivity() {
-    private lateinit var exchName: TextView
+    private lateinit var exIco: ImageView
     private lateinit var intervalBtn: Button
     private lateinit var hideBtn: Button
     private lateinit var intervalValue: TextView
     private lateinit var pairs: RecyclerView
-
     private lateinit var pairsAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var currentInterval = "1h"
@@ -30,7 +31,7 @@ class ExchangeActivity : ExratesActivity() {
             //storage = Storage(applicationContext)
 
 
-            exchName = findViewById(R.id.exName)
+            exIco = findViewById(R.id.exIco)
             intervalBtn = findViewById(R.id.cur_interval)
             hideBtn = findViewById(R.id.exch_btn_hide_show)
             intervalValue = findViewById(R.id.intervalValue)
@@ -62,10 +63,10 @@ class ExchangeActivity : ExratesActivity() {
                 adapter.notifyDataSetChanged()
             }
 
-            val exName = intent.getStringExtra(EXTRA_EXCHANGE_NAME) ?: throw NullPointerException("extra cur name is null")
-            exchName.text = exName
-            val exId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
-            model.getActualExchange(ExchangePayload(exId, currentInterval, arrayOf()))
+            val icoId = intent.getIntExtra(EXTRA_EXCHANGE_ICO, 0)
+            exIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, icoId, null ))
+            //val exId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+            model.getActualExchange(ExchangePayload(app.currentExchangeId, currentInterval, arrayOf()))
             startProgress()
 
         }catch (e: Exception){

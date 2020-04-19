@@ -74,19 +74,29 @@ class MainActivity : ExratesActivity() {
 
             exchangeName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    log_d("items was not be selected")
+                    startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
+                        putExtra(EXTRA_EXCHANGE_ICO, app.currentExchangeId)
+                    })
                 }
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val exchName = parent?.getItemAtPosition(position)
                     app.currentExchangeId = app.exchangeNamesList!!.find { it.name == exchName }!!.id
-                    log_d("item selected pos: $position, name: $exchName")
+                    //log_d("item selected pos: $position, name: $exchName")
+
                     startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
-                        putExtra(EXTRA_EXCHANGE_NAME, exchName.toString())
+                        putExtra(EXTRA_EXCHANGE_ICO, getIcoId(exchName.toString()))
                     })
                 }
 
+                fun getIcoId(exName: String) = when(exName){
+                    "binance" -> R.drawable.binance
+                    else -> throw IllegalArgumentException("ex $exName icon id  not found")
+                }
+
             }
+
+
 
             currencyName.setSelection(0, false)
 
@@ -100,7 +110,7 @@ class MainActivity : ExratesActivity() {
                     startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                         putExtra(EXTRA_CURRENCY_NAME_1, curs[0])
                         putExtra(EXTRA_CURRENCY_NAME_2, curs[1])
-                        putExtra(EXTRA_EXCHANGE_NAME, exchangeName.selectedItem as String)
+                        putExtra(EXTRA_EXCHANGE_ICO, exchangeName.selectedItem as String)
                     })
                 }
 
@@ -113,7 +123,7 @@ class MainActivity : ExratesActivity() {
                     val curs = currencyName.getItemAtPosition(curIdx).toString().split("/")
                     putExtra(EXTRA_CURRENCY_NAME_1, curs[0] )
                     putExtra(EXTRA_CURRENCY_NAME_2, curs[1] )
-                    putExtra(EXTRA_EXCHANGE_NAME, exName)
+                   // putExtra(EXTRA_EXCHANGE_NAME, exName)
                     putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
                     putExtra(EXTRA_CUR_ICO, app.baseContext.resources.getIdentifier(curs[0].toLowerCase(), "drawable", app.baseContext.packageName))
 

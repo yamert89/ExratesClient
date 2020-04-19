@@ -15,16 +15,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/exName"
-            android:layout_width="96dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:text="Exchange"
-            android:textSize="20sp"
+        <ImageView
+            android:id="@+id/exIco"
+            android:layout_width="158dp"
+            android:layout_height="47dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/binance" />
 
         <Button
             android:id="@+id/cur_interval"
@@ -35,8 +34,6 @@
             android:text="Interval"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@+id/checkBox2"
-            app:layout_constraintHorizontal_bias="0.875"
-            app:layout_constraintStart_toEndOf="@+id/exName"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
