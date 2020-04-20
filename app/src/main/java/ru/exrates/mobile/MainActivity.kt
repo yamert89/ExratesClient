@@ -63,7 +63,8 @@ class MainActivity : ExratesActivity() {
 
             viewManager = LinearLayoutManager(this)
 
-            pairsAdapter = storage.getValue(SAVED_CURRENCIES_ADAPTER, PairsAdapter(mutableListOf()))
+            val savedAdapter = storage.getValue(SAVED_CURRENCIES_ADAPTER, SAVED_CURRENCIES_ADAPTER_BINANCE)
+            pairsAdapter = storage.getValue(savedAdapter, PairsAdapter(mutableListOf(), app = app))
             pairsAdapter.app = app
             currenciesRecyclerView = findViewById<RecyclerView>(R.id.main_cur_list).apply {
                 adapter = pairsAdapter
@@ -75,22 +76,24 @@ class MainActivity : ExratesActivity() {
             exchangeName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
-                        putExtra(EXTRA_EXCHANGE_ICO, app.currentExchangeId)
+                        putExtra(EXTRA_EXCHANGE_ICO, app.currentExchange?.exId)
                     })
                 }
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val exchName = parent?.getItemAtPosition(position)
-                    app.currentExchangeId = app.exchangeNamesList!!.find { it.name == exchName }!!.id
+                    val exId = app.exchangeNamesList!!.find { it.name == exchName }!!.id
                     //log_d("item selected pos: $position, name: $exchName")
 
                     startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
                         putExtra(EXTRA_EXCHANGE_ICO, getIcoId(exchName.toString()))
+                        putExtra(EXTRA_EXCHANGE_ID, exId)
                     })
                 }
 
                 fun getIcoId(exName: String) = when(exName){
-                    "binance" -> R.drawable.binance
+                    "binanceExchange" -> R.drawable.binance
+                    "p2pb2b" -> R.drawable.p2pb2b
                     else -> throw IllegalArgumentException("ex $exName icon id  not found")
                 }
 
@@ -156,12 +159,13 @@ class MainActivity : ExratesActivity() {
 
     override fun updatePairData(list: MutableList<CurrencyPair>) {
         log_d("updatePairData")
+        log_d(list.joinToString{"${it.symbol} | ${it.exchangeName}"})
         super.updatePairData(list)
         app.currentPairInfo = list
         var count = 0.0
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
-        val cur = list.find { it.exId == app.currentExchangeId }!!
+        val cur = list.find { it.exId == app.currentExchange?.exId ?: 1 }!!
         log_d("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         log_d("priceHistory:" + cur.priceHistory.joinToString())
@@ -249,9 +253,14 @@ class MainActivity : ExratesActivity() {
 
     override fun saveState() {
         super.saveState()
+        val adapterName = when(app.currentExchange?.exId){
+            1 -> SAVED_CURRENCIES_ADAPTER_BINANCE
+            else -> SAVED_CURRENCIES_ADAPTER_P2PB2B
+        }
         save(SAVED_EX_IDX to exchangeName.selectedItemPosition,
             SAVED_CUR_IDX to currencyName.selectedItemPosition,
-            SAVED_CURRENCIES_ADAPTER to currenciesRecyclerView.adapter!!,
+            SAVED_CURRENCIES_ADAPTER to adapterName,
+            adapterName to currenciesRecyclerView.adapter!!,
             SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC"))) //todo hardcode
     }
 
@@ -291,15 +300,14 @@ class MainActivity : ExratesActivity() {
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     val cur1 = storage.getValue(CURRENT_CUR_1, "ETCBTC")
                     val cur2 = storage.getValue(CURRENT_CUR_2, "ETCBTC")
-                    val exchange = storage.getValue(CURRENT_EXCHANGE, 1)
+                    val exId = storage.getValue(CURRENT_EXCHANGE_ID, 1)
                     val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("ETCBTC")) //todo hardcode
-                    app.currentExchangeId = exchange
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
 
 
                     model.getActualExchange(ExchangePayload(
-                        exchange,
+                        exId,
                         app.currentInterval,
                         app.currentExchange?.pairs?.map { it.baseCurrency + it.quoteCurrency }?.toTypedArray()?.plus(
                             arrayOf(app.currentCur1 + app.currentCur2)) ?: pairs)
@@ -319,7 +327,7 @@ class MainActivity : ExratesActivity() {
             }else model.ping()
 
             updateExchangesList(app.exchangeNamesList?.map { it.name })
-            updateCurrenciesList(app.exchangeNamesList?.find { it.id == app.currentExchangeId }?.pairs)
+            updateCurrenciesList(app.exchangeNamesList?.find { it.id == app.currentExchange?.exId }?.pairs)
             currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
 
         }catch (e: Exception){e.printStackTrace()}

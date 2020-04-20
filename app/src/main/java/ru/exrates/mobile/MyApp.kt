@@ -16,7 +16,7 @@ import java.time.Duration
 class MyApp(): Application(){
     var currentExchange: Exchange? = null
     var currentPairInfo: MutableList<CurrencyPair>? = null
-    var currentExchangeId = 1
+    //var currentExchangeId = 1
     var currentCur1: String = "ETC"
     var currentCur2: String = "BTC"
     //var currencyNameslist: List<String>? = null

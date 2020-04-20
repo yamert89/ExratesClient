@@ -59,7 +59,7 @@ class CurrencyActivity : ExratesActivity() {
 
             val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
             val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
-            app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+            //app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
             val curIcoId = intent.getIntExtra(EXTRA_CUR_ICO, 0)
             curIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, curIcoId, null))
 
@@ -77,7 +77,7 @@ class CurrencyActivity : ExratesActivity() {
                     val interval = parent?.getItemAtPosition(position) as String
                     currentGraphInterval = interval
                     currentGraphIntervalIdx = position
-                    model.getPriceHistory(currName1 + currName2, app.currentExchangeId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
+                    model.getPriceHistory(currName1 + currName2, app.currentExchange!!.exId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
 
                 }
             }
@@ -116,7 +116,7 @@ class CurrencyActivity : ExratesActivity() {
         adapter.pairsByExchanges.clear()
         adapter.pairsByExchanges.addAll(list)
         adapter.notifyDataSetChanged()
-        val pair = list.find { it.exId == app.currentExchangeId }
+        val pair = list.find { it.exId == app.currentExchange?.exId }
         updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in updatePairData"))
         if (historyPeriodSpinner.adapter.isEmpty) {
             val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
@@ -128,7 +128,7 @@ class CurrencyActivity : ExratesActivity() {
             historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
         }
 
-        val cur = list.find { it.exId == app.currentExchangeId }!!
+        val cur = list.find { it.exId == app.currentExchange?.exId }!!
 
         GraphFactory(anyChartView, currentGraphInterval).createBigGraph(cur.priceHistory)
        // anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))

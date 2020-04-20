@@ -47,7 +47,7 @@ class ExchangeActivity : ExratesActivity() {
 
             val pairsOfAdapter = if(currentDataIsNull()) mutableListOf<CurrencyPair>() else
                 if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.filter{it.visible}.toMutableList() //todo base filtering on server
-            pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval)
+            pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval, app)
             viewManager = LinearLayoutManager(this)
 
             pairs = findViewById<RecyclerView>(R.id.pairs).apply {
@@ -66,7 +66,7 @@ class ExchangeActivity : ExratesActivity() {
             val icoId = intent.getIntExtra(EXTRA_EXCHANGE_ICO, 0)
             exIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, icoId, null ))
             //val exId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
-            model.getActualExchange(ExchangePayload(app.currentExchangeId, currentInterval, arrayOf()))
+            model.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, arrayOf()))
             startProgress()
 
         }catch (e: Exception){
@@ -89,7 +89,7 @@ class ExchangeActivity : ExratesActivity() {
         if (currentDataIsNull()) throw NullPointerException("current data in task is null")
         model.getActualExchange(
             ExchangePayload(
-                app.currentExchangeId,
+                app.currentExchange!!.exId,
                 currentInterval,
                 app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray()
             )

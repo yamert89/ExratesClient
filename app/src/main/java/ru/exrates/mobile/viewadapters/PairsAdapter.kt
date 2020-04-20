@@ -26,9 +26,10 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
     lateinit var currentInterval: String
     lateinit var app: MyApp
 
-    constructor(dataPairs: MutableList<CurrencyPair>, currentInterval: String = "1h") : this(){
+    constructor(dataPairs: MutableList<CurrencyPair>, currentInterval: String = "1h", app: MyApp) : this(){
         this.dataPairs = dataPairs
         this.currentInterval = currentInterval
+        this.app = app
     }
 
 
