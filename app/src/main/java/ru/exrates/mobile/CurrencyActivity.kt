@@ -1,6 +1,7 @@
 package ru.exrates.mobile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
@@ -25,7 +26,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var historyPeriodSpinner: Spinner
     private lateinit var curIco : ImageView
     private var currentInterval = "1h" //TODO app.curInt
-    private var currentGraphInterval = "1h" //todo?
+    private var currentGraphInterval = "3m" //todo?
     private var currentGraphIntervalIdx = 0
         //private var activeExchangeName = "binanceExchange"
 
@@ -45,7 +46,7 @@ class CurrencyActivity : ExratesActivity() {
             anyChartView = findViewById(R.id.anyChartView_cur)
             curIco = findViewById(R.id.cur_ico)
             //storage = Storage(applicationContext)
-            currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
+            currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "3m")
             currentGraphIntervalIdx = storage.getValue(CURRENT_GRAPH_INTERVAL_IDX, 0)
 
             model = Model(app, this)
@@ -103,7 +104,7 @@ class CurrencyActivity : ExratesActivity() {
             }
 
         }catch (e: Exception){
-            e.printStackTrace()
+            Log.d(null, "Current activity start failed", e)
         }
 
     }
@@ -153,7 +154,7 @@ class CurrencyActivity : ExratesActivity() {
     }
 
     override fun task() {
-        model.getActualPair(currencyName.text.toString(), currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
+        model.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
     }
 
     override fun saveState() {

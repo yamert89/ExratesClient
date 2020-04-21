@@ -113,7 +113,8 @@ class MainActivity : ExratesActivity() {
                     startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                         putExtra(EXTRA_CURRENCY_NAME_1, curs[0])
                         putExtra(EXTRA_CURRENCY_NAME_2, curs[1])
-                        putExtra(EXTRA_EXCHANGE_ICO, exchangeName.selectedItem as String)
+                        putExtra(EXTRA_CUR_ICO, app.baseContext.resources.getIdentifier(curs[0].toLowerCase(), "drawable", app.baseContext.packageName))
+                        //putExtra(EXTRA_EXCHANGE_ICO, exchangeName.selectedItem as String)
                     })
                 }
 
