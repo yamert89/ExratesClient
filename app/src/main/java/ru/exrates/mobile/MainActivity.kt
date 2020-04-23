@@ -39,7 +39,7 @@ class MainActivity : ExratesActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         try {
-            log_d("main oncreate")
+            log_trace("main oncreate")
             setContentView(R.layout.activity_main)
             //storage = Storage(applicationContext, app.om)
 
@@ -108,8 +108,10 @@ class MainActivity : ExratesActivity() {
                     if (curIdx == position) return
                     curIdx = position
                     val curName = parent?.getItemAtPosition(position)
-                    log_d("item selected pos: $position, name: $curName, id: $id")
+                    log_trace("item selected pos: $position, name: $curName, id: $id")
                     val curs = curName.toString().split("/")
+                    app.currentCur1 = curs[0]
+                    app.currentCur2 = curs[1]
                     startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                         putExtra(EXTRA_CURRENCY_NAME_1, curs[0])
                         putExtra(EXTRA_CURRENCY_NAME_2, curs[1])
@@ -125,6 +127,8 @@ class MainActivity : ExratesActivity() {
                 startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                     val exName = exchangeName.selectedItem as String
                     val curs = currencyName.getItemAtPosition(curIdx).toString().split("/")
+                    app.currentCur1 = curs[0]
+                    app.currentCur2 = curs[1]
                     putExtra(EXTRA_CURRENCY_NAME_1, curs[0] )
                     putExtra(EXTRA_CURRENCY_NAME_2, curs[1] )
                    // putExtra(EXTRA_EXCHANGE_NAME, exName)
@@ -161,6 +165,8 @@ class MainActivity : ExratesActivity() {
     override fun updatePairData(list: MutableList<CurrencyPair>) {
         log_d("updatePairData")
         log_d(list.joinToString{"${it.symbol} | ${it.exchangeName}"})
+        app.currentCur1 = list[0].baseCurrency
+        app.currentCur2 = list[0].quoteCurrency
         super.updatePairData(list)
         app.currentPairInfo = list
         var count = 0.0
@@ -217,7 +223,7 @@ class MainActivity : ExratesActivity() {
 
             }
             log_d("get exchange")
-            val defaultExchName = exchangeNamesList[0]
+            val defaultExchName = exchangeNamesList[0] //todo ??
             model.getActualExchange(ExchangePayload(1, app.currentInterval, emptyArray()))
             model.getActualPair(
                 "BCC", "BTC", //todo hardcode
@@ -248,7 +254,7 @@ class MainActivity : ExratesActivity() {
 
     override fun startProgress(){
         super.startProgress()
-        log_d( "Snack started..")
+        log_trace( "Snack started..")
         Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
     }
 
@@ -281,7 +287,7 @@ class MainActivity : ExratesActivity() {
                 }
 
                 else {
-                    log_d("Saved lists loaded")
+                    log_trace("Saved lists loaded")
                     try{
                         if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST, ArrayList<ExchangeNamesObject>())
                         log_d("ds")
@@ -299,10 +305,10 @@ class MainActivity : ExratesActivity() {
                     }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val cur1 = storage.getValue(CURRENT_CUR_1, "ETCBTC")
-                    val cur2 = storage.getValue(CURRENT_CUR_2, "ETCBTC")
+                    val cur1 = storage.getValue(CURRENT_CUR_1, "AGIBTC")
+                    val cur2 = storage.getValue(CURRENT_CUR_2, "AGIBTC")
                     val exId = storage.getValue(CURRENT_EXCHANGE_ID, 1)
-                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("ETCBTC")) //todo hardcode
+                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("AGIBTC")) //todo hardcode
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
 

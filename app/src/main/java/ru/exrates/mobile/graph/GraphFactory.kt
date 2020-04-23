@@ -4,6 +4,7 @@ import android.graphics.Color
 import lecho.lib.hellocharts.model.*
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.log_d
+import ru.exrates.mobile.log_trace
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.time.*
@@ -41,12 +42,9 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
     }
 
     private fun createGraph(valueDataList: ValueDataList, line: Line){
-        //anyChartView.isViewportCalculationEnabled = false
 
+        log_trace(valueDataList.values.joinToString { "x: ${it.x} y: ${it.y}" })
 
-
-        log_d(valueDataList.values.joinToString { "x: ${it.x} y: ${it.y}" })
-        //line.setHasPoints(false)
         val lineChartData = LineChartData(mutableListOf(line))
         with(lineChartData){
             isValueLabelBackgroundEnabled = true
@@ -76,12 +74,10 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
         anyChartView.lineChartData = lineChartData
         anyChartView.isValueSelectionEnabled = true
 
-        //anyChartView.setHa
-        //anyChartView.contentDescription = "dfdf"
     }
 
     private fun createChartValueDataList(priceHistory: List<Double>): ValueDataList {
-        log_d("current interval = $currentInterval")
+        log_trace("current interval = $currentInterval")
         var dateInterval = Duration.ZERO
         var pattern = "HH:mm"
         var xLabel = ""
@@ -149,7 +145,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             labelValueList.add(start.toEpochSecond(ZoneOffset.UTC).toFloat())
 
         }
-        log_d("price history values: ${if(priceHistory.isEmpty()) "0" else priceHistory.joinToString()}")
+        log_trace("price history values: ${if(priceHistory.isEmpty()) "0" else priceHistory.joinToString()}")
 
         var yLabels: List<String>? = null
         var yAxisLabelValues: List<Float>? = null
@@ -173,11 +169,11 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             }
         }
 
-        log_d("labels size: ${labelList.size}  l. values size: ${labelValueList.size}")
-        log_d("labels X: ${labelList.joinToString()}")
-        log_d("label values X: ${labelValueList.joinToString()}")
-        log_d("labels Y: ${yLabels?.joinToString()}")
-        log_d("label values Y ${yAxisLabelValues?.joinToString()}")
+        log_trace("labels size: ${labelList.size}  l. values size: ${labelValueList.size}")
+        log_trace("labels X: ${labelList.joinToString()}")
+        log_trace("label values X: ${labelValueList.joinToString()}")
+        log_trace("labels Y: ${yLabels?.joinToString()}")
+        log_trace("label values Y ${yAxisLabelValues?.joinToString()}")
 
         return ValueDataList(
             dataList,

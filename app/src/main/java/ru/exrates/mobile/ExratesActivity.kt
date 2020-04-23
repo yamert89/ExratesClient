@@ -73,7 +73,7 @@ abstract class ExratesActivity : AppCompatActivity() {
             override fun run() {
                 task()
             }
-        }, 75000L, 80000L) //todo period
+        }, 75000L, 40000L) //todo period
     }
 
     protected abstract fun task()

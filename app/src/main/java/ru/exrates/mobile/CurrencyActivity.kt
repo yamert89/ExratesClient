@@ -118,7 +118,7 @@ class CurrencyActivity : ExratesActivity() {
         adapter.pairsByExchanges.addAll(list)
         adapter.notifyDataSetChanged()
         val pair = list.find { it.exId == app.currentExchange?.exId }
-        updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in updatePairData"))
+        updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in exId: ${app.currentExchange?.exId}, and pairData: ${list.joinToString()}"))
         if (historyPeriodSpinner.adapter.isEmpty) {
             val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
             historyAdapter.clear()
@@ -154,6 +154,7 @@ class CurrencyActivity : ExratesActivity() {
     }
 
     override fun task() {
+        log_d("task cur activ started with cur1: ${app.currentCur1}, cur2: ${app.currentCur2}, curGraphInterval: $currentGraphInterval")
         model.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
     }
 
