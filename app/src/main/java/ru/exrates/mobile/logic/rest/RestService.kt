@@ -34,6 +34,6 @@ interface RestService {
     fun getPair(@Query("c1") c1: String, @Query("c2") c2: String, @Query("limit") limit: Int): Call<MutableList<CurrencyPair>>
 
     @GET("rest/pair/history")
-    fun getPriceHistory(@Query("pname") pName: String, @Query("exId") exId: Int,
+    fun getPriceHistory(@Query("c1") c1: String, @Query("c2") c2: String, @Query("exId") exId: Int,
                         @Query("historyinterval") historyInterval: String, @Query("limit") limit: Int): Call<List<Double>>
 }

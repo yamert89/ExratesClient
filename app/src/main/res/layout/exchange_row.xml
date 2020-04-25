@@ -4,7 +4,7 @@
     android:id="@+id/exchange_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#4003A9F4"
+    android:background="#40E4E4E4"
     android:orientation="horizontal">
 
     <ImageView

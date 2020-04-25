@@ -47,9 +47,9 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
         })
     }
 
-    fun getPriceHistory(pname: String, exchId: Int, historyinterval: String, limit: Int){
+    fun getPriceHistory(c1: String, c2: String, exchId: Int, historyinterval: String, limit: Int){
         log_d("REQUEST: price history")
-        app.restService.getPriceHistory(pname, exchId, historyinterval, truncateLimit(limit)).enqueue(HistoryCallback(activity))
+        app.restService.getPriceHistory(c1, c2, exchId, historyinterval, truncateLimit(limit)).enqueue(HistoryCallback(activity))
     }
 
     private fun truncateLimit(limit: Int): Int{

@@ -78,14 +78,14 @@ class CurrencyActivity : ExratesActivity() {
                     val interval = parent?.getItemAtPosition(position) as String
                     currentGraphInterval = interval
                     currentGraphIntervalIdx = position
-                    model.getPriceHistory(currName1 + currName2, app.currentExchange!!.exId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
+                    model.getPriceHistory(currName1, currName2, app.currentExchange!!.exId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
 
                 }
             }
 
             currencyName.text = "$currName1/$currName2"
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), currentInterval)
+            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, currentInterval)
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
