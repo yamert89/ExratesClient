@@ -3,7 +3,8 @@ package ru.exrates.mobile.logic.entities
 data class Exchange(val exId: Int, val name: String, val pairs: MutableList<CurrencyPair>,
                     val changePeriods: List<String>,
                     val historyPeriods: List<String>,
-                    val showHidden: Boolean = true
+                    val showHidden: Boolean = true,
+                    val status: Int
                     ): java.io.Serializable{
 
     override fun toString(): String {

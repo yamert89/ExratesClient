@@ -4,10 +4,7 @@ import android.view.View
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import ru.exrates.mobile.CurrencyActivity
-import ru.exrates.mobile.ExratesActivity
-import ru.exrates.mobile.MainActivity
-import ru.exrates.mobile.log_e
+import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
@@ -28,6 +25,10 @@ abstract class ExCallback<T>(protected val activity: ExratesActivity): Callback<
     }
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
+        when(response.code()){
+            404 -> log_e("Page not found")
+            else -> log_trace("resp success")
+        }
         if (response.body() == null) throw IllegalStateException("Response is null : $response ${response.message()} \n ${response.errorBody().toString()}")
     }
 
