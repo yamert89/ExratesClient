@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -32,6 +33,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var pairsAdapter: PairsAdapter
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
+    private lateinit var root: ConstraintLayout
     private var curIdx = 0
     private var exIdx = 0
     private var cur: CurrencyPair? = null
@@ -51,6 +53,7 @@ class MainActivity : ExratesActivity() {
             progressLayout = findViewById(R.id.progressLayout)
             anyChartView = findViewById(R.id.anyChartView)
             goToCurBtn = findViewById(R.id.go_to_currency)
+            root = findViewById(R.id.root)
 
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
@@ -177,7 +180,13 @@ class MainActivity : ExratesActivity() {
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         log_d("priceHistory:" + cur.priceHistory.joinToString())
         log_d("priceHistory truncated:" + cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1).joinToString())
-        GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1))
+        if (cur.priceHistory.isEmpty()) {
+            root.removeView(anyChartView)
+            val notice = TextView(app.baseContext).apply {
+                text = "Data not available"
+            }
+            root.addView(notice, 4)
+        } else GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1))
     }
 
     override fun task() {

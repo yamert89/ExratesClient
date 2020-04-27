@@ -78,6 +78,7 @@ class HistoryCallback(activity: ExratesActivity) : ExCallback<List<Double>>(acti
     override fun onResponse(call: Call<List<Double>>, response: Response<List<Double>>) {
         super.onResponse(call, response)
         activity as CurrencyActivity
+        if (response.code() == 404) mainFunc(listOf(), activity::updateGraph)
         mainFunc(response.body(), activity::updateGraph)
     }
 

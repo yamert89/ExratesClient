@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +25,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var exchangesAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var historyPeriodSpinner: Spinner
+    private lateinit var root: ConstraintLayout
     private lateinit var curIco : ImageView
     private var currentInterval = "1h" //TODO app.curInt
     private var currentGraphInterval = "3m" //todo?
@@ -45,6 +47,7 @@ class CurrencyActivity : ExratesActivity() {
             historyPeriodSpinner = findViewById(R.id.cur_history_period)
             anyChartView = findViewById(R.id.anyChartView_cur)
             curIco = findViewById(R.id.cur_ico)
+            root = findViewById(R.id.currency)
             //storage = Storage(applicationContext)
             currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "3m")
             currentGraphIntervalIdx = storage.getValue(CURRENT_GRAPH_INTERVAL_IDX, 0)
@@ -131,26 +134,45 @@ class CurrencyActivity : ExratesActivity() {
 
         val cur = list.find { it.exId == app.currentExchange?.exId }!!
 
-        GraphFactory(anyChartView, currentGraphInterval).createBigGraph(cur.priceHistory)
-       // anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
-        //set.data(dataList as List<ValueDataEntry>)
-        log_d("updating graph from pairData with ${cur.priceHistory.joinToString()}")
+        if (cur.priceHistory.isEmpty()) {
+            root.removeView(anyChartView)
+            val notice = TextView(app.baseContext).apply {
+                text = "Data not available"
+            }
+            root.addView(notice, 2)
+        } else {
+            GraphFactory(anyChartView, currentGraphInterval).createBigGraph(cur.priceHistory)
+            // anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
+            //set.data(dataList as List<ValueDataEntry>)
+            log_d("updating graph from pairData with ${cur.priceHistory.joinToString()}")
+        }
+
+
 
     }
 
     fun updateGraph(list: List<Double>){
         //val data = mutableListOf<ValueDataEntry>()
-        GraphFactory(anyChartView, currentGraphInterval).createBigGraph(list)
+        if (list.isEmpty()) {
+            root.removeView(anyChartView)
+            val notice = TextView(app.baseContext).apply {
+                text = "Data not available"
+            }
+            root.addView(notice, 2)
+        } else {
+            GraphFactory(anyChartView, currentGraphInterval).createBigGraph(list)
 
 
-        //list.forEach { data.add(ValueDataEntry("1", it)) }
-        log_d("updating graph with ${list.joinToString()}")
+            //list.forEach { data.add(ValueDataEntry("1", it)) }
+            log_d("updating graph with ${list.joinToString()}")
 
-        //set.data(dataList as List<ValueDataEntry>)
-        //anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
-        /*val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
-        historyAdapter.addAll(list.mapTo(mutableListOf<String>(), {it.toString()}))
-        historyAdapter.notifyDataSetChanged()*/
+            //set.data(dataList as List<ValueDataEntry>)
+            //anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
+            /*val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
+            historyAdapter.addAll(list.mapTo(mutableListOf<String>(), {it.toString()}))
+            historyAdapter.notifyDataSetChanged()*/
+        }
+
     }
 
     override fun task() {
