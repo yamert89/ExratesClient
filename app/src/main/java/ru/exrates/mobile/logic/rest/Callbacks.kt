@@ -25,10 +25,10 @@ abstract class ExCallback<T>(protected val activity: ExratesActivity): Callback<
     }
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
-        when(response.code()){
+       /* when(response.code()){
             404 -> log_e("Page not found")
             else -> log_trace("resp success")
-        }
+        }*/
         if (response.body() == null) throw IllegalStateException("Response is null : $response ${response.message()} \n ${response.errorBody().toString()}")
     }
 

@@ -13,7 +13,9 @@ import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
+import ru.exrates.mobile.structures.IntervalComparator
 import ru.exrates.mobile.viewadapters.ExchangesAdapter
+import java.util.*
 
 class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyName: TextView
@@ -27,6 +29,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var historyPeriodSpinner: Spinner
     private lateinit var root: ConstraintLayout
     private lateinit var curIco : ImageView
+    private var intervals: MutableSet<String> = TreeSet(IntervalComparator())
     private var currentInterval = "1h" //TODO app.curInt
     private var currentGraphInterval = "3m" //todo?
     private var currentGraphIntervalIdx = 0
@@ -53,6 +56,7 @@ class CurrencyActivity : ExratesActivity() {
             currentGraphIntervalIdx = storage.getValue(CURRENT_GRAPH_INTERVAL_IDX, 0)
 
             model = Model(app, this)
+
 
             if(currentNameListsIsNull()){
                 currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
@@ -98,13 +102,21 @@ class CurrencyActivity : ExratesActivity() {
             }
 
             currencyInterval.setOnClickListener {
-                currencyIntervalValue.text = if(currentDataIsNull()) "1h" else
-                    app.currentPairInfo!![0].priceChange.higherKey(currencyIntervalValue.text.toString()) ?: app.currentPairInfo!![0].priceChange.firstKey()
+                currencyIntervalValue.text = if(currentDataIsNull()) app.currentExchange!!.historyPeriods[0] else
+                    intervals.first()
+                    /*app.currentPairInfo!!.find { it.exId == app.currentExchange!!.exId }!!
+                        .priceChange.higherKey(currencyIntervalValue.text.toString())
+                        ?: app.currentPairInfo!![0].priceChange.firstKey()*/
                 val adapter = currencyExchanges.adapter as ExchangesAdapter
                 adapter.interval = currencyIntervalValue.text.toString()
                 adapter.notifyDataSetChanged()
 
             }
+
+            app.currentPairInfo!!.forEach {
+                intervals.addAll(it.historyPeriods!!.subtract(intervals))
+            }
+
 
         }catch (e: Exception){
             Log.d(null, "Current activity start failed", e)
