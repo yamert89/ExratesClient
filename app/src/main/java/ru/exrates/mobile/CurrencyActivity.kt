@@ -13,6 +13,7 @@ import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
+import ru.exrates.mobile.logic.entities.SelectedExchange
 import ru.exrates.mobile.structures.IntervalComparator
 import ru.exrates.mobile.viewadapters.ExchangesAdapter
 import java.util.*
@@ -33,6 +34,7 @@ class CurrencyActivity : ExratesActivity() {
     private var currentInterval = "" //TODO app.curInt
     private var currentGraphInterval = "" //todo?
     private var currentGraphIntervalIdx = 0
+    private var selectedExchange = SelectedExchange(1)
         //private var activeExchangeName = "binanceExchange"
 
 
@@ -88,14 +90,14 @@ class CurrencyActivity : ExratesActivity() {
                     val interval = parent?.getItemAtPosition(position) as String
                     currentGraphInterval = interval
                     currentGraphIntervalIdx = position
-                    model.getPriceHistory(currName1, currName2, app.currentExchange!!.exId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
+                    model.getPriceHistory(currName1, currName2, selectedExchange.id, interval, CURRENCY_HISTORIES_CUR_NUMBER)
 
                 }
             }
 
             currencyName.text = "$currName1 / $currName2"
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, currentInterval)
+            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, currentInterval, selectedExchange)
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
@@ -108,7 +110,7 @@ class CurrencyActivity : ExratesActivity() {
 
             currencyInterval.setOnClickListener {
                 val interval = if(currentDataIsNull()) app.currentExchange!!.historyPeriods[0] else
-                    app.currentPairInfo!!.find { it.exId == app.currentExchange!!.exId }!!
+                    app.currentPairInfo!!.find { it.exId == selectedExchange.id }!!
                         .priceChange.higherKey(currentInterval)
                         ?: app.currentPairInfo!![0].priceChange.firstKey()
                 currencyIntervalValue.text = interval
@@ -118,17 +120,22 @@ class CurrencyActivity : ExratesActivity() {
                 adapter.notifyDataSetChanged()
 
             }
-
-
-
-
-
+            selectedExchange.listener = {
+                val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
+                historyAdapter.clear()
+                historyAdapter.addAll(
+                    app.currentPairInfo?.find { it.exId == selectedExchange.id }?.historyPeriods!!
+                )
+                historyAdapter.notifyDataSetChanged()
+                historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
+            }
 
         }catch (e: Exception){
             Log.d(null, "Current activity start failed", e)
         }
 
     }
+
 
     private fun updateIntervals(){
         app.currentPairInfo!!.forEach {
@@ -149,8 +156,8 @@ class CurrencyActivity : ExratesActivity() {
         adapter.pairsByExchanges.clear()
         adapter.pairsByExchanges.addAll(list)
         adapter.notifyDataSetChanged()
-        val pair = list.find { it.exId == app.currentExchange?.exId }
-        updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in exId: ${app.currentExchange?.exId}, and pairData: ${list.joinToString()}"))
+        val pair = list.find { it.exId == selectedExchange.id }
+        updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in exId: ${selectedExchange.id}, and pairData: ${list.joinToString()}"))
         if (historyPeriodSpinner.adapter.isEmpty) {
             val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
             historyAdapter.clear()
@@ -161,7 +168,7 @@ class CurrencyActivity : ExratesActivity() {
             historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
         }
 
-        val cur = list.find { it.exId == app.currentExchange?.exId }!!
+        val cur = list.find { it.exId == selectedExchange.id }!!
 
         if (cur.priceHistory.isEmpty()) {
             root.removeView(anyChartView)

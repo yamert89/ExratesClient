@@ -12,12 +12,13 @@ import ru.exrates.mobile.R
 import ru.exrates.mobile.log_d
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.entities.CurrencyPair
+import ru.exrates.mobile.logic.entities.SelectedExchange
 import ru.exrates.mobile.toNumeric
 
 class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
                        private val model: Model,
                        var interval: String = "1h",
-                       private val defaultExId: Int = 1 ): RecyclerView.Adapter<ExchangesAdapter.ExchangeViewHolder>() {
+                       val selectedExchange: SelectedExchange ): RecyclerView.Adapter<ExchangesAdapter.ExchangeViewHolder>() {
     private val selectedColor = Color.parseColor("#4003A9F4")
     private val defaultColor = Color.parseColor("#40E4E4E4")
     private var selectedRow: LinearLayout? = null
@@ -32,7 +33,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
 
     override fun onBindViewHolder(holder: ExchangeViewHolder, position: Int) {
         val pair = pairsByExchanges[position]
-        if (pair.exId == defaultExId) holder.linearLayout.setBackgroundColor(selectedColor)
+        if (pair.exId == selectedExchange.id) holder.linearLayout.setBackgroundColor(selectedColor)
         holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_name).text = pair.exchangeName
         holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_price).text = pair.price.toNumeric().toString()
         holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_change).text = pair.priceChange[interval].toString() + "%"
@@ -43,7 +44,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
             selectedRow?.setBackgroundColor(defaultColor)
             it.setBackgroundColor(selectedColor)
             selectedRow = it as LinearLayout
-            //todo current exchange select, graph intervals update
+            selectedExchange.id = pair.exId
         }
 
 
