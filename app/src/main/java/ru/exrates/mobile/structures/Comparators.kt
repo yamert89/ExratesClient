@@ -6,10 +6,10 @@ class IntervalComparator : Comparator<String>{
         if (o1 == o2) return 0
         val regExp = "(\\d{1,2})(\\D)".toRegex()
         val groups1 = regExp.find(o1)?.groups ?: throw NullPointerException("Regexp is null")
-        val numToken1 = groups1[1]!!.value
+        val numToken1 = groups1[1]!!.value.toInt()
         val stringToken1 = groups1[2]!!.value
         val groups2 = regExp.find(o2)?.groups ?: throw NullPointerException("Regexp is null")
-        val numToken2 = groups2[1]!!.value
+        val numToken2 = groups2[1]!!.value.toInt()
         val stringToken2 = groups2[2]!!.value
         val seq = "mhdwMy"
         val idx1 = seq.indexOf(stringToken1)

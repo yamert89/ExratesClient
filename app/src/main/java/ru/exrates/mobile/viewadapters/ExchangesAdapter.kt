@@ -43,6 +43,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
             selectedRow?.setBackgroundColor(defaultColor)
             it.setBackgroundColor(selectedColor)
             selectedRow = it as LinearLayout
+            //todo current exchange select, graph intervals update
         }
 
 

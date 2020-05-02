@@ -30,8 +30,8 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var root: ConstraintLayout
     private lateinit var curIco : ImageView
     private var intervals: MutableSet<String> = TreeSet(IntervalComparator())
-    private var currentInterval = "1h" //TODO app.curInt
-    private var currentGraphInterval = "3m" //todo?
+    private var currentInterval = "" //TODO app.curInt
+    private var currentGraphInterval = "" //todo?
     private var currentGraphIntervalIdx = 0
         //private var activeExchangeName = "binanceExchange"
 
@@ -52,14 +52,17 @@ class CurrencyActivity : ExratesActivity() {
             curIco = findViewById(R.id.cur_ico)
             root = findViewById(R.id.currency)
             //storage = Storage(applicationContext)
-            currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "3m")
+            currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, app.currentExchange!!.historyPeriods.first())
             currentGraphIntervalIdx = storage.getValue(CURRENT_GRAPH_INTERVAL_IDX, 0)
 
             model = Model(app, this)
 
+            updateIntervals()
+
+            log_d(intervals.joinToString())
 
             if(currentNameListsIsNull()){
-                currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
+                currentInterval = storage.getValue(CURRENT_INTERVAL, intervals.first())
                 log_d("Loaded saved pair data from storage")
             }
             if (currentNameListsIsNull()) throw NullPointerException("current data is null")
@@ -77,7 +80,7 @@ class CurrencyActivity : ExratesActivity() {
             historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
 
-            historyPeriodSpinner.setSelection(0)
+            historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
             historyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onNothingSelected(parent: AdapterView<*>?){}
 
@@ -90,7 +93,7 @@ class CurrencyActivity : ExratesActivity() {
                 }
             }
 
-            currencyName.text = "$currName1/$currName2"
+            currencyName.text = "$currName1 / $currName2"
 
             exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, currentInterval)
             viewManager = LinearLayoutManager(this)
@@ -101,21 +104,24 @@ class CurrencyActivity : ExratesActivity() {
 
             }
 
+            currencyIntervalValue.text = intervals.first()
+
             currencyInterval.setOnClickListener {
-                currencyIntervalValue.text = if(currentDataIsNull()) app.currentExchange!!.historyPeriods[0] else
-                    intervals.first()
-                    /*app.currentPairInfo!!.find { it.exId == app.currentExchange!!.exId }!!
-                        .priceChange.higherKey(currencyIntervalValue.text.toString())
-                        ?: app.currentPairInfo!![0].priceChange.firstKey()*/
+                val interval = if(currentDataIsNull()) app.currentExchange!!.historyPeriods[0] else
+                    app.currentPairInfo!!.find { it.exId == app.currentExchange!!.exId }!!
+                        .priceChange.higherKey(currentInterval)
+                        ?: app.currentPairInfo!![0].priceChange.firstKey()
+                currencyIntervalValue.text = interval
+                currentInterval = interval
                 val adapter = currencyExchanges.adapter as ExchangesAdapter
-                adapter.interval = currencyIntervalValue.text.toString()
+                adapter.interval = currentInterval
                 adapter.notifyDataSetChanged()
 
             }
 
-            app.currentPairInfo!!.forEach {
-                intervals.addAll(it.historyPeriods!!.subtract(intervals))
-            }
+
+
+
 
 
         }catch (e: Exception){
@@ -124,9 +130,20 @@ class CurrencyActivity : ExratesActivity() {
 
     }
 
+    private fun updateIntervals(){
+        app.currentPairInfo!!.forEach {
+            intervals.addAll(it.historyPeriods!!.subtract(intervals))
+        }
+        val interval = intervals.first()
+        currentInterval = interval
+        currencyIntervalValue.text = interval
+
+    }
+
     override fun updatePairData(list: MutableList<CurrencyPair>) {
         super.updatePairData(list)
         app.currentPairInfo = list
+        updateIntervals()
         val adapter = currencyExchanges.adapter as ExchangesAdapter
         adapter.interval = currencyIntervalValue.text.toString()
         adapter.pairsByExchanges.clear()
@@ -198,6 +215,8 @@ class CurrencyActivity : ExratesActivity() {
         storage.storeValue(CURRENT_GRAPH_INTERVAL_IDX, currentGraphIntervalIdx)
 
     }
+
+
 
 
 
