@@ -252,6 +252,7 @@ class MainActivity : ExratesActivity() {
         log_d( "exchanges: $exchangeNames")
         with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
         exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
+
     }
 
     private fun updateCurrenciesList(curNames: List<String>?){
@@ -277,7 +278,8 @@ class MainActivity : ExratesActivity() {
             SAVED_CUR_IDX to currencyName.selectedItemPosition,
             SAVED_CURRENCIES_ADAPTER to adapterName,
             adapterName to currenciesRecyclerView.adapter!!,
-            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC"))) //todo hardcode
+            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC")), //todo hardcode
+            SAVED_EXID to (app.currentExchange?.exId ?: 1))
     }
 
 
@@ -342,8 +344,13 @@ class MainActivity : ExratesActivity() {
                 return
             }else model.ping()
 
-            updateExchangesList(app.exchangeNamesList?.map { it.name })
-            updateCurrenciesList(app.exchangeNamesList?.find { it.id == app.currentExchange?.exId }?.pairs)
+            GlobalScope.launch(Dispatchers.Main) {
+                updateExchangesList(app.exchangeNamesList?.map { it.name })
+                updateCurrenciesList(app.exchangeNamesList?.find {
+                    it.id == storage.getValue(SAVED_EXID, 1) }?.pairs)
+            }
+
+
             currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
 
         }catch (e: Exception){e.printStackTrace()}
