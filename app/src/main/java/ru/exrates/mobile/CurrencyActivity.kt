@@ -56,9 +56,13 @@ class CurrencyActivity : ExratesActivity() {
             //storage = Storage(applicationContext)
             currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, app.currentExchange!!.historyPeriods.first())
 
-
-
             model = Model(app, this)
+
+            val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
+            val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
+            //app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+
+            model.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
             updateIntervals()
 
@@ -70,15 +74,8 @@ class CurrencyActivity : ExratesActivity() {
             }
             if (currentNameListsIsNull()) throw NullPointerException("current data is null")
 
-
-            val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
-            val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
-            //app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
             val curIcoId = intent.getIntExtra(EXTRA_CUR_ICO, 0)
             curIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, curIcoId, null))
-
-
-            model.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
             historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
@@ -101,7 +98,7 @@ class CurrencyActivity : ExratesActivity() {
 
             currencyName.text = "$currName1 / $currName2"
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, currentInterval, selectedExchange)
+            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, app, currentInterval, selectedExchange)
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
