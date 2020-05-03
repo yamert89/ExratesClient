@@ -232,14 +232,14 @@ class MainActivity : ExratesActivity() {
 
             }
             log_d("get exchange")
-            val defaultExchName = exchangeNamesList[0] //todo ??
+
             model.getActualExchange(ExchangePayload(1, app.currentInterval, emptyArray()))
             model.getActualPair(
                 "BCC", "BTC", //todo hardcode
                 CURRENCY_HISTORIES_MAIN_NUMBER
             ) //todo default exch and pair
             updateExchangesList(exchangeNamesList.map { it.name })
-            updateCurrenciesList(exchangeNamesList[0].pairs)//todo
+            updateCurListsWithAllPairs(exchangeNamesList)
         }catch (e: Exception){
             log_e("exception in init method")
             e.printStackTrace()
@@ -260,6 +260,12 @@ class MainActivity : ExratesActivity() {
         log_d( "curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
         currencyName.setSelection(curIdx)
+    }
+
+    private fun updateCurListsWithAllPairs(exchangeNamesList: List<ExchangeNamesObject>){
+        val allPairs = ArrayList<String>(2000)
+        exchangeNamesList.forEach { allPairs.addAll(it.pairs.subtract(allPairs)) }
+        updateCurrenciesList(allPairs.sorted())
     }
 
     override fun startProgress(){
@@ -345,9 +351,9 @@ class MainActivity : ExratesActivity() {
             }else model.ping()
 
             GlobalScope.launch(Dispatchers.Main) {
-                updateExchangesList(app.exchangeNamesList?.map { it.name })
-                updateCurrenciesList(app.exchangeNamesList?.find {
-                    it.id == storage.getValue(SAVED_EXID, 1) }?.pairs)
+                if (app.exchangeNamesList == null) return@launch
+                updateExchangesList(app.exchangeNamesList!!.map { it.name })
+                updateCurListsWithAllPairs(app.exchangeNamesList!!)
             }
 
 
