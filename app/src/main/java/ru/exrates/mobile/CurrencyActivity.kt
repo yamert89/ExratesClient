@@ -55,7 +55,8 @@ class CurrencyActivity : ExratesActivity() {
             root = findViewById(R.id.currency)
             //storage = Storage(applicationContext)
             currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, app.currentExchange!!.historyPeriods.first())
-            currentGraphIntervalIdx = storage.getValue(CURRENT_GRAPH_INTERVAL_IDX, 0)
+
+
 
             model = Model(app, this)
 
@@ -91,6 +92,9 @@ class CurrencyActivity : ExratesActivity() {
                     currentGraphInterval = interval
                     currentGraphIntervalIdx = position
                     model.getPriceHistory(currName1, currName2, selectedExchange.id, interval, CURRENCY_HISTORIES_CUR_NUMBER)
+                    val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
+                    storage.storeValue(key, position )
+                    log_d("Graph interval saved with key $key and value $position")
 
                 }
             }
@@ -126,6 +130,8 @@ class CurrencyActivity : ExratesActivity() {
                     app.currentPairInfo?.find { it.exId == selectedExchange.id }?.historyPeriods!!
                 )
                 historyAdapter.notifyDataSetChanged()
+                val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
+                currentGraphIntervalIdx = storage.getValue(key, 0)
                 historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
             }
 
@@ -137,12 +143,16 @@ class CurrencyActivity : ExratesActivity() {
 
 
     private fun updateIntervals(){
-        app.currentPairInfo!!.forEach {
+        app.currentPairInfo!!.forEach { //todo mb null?
             intervals.addAll(it.historyPeriods!!.subtract(intervals))
         }
         val interval = intervals.first()
         currentInterval = interval
         currencyIntervalValue.text = interval
+        val pairSymbol = app.currentPairInfo!![0].symbol
+        val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}$pairSymbol"
+        currentGraphIntervalIdx = storage.getValue(key, 0)
+        log_d("Graph interval loaded with key $key and value $currentGraphIntervalIdx")
 
     }
 
