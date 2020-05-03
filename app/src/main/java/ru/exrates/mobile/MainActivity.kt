@@ -12,6 +12,7 @@ import kotlinx.coroutines.*
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
+import ru.exrates.mobile.logic.activities.SearchButtonClickListener
 import ru.exrates.mobile.logic.entities.BindedImageView
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
@@ -34,6 +35,8 @@ class MainActivity : ExratesActivity() {
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
     private lateinit var root: ConstraintLayout
+    private lateinit var searchBtn: ImageView
+    private lateinit var autoCompleteTextView: AutoCompleteTextView
     private var curIdx = 0
     private var exIdx = 0
     private var cur: CurrencyPair? = null
@@ -54,6 +57,8 @@ class MainActivity : ExratesActivity() {
             anyChartView = findViewById(R.id.anyChartView)
             goToCurBtn = findViewById(R.id.go_to_currency)
             root = findViewById(R.id.root)
+            searchBtn = findViewById(R.id.main_search_btn)
+            autoCompleteTextView = findViewById(R.id.main_autoComplete)
 
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
@@ -137,6 +142,10 @@ class MainActivity : ExratesActivity() {
 
                 })
             }
+
+            searchBtn.setOnClickListener(SearchButtonClickListener(autoCompleteTextView, currencyName, this))
+
+            autoCompleteTextView.setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line ))
 
             log_d("Main activity created")
 
@@ -232,7 +241,11 @@ class MainActivity : ExratesActivity() {
                 CURRENCY_HISTORIES_MAIN_NUMBER
             ) //todo default exch and pair
             updateExchangesList(exchangeNamesList.map { it.name })
-            updateCurListsWithAllPairs(exchangeNamesList)
+            val allPairs = getListWithAllPairs(exchangeNamesList)
+            updateCurrenciesList(allPairs)
+            val adapter = autoCompleteTextView.adapter as ArrayAdapter<String>
+            adapter.addAll(allPairs)
+
         }catch (e: Exception){
             log_e("exception in init method")
             e.printStackTrace()
@@ -255,10 +268,10 @@ class MainActivity : ExratesActivity() {
         currencyName.setSelection(curIdx)
     }
 
-    private fun updateCurListsWithAllPairs(exchangeNamesList: List<ExchangeNamesObject>){
+    private fun getListWithAllPairs(exchangeNamesList: List<ExchangeNamesObject>): List<String>{
         val allPairs = ArrayList<String>(2000)
         exchangeNamesList.forEach { allPairs.addAll(it.pairs.subtract(allPairs)) }
-        updateCurrenciesList(allPairs.sorted())
+        return allPairs.sorted()
     }
 
     override fun startProgress(){
@@ -344,9 +357,12 @@ class MainActivity : ExratesActivity() {
             }else model.ping()
 
             GlobalScope.launch(Dispatchers.Main) {
-                if (app.exchangeNamesList == null) return@launch
+                if (app.exchangeNamesList == null || !currencyName.adapter.isEmpty) return@launch
                 updateExchangesList(app.exchangeNamesList!!.map { it.name })
-                updateCurListsWithAllPairs(app.exchangeNamesList!!)
+                val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
+                updateCurrenciesList(allPairs)
+                val adapter = autoCompleteTextView.adapter as ArrayAdapter<String>
+                adapter.addAll(allPairs)
             }
 
 

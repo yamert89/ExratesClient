@@ -1,6 +1,7 @@
-package ru.exrates.mobile
+package ru.exrates.mobile.logic.activities
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import ru.exrates.mobile.MyApp
 
 class IconProducer(private val app: MyApp) {
     private var iconList: Array<JsonUnit> = emptyArray()
