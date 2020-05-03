@@ -17,7 +17,7 @@ import ru.exrates.mobile.toNumeric
 
 class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
                        private val model: Model,
-                       var interval: String = "1h",
+                       var interval: String ,
                        val selectedExchange: SelectedExchange ): RecyclerView.Adapter<ExchangesAdapter.ExchangeViewHolder>() {
     private val selectedColor = Color.parseColor("#4003A9F4")
     private val defaultColor = Color.parseColor("#40E4E4E4")
@@ -36,7 +36,8 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
         if (pair.exId == selectedExchange.id) holder.linearLayout.setBackgroundColor(selectedColor)
         holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_name).text = pair.exchangeName
         holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_price).text = pair.price.toNumeric().toString()
-        holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_change).text = pair.priceChange[interval].toString() + "%"
+        holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_change).text =
+            if (pair.priceChange[interval] == null) "---" else pair.priceChange[interval].toString() + "%"
         holder.linearLayout.setOnClickListener {
             log_d("old selected row: $selectedRow, selected item id: ${it.id}")
             model.getPriceHistory(pair.baseCurrency, pair.quoteCurrency, pair.exId, interval, CURRENCY_HISTORIES_CUR_NUMBER)

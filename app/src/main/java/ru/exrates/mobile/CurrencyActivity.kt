@@ -30,9 +30,9 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var historyPeriodSpinner: Spinner
     private lateinit var root: ConstraintLayout
     private lateinit var curIco : ImageView
-    private var intervals: MutableSet<String> = TreeSet(IntervalComparator())
-    private var currentInterval = "" //TODO app.curInt
-    private var currentGraphInterval = "" //todo?
+    private var intervals: TreeSet<String> = TreeSet(IntervalComparator())
+    private var currentInterval = ""
+    private var currentGraphInterval = ""
     private var currentGraphIntervalIdx = 0
     private var selectedExchange = SelectedExchange(1)
         //private var activeExchangeName = "binanceExchange"
@@ -110,8 +110,7 @@ class CurrencyActivity : ExratesActivity() {
 
             currencyInterval.setOnClickListener {
                 val interval = if(currentDataIsNull()) app.currentExchange!!.historyPeriods[0] else
-                    app.currentPairInfo!!.find { it.exId == selectedExchange.id }!!
-                        .priceChange.higherKey(currentInterval)
+                    intervals.higher(currentInterval)
                         ?: app.currentPairInfo!![0].priceChange.firstKey()
                 currencyIntervalValue.text = interval
                 currentInterval = interval
