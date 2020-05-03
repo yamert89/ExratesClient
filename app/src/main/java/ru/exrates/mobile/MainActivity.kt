@@ -86,7 +86,6 @@ class MainActivity : ExratesActivity() {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val exchName = parent?.getItemAtPosition(position)
                     val exId = app.exchangeNamesList!!.find { it.name == exchName }!!.id
-                    //log_d("item selected pos: $position, name: $exchName")
 
                     startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
                         putExtra(EXTRA_EXCHANGE_ICO, getIcoId(exchName.toString()))
@@ -101,8 +100,6 @@ class MainActivity : ExratesActivity() {
                 }
 
             }
-
-
 
             currencyName.setSelection(0, false)
 
@@ -140,10 +137,6 @@ class MainActivity : ExratesActivity() {
 
                 })
             }
-
-
-
-            //val cartesian = AnyChart.line()
 
             log_d("Main activity created")
 
