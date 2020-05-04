@@ -68,7 +68,7 @@ class CurrencyActivity : ExratesActivity() {
 
             model.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
-            updateIntervals()
+            //updateIntervals()
 
             log_d(intervals.joinToString())
 
@@ -111,10 +111,10 @@ class CurrencyActivity : ExratesActivity() {
 
             }
 
-            currencyIntervalValue.text = intervals.first()
+            //currencyIntervalValue.text = intervals.first()
 
             currencyInterval.setOnClickListener {
-                val interval = if(currentDataIsNull()) app.currentExchange!!.historyPeriods[0] else
+                val interval = if(currentDataIsNull()) app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!! else
                     intervals.higher(currentInterval)
                         ?: app.currentPairInfo!![0].priceChange.firstKey()
                 currencyIntervalValue.text = interval
@@ -173,7 +173,7 @@ class CurrencyActivity : ExratesActivity() {
             val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
             historyAdapter.clear()
             historyAdapter.addAll(
-                app.currentExchange?.historyPeriods ?: list[0].historyPeriods!!
+                list[0].historyPeriods!! //fixme
             )//todo not null?
             historyAdapter.notifyDataSetChanged()
             historyPeriodSpinner.setSelection(currentGraphIntervalIdx)

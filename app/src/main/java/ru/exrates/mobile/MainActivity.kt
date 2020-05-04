@@ -110,7 +110,8 @@ class MainActivity : ExratesActivity() {
 
             currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if (curIdx == position) return
+                    startCurActivity(position)
+                    /*if (curIdx == position) return
                     curIdx = position
                     val curName = parent?.getItemAtPosition(position)
                     log_trace("item selected pos: $position, name: $curName, id: $id")
@@ -122,34 +123,13 @@ class MainActivity : ExratesActivity() {
                         putExtra(EXTRA_CURRENCY_NAME_2, curs.second)
                         putExtra(EXTRA_CUR_ICO, app.baseContext.resources.getIdentifier(curs.first.toLowerCase(), "drawable", app.baseContext.packageName))
                         //putExtra(EXTRA_EXCHANGE_ICO, exchangeName.selectedItem as String)
-                    })
+                    })*/
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
 
-            goToCurBtn.setOnClickListener {
-                startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
-                    val exName = exchangeName.selectedItem as String
-                    val symbol = currencyName.getItemAtPosition(curIdx).toString()
-                    val curs = parseSymbol(symbol)
-                    app.currentCur1 = curs.first
-                    app.currentCur2 = curs.second
-
-                    putExtra(EXTRA_CURRENCY_NAME_1, curs.first )
-                    putExtra(EXTRA_CURRENCY_NAME_2, curs.second )
-                   // putExtra(EXTRA_EXCHANGE_NAME, exName)
-                   // putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
-                    var id = app.baseContext.resources.getIdentifier(curs.first.toLowerCase(), "drawable", app.baseContext.packageName)
-                    if (id == 0) id = android.R.drawable.ic_menu_help
-                    putExtra(EXTRA_CUR_ICO, id)
-                    val defExId = if (app.exchangeNamesList?.get(0)?.pairs?.contains(symbol) == true) 1 else {
-                        app.exchangeNamesList?.find { it.pairs.contains(symbol) }?.id
-                    }
-                    putExtra(EXTRA_EXCHANGE_ID, defExId)
-
-                })
-            }
+            goToCurBtn.setOnClickListener { startCurActivity() }
 
             searchBtn.setOnClickListener(SearchButtonClickListener(autoCompleteTextView, currencyName, this))
 
@@ -161,6 +141,32 @@ class MainActivity : ExratesActivity() {
             e.printStackTrace()
         }
 
+    }
+
+    private fun startCurActivity(position: Int = Int.MAX_VALUE){
+        if (position != Int.MAX_VALUE) {
+            if (curIdx == position) return
+            curIdx = position
+        }
+        startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
+            val symbol = currencyName.getItemAtPosition(curIdx).toString()
+            val curs = parseSymbol(symbol)
+            app.currentCur1 = curs.first
+            app.currentCur2 = curs.second
+
+            putExtra(EXTRA_CURRENCY_NAME_1, curs.first )
+            putExtra(EXTRA_CURRENCY_NAME_2, curs.second )
+            // putExtra(EXTRA_EXCHANGE_NAME, exName)
+            // putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
+            var id = app.baseContext.resources.getIdentifier(curs.first.toLowerCase(), "drawable", app.baseContext.packageName)
+            if (id == 0) id = android.R.drawable.ic_menu_help
+            putExtra(EXTRA_CUR_ICO, id)
+            val defExId = if (app.exchangeNamesList?.get(0)?.pairs?.contains(symbol) == true) 1 else {
+                app.exchangeNamesList?.find { it.pairs.contains(symbol) }?.id
+            }
+            putExtra(EXTRA_EXCHANGE_ID, defExId)
+
+        })
     }
 
     private fun parseSymbol(symbol: String): Pair<String, String>{
@@ -182,6 +188,10 @@ class MainActivity : ExratesActivity() {
 
     override fun updatePairData(list: MutableList<CurrencyPair>) {
         log_d("updatePairData")
+        if (list.isEmpty()){
+            log_e("Incoming list of pairData is empty")
+            return
+        }
         log_d(list.joinToString{"${it.symbol} | ${it.exchangeName}"})
         app.currentCur1 = list[0].baseCurrency
         app.currentCur2 = list[0].quoteCurrency
@@ -190,13 +200,14 @@ class MainActivity : ExratesActivity() {
         var count = 0.0
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
-        val cur = list.find { it.exId == app.currentExchange?.exId ?: 1 }!!
+        val cur = list.find { it.exId == app.currentExchange?.exId ?: 1 } ?: list[0] //todo right? app.currentExchange outdated. how to choose right pair?
         log_d("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         log_d("priceHistory:" + cur.priceHistory.joinToString())
         log_d("priceHistory truncated:" + cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1).joinToString())
         if (cur.priceHistory.isEmpty()) {
             root.removeView(anyChartView)
+            log_e("Graph removed")
             val notice = TextView(app.baseContext).apply {
                 text = "Data not available"
             }
