@@ -17,9 +17,9 @@
 
         <ImageView
             android:id="@+id/exIco"
-            android:layout_width="158dp"
+            android:layout_width="140dp"
             android:layout_height="47dp"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -29,44 +29,26 @@
             android:id="@+id/cur_interval"
             android:layout_width="wrap_content"
             android:layout_height="38dp"
+            android:layout_marginStart="56dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="28dp"
             android:text="Interval"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/checkBox2"
+            app:layout_constraintEnd_toStartOf="@+id/intervalValue"
+            app:layout_constraintHorizontal_bias="0.657"
+            app:layout_constraintStart_toEndOf="@+id/exIco"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/intervalValue"
-            android:layout_width="16dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-
-            android:text="1h"
-            app:layout_constraintEnd_toEndOf="@+id/cur_interval"
-            app:layout_constraintStart_toStartOf="@+id/cur_interval"
-            app:layout_constraintTop_toBottomOf="@+id/cur_interval" />
-
-        <CheckBox
-            android:id="@+id/checkBox2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="12dp"
-            android:text="SelectAll"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="28dp"
+            android:text="1h"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Switch
-            android:id="@+id/exch_btn_hide_show"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="16dp"
-            android:text="hide  "
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/checkBox2"
-            app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

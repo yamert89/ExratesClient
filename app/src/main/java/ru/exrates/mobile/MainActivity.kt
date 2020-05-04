@@ -114,13 +114,13 @@ class MainActivity : ExratesActivity() {
                     curIdx = position
                     val curName = parent?.getItemAtPosition(position)
                     log_trace("item selected pos: $position, name: $curName, id: $id")
-                    val curs = curName.toString().split("/")
-                    app.currentCur1 = curs[0]
-                    app.currentCur2 = curs[1]
+                    val curs = parseSymbol(curName.toString())
+                    app.currentCur1 = curs.first
+                    app.currentCur2 = curs.second
                     startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
-                        putExtra(EXTRA_CURRENCY_NAME_1, curs[0])
-                        putExtra(EXTRA_CURRENCY_NAME_2, curs[1])
-                        putExtra(EXTRA_CUR_ICO, app.baseContext.resources.getIdentifier(curs[0].toLowerCase(), "drawable", app.baseContext.packageName))
+                        putExtra(EXTRA_CURRENCY_NAME_1, curs.first)
+                        putExtra(EXTRA_CURRENCY_NAME_2, curs.second)
+                        putExtra(EXTRA_CUR_ICO, app.baseContext.resources.getIdentifier(curs.first.toLowerCase(), "drawable", app.baseContext.packageName))
                         //putExtra(EXTRA_EXCHANGE_ICO, exchangeName.selectedItem as String)
                     })
                 }
@@ -131,14 +131,22 @@ class MainActivity : ExratesActivity() {
             goToCurBtn.setOnClickListener {
                 startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
                     val exName = exchangeName.selectedItem as String
-                    val curs = currencyName.getItemAtPosition(curIdx).toString().split("/")
-                    app.currentCur1 = curs[0]
-                    app.currentCur2 = curs[1]
-                    putExtra(EXTRA_CURRENCY_NAME_1, curs[0] )
-                    putExtra(EXTRA_CURRENCY_NAME_2, curs[1] )
+                    val symbol = currencyName.getItemAtPosition(curIdx).toString()
+                    val curs = parseSymbol(symbol)
+                    app.currentCur1 = curs.first
+                    app.currentCur2 = curs.second
+
+                    putExtra(EXTRA_CURRENCY_NAME_1, curs.first )
+                    putExtra(EXTRA_CURRENCY_NAME_2, curs.second )
                    // putExtra(EXTRA_EXCHANGE_NAME, exName)
-                    putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
-                    putExtra(EXTRA_CUR_ICO, app.baseContext.resources.getIdentifier(curs[0].toLowerCase(), "drawable", app.baseContext.packageName))
+                   // putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
+                    var id = app.baseContext.resources.getIdentifier(curs.first.toLowerCase(), "drawable", app.baseContext.packageName)
+                    if (id == 0) id = android.R.drawable.ic_menu_help
+                    putExtra(EXTRA_CUR_ICO, id)
+                    val defExId = if (app.exchangeNamesList?.get(0)?.pairs?.contains(symbol) == true) 1 else {
+                        app.exchangeNamesList?.find { it.pairs.contains(symbol) }?.id
+                    }
+                    putExtra(EXTRA_EXCHANGE_ID, defExId)
 
                 })
             }
@@ -153,6 +161,11 @@ class MainActivity : ExratesActivity() {
             e.printStackTrace()
         }
 
+    }
+
+    private fun parseSymbol(symbol: String): Pair<String, String>{
+        val arr = symbol.split("/")
+        return arr[0] to arr[1]
     }
 
     override fun updateExchangeData(exchange: Exchange){
@@ -235,13 +248,16 @@ class MainActivity : ExratesActivity() {
             }
             log_d("get exchange")
 
-            model.getActualExchange(ExchangePayload(1, app.currentInterval, emptyArray()))
+
+            val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
+            model.getActualExchange(ExchangePayload(exchangeNamesList.find { it.pairs.contains(allPairs[0]) }!!.id, app.currentInterval, emptyArray()))
+            val curs = parseSymbol(allPairs[0])
             model.getActualPair(
-                "BCC", "BTC", //todo hardcode
+                curs.first, curs.second,
                 CURRENCY_HISTORIES_MAIN_NUMBER
-            ) //todo default exch and pair
+            )
             updateExchangesList(exchangeNamesList.map { it.name })
-            val allPairs = getListWithAllPairs(exchangeNamesList)
+
             updateCurrenciesList(allPairs)
             val adapter = autoCompleteTextView.adapter as ArrayAdapter<String>
             adapter.addAll(allPairs)
@@ -330,7 +346,7 @@ class MainActivity : ExratesActivity() {
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     val cur1 = storage.getValue(CURRENT_CUR_1, "AGIBTC")
                     val cur2 = storage.getValue(CURRENT_CUR_2, "AGIBTC")
-                    val exId = storage.getValue(CURRENT_EXCHANGE_ID, 1)
+                    val exId = storage.getValue(SAVED_EXID, 1)
                     val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("AGIBTC")) //todo hardcode
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
@@ -357,7 +373,10 @@ class MainActivity : ExratesActivity() {
             }else model.ping()
 
             GlobalScope.launch(Dispatchers.Main) {
-                if (app.exchangeNamesList == null || !currencyName.adapter.isEmpty) return@launch
+                if (app.exchangeNamesList == null || !currencyName.adapter.isEmpty) {
+                    log_d("exchange names list is null or currency name adapter is empty")
+                    return@launch
+                }
                 updateExchangesList(app.exchangeNamesList!!.map { it.name })
                 val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
                 updateCurrenciesList(allPairs)

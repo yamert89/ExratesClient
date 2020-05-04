@@ -43,7 +43,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
         val pair = dataPairs[position]
         try{
             var res = app.baseContext.resources.getIdentifier(pair.baseCurrency.toLowerCase(), "drawable", app.baseContext.packageName)
-            if (res == 0) res = R.drawable.etc //todo default ico
+            if (res == 0) res = android.R.drawable.ic_menu_help
             holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_ico).setImageDrawable(ResourcesCompat.getDrawable(
                 app.resources,
                 res,

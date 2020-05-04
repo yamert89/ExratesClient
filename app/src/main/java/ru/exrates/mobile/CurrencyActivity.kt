@@ -54,13 +54,17 @@ class CurrencyActivity : ExratesActivity() {
             curIco = findViewById(R.id.cur_ico)
             root = findViewById(R.id.currency)
             //storage = Storage(applicationContext)
-            currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, app.currentExchange!!.historyPeriods.first())
+
 
             model = Model(app, this)
 
             val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
             val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
             //app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+            selectedExchange.id = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+            currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL,
+                app.currentPairInfo!!.find { selectedExchange.id == it.exId }?.historyPeriods?.get(0) ?: "1h"
+            )
 
             model.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
@@ -80,7 +84,7 @@ class CurrencyActivity : ExratesActivity() {
             historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
 
-            historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
+            //historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
             historyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onNothingSelected(parent: AdapterView<*>?){}
 
@@ -148,7 +152,8 @@ class CurrencyActivity : ExratesActivity() {
         currencyIntervalValue.text = interval
         val pairSymbol = app.currentPairInfo!![0].symbol
         val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}$pairSymbol"
-        currentGraphIntervalIdx = storage.getValue(key, 0)
+        currentGraphIntervalIdx = storage.getValue(key, 0) //todo sync with currentGraphInterval
+        currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
         log_d("Graph interval loaded with key $key and value $currentGraphIntervalIdx")
 
     }

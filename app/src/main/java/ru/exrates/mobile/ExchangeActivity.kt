@@ -17,7 +17,6 @@ import ru.exrates.mobile.viewadapters.PairsAdapter
 class ExchangeActivity : ExratesActivity() {
     private lateinit var exIco: ImageView
     private lateinit var intervalBtn: Button
-    private lateinit var hideBtn: Button
     private lateinit var intervalValue: TextView
     private lateinit var pairs: RecyclerView
     private lateinit var pairsAdapter: RecyclerView.Adapter<*>
@@ -33,7 +32,6 @@ class ExchangeActivity : ExratesActivity() {
 
             exIco = findViewById(R.id.exIco)
             intervalBtn = findViewById(R.id.cur_interval)
-            hideBtn = findViewById(R.id.exch_btn_hide_show)
             intervalValue = findViewById(R.id.intervalValue)
             progressLayout = findViewById(R.id.progressLayout)
 

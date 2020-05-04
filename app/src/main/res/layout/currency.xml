@@ -23,7 +23,7 @@
             android:layout_marginTop="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/abt" />
+            app:srcCompat="@android:drawable/ic_menu_help" />
 
         <TextView
             android:id="@+id/cur_name"
@@ -40,10 +40,10 @@
             android:id="@+id/cur_interval"
             android:layout_width="wrap_content"
             android:layout_height="38dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="Interval"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.894"
+            app:layout_constraintEnd_toStartOf="@+id/cur_intervalValue"
+            app:layout_constraintHorizontal_bias="0.888"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -51,11 +51,12 @@
             android:id="@+id/cur_intervalValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="28dp"
             android:text="1h"
-            app:layout_constraintEnd_toEndOf="@+id/cur_interval"
-            app:layout_constraintStart_toStartOf="@+id/cur_interval"
-            app:layout_constraintTop_toBottomOf="@+id/cur_interval" />
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
