@@ -1,6 +1,6 @@
 package ru.exrates.mobile.logic.entities
 
-import ru.exrates.mobile.log_d
+import ru.exrates.mobile.logD
 
 data class Exchange(val exId: Int, val name: String, val pairs: MutableList<CurrencyPair>,
                     val changePeriods: List<String>,
@@ -37,7 +37,7 @@ class SelectedExchange(id: Int){
     var listener : (() -> Unit)? = null
     var id : Int = id
         set(ex){
-            log_d("Selected exchange old id = $id, new id = $ex")
+            logD("Selected exchange old id = $id, new id = $ex")
             field = ex
             listener?.invoke()
         }

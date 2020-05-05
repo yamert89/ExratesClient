@@ -19,11 +19,11 @@ abstract class ExratesActivity : AppCompatActivity() {
     lateinit var progressLayout: ConstraintLayout
 
     open fun updateExchangeData(exchange: Exchange) {
-        log_d("Exchange data updated...")
+        logD("Exchange data updated...")
     }
 
     open fun updatePairData(list: MutableList<CurrencyPair>) {
-        log_d("Pair data updated...")
+        logD("Pair data updated...")
     }
 
     open fun startProgress() {
@@ -39,10 +39,10 @@ abstract class ExratesActivity : AppCompatActivity() {
     fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
 
     open fun saveState(){
-        log_d("saving state....")
+        logD("saving state....")
         if(currentDataIsNull()) return
         save(
-            CURRENT_EXCHANGE to app.currentExchange!!.exId,
+            /*CURRENT_EXCHANGE to app.currentExchange!!.exId,*/
             CURRENT_CUR_1 to app.currentPairInfo!![0].baseCurrency,
             CURRENT_CUR_2 to app.currentPairInfo!![0].quoteCurrency
         )
@@ -50,7 +50,7 @@ abstract class ExratesActivity : AppCompatActivity() {
 
     fun save(vararg args : Pair<String, Any>){
         args.forEach { storage.storeValue(it.first, it.second) }
-        log_d("savestate: ${args.size} objects saved")
+        logD("savestate: ${args.joinToString()} objects saved")
     }
 
     fun toast(message: String) = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
@@ -63,7 +63,7 @@ abstract class ExratesActivity : AppCompatActivity() {
         timer = Timer()
         app = this.application as MyApp
         storage = Storage(applicationContext, app.om)
-        log_d("Basic exrates activity created")
+        logD("Basic exrates activity created")
     }
 
     override fun onResume() {
@@ -80,7 +80,7 @@ abstract class ExratesActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        log_d("root onpause")
+        logD("root onpause")
         saveState()
         timer.cancel()
     }
@@ -89,13 +89,13 @@ abstract class ExratesActivity : AppCompatActivity() {
         super.onDestroy()
         saveState()
         timer.cancel()
-        log_d("root ondestroy")
+        logD("root ondestroy")
 
     }
 
     override fun onStop() {
         super.onStop()
-        log_d("root ondestop")
+        logD("root ondestop")
         saveState()
         timer.cancel()
     }

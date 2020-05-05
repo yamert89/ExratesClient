@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
-import ru.exrates.mobile.logic.Storage
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.SelectedExchange
 import ru.exrates.mobile.structures.IntervalComparator
@@ -70,11 +69,11 @@ class CurrencyActivity : ExratesActivity() {
 
             //updateIntervals()
 
-            log_d(intervals.joinToString())
+            logD(intervals.joinToString())
 
             if(currentNameListsIsNull()){
                 currentInterval = storage.getValue(CURRENT_INTERVAL, intervals.first())
-                log_d("Loaded saved pair data from storage")
+                logD("Loaded saved pair data from storage")
             }
             if (currentNameListsIsNull()) throw NullPointerException("current data is null")
 
@@ -95,14 +94,14 @@ class CurrencyActivity : ExratesActivity() {
                     model.getPriceHistory(currName1, currName2, selectedExchange.id, interval, CURRENCY_HISTORIES_CUR_NUMBER)
                     val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
                     storage.storeValue(key, position )
-                    log_d("Graph interval saved with key $key and value $position")
+                    logD("Graph interval saved with key $key and value $position")
 
                 }
             }
 
             currencyName.text = "$currName1 / $currName2"
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, app, currentInterval, selectedExchange)
+            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, app, app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!!, selectedExchange)
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
@@ -154,7 +153,7 @@ class CurrencyActivity : ExratesActivity() {
         val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}$pairSymbol"
         currentGraphIntervalIdx = storage.getValue(key, 0) //todo sync with currentGraphInterval
         currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
-        log_d("Graph interval loaded with key $key and value $currentGraphIntervalIdx")
+        logD("Graph interval loaded with key $key and value $currentGraphIntervalIdx")
 
     }
 
@@ -191,7 +190,7 @@ class CurrencyActivity : ExratesActivity() {
             GraphFactory(anyChartView, currentGraphInterval).createBigGraph(cur.priceHistory)
             // anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
             //set.data(dataList as List<ValueDataEntry>)
-            log_d("updating graph from pairData with ${cur.priceHistory.joinToString()}")
+            logD("updating graph from pairData with ${cur.priceHistory.joinToString()}")
         }
 
 
@@ -211,7 +210,7 @@ class CurrencyActivity : ExratesActivity() {
 
 
             //list.forEach { data.add(ValueDataEntry("1", it)) }
-            log_d("updating graph with ${list.joinToString()}")
+            logD("updating graph with ${list.joinToString()}")
 
             //set.data(dataList as List<ValueDataEntry>)
             //anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
@@ -223,7 +222,7 @@ class CurrencyActivity : ExratesActivity() {
     }
 
     override fun task() {
-        log_d("task cur activ started with cur1: ${app.currentCur1}, cur2: ${app.currentCur2}, curGraphInterval: $currentGraphInterval")
+        logD("task cur activ started with cur1: ${app.currentCur1}, cur2: ${app.currentCur2}, curGraphInterval: $currentGraphInterval")
         model.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
     }
 

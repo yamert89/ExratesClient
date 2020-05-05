@@ -1,6 +1,7 @@
 package ru.exrates.mobile
 
 import android.util.Log
+import android.widget.AbsSpinner
 import java.text.DecimalFormat
 import java.util.*
 
@@ -46,11 +47,11 @@ const val IS_FIRST_LOAD = "firstload"
 const val CURRENCY_HISTORIES_MAIN_NUMBER = 10
 const val CURRENCY_HISTORIES_CUR_NUMBER = 25
 
-fun log_d(message: String) = Log.d(EXRATES, message)
+fun logD(message: String) = Log.d(EXRATES, message)
 
-fun log_e(message: String) = Log.e(EXRATES, message)
+fun logE(message: String) = Log.e(EXRATES, message)
 
-fun log_trace(message: String) = Log.v(EXRATES, message)
+fun logTrace(message: String) = Log.v(EXRATES, message)
 
 fun Double.toNumeric() = DecimalFormat("####.########################").format(this)
 

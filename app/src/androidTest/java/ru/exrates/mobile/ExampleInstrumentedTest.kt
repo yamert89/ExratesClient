@@ -140,7 +140,7 @@ class ExampleInstrumentedTest {
             //log_d( payload.toString())
             val call: Call<Exchange> = restService.getExchange(payload)
             val response = call.execute()
-            log_d( "!!!" + response.body())
+            logD( "!!!" + response.body())
             val exchange = response.body()
 
             assertEquals(200, response.code())
@@ -180,7 +180,7 @@ class ExampleInstrumentedTest {
             call.enqueue(some)
            //assertEquals(true, bool)
             Thread.sleep(5000)
-            log_d( "end test body")
+            logD( "end test body")
             assertTrue(some.bool)
         }catch (e: Exception){
             Log.e("Exrates", e.message ?: "null message")
@@ -197,10 +197,10 @@ class ExampleInstrumentedTest {
         }
 
         override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
-            log_d( "Async response success: ${response.body()}, code: ${response.code()} ," +
+            logD( "Async response success: ${response.body()}, code: ${response.code()} ," +
                     " message: ${response.message()}, callIsExecuted: ${call.isExecuted} , error: ${response.errorBody().toString()}")
-            log_d( "call: " + ObjectMapper().writeValueAsString(call))
-            log_d( "response: " + ObjectMapper().writeValueAsString(response))
+            logD( "call: " + ObjectMapper().writeValueAsString(call))
+            logD( "response: " + ObjectMapper().writeValueAsString(response))
             bool = true
 
         }

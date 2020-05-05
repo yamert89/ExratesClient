@@ -1,9 +1,7 @@
 package ru.exrates.mobile
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Main
 import org.junit.Test
-import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -37,7 +35,7 @@ class Coroutines {
            val job2 = launch {
                 timer.schedule(object :  TimerTask(){
                     override fun run() {
-                        log_d("tic....")
+                        logD("tic....")
                     }
                 }, 5000L, 1000L)
             }
@@ -52,7 +50,7 @@ class Coroutines {
             timer = Timer()
             timer.schedule(object : TimerTask(){
                 override fun run() {
-                    log_d("tak...")
+                    logD("tak...")
                 }
             }, 1000)
         }

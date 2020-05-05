@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.Model
@@ -49,7 +48,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
             null
         ))
         holder.linearLayout.setOnClickListener {
-            log_d("old selected row: $selectedRow, selected item id: ${it.id}")
+            logD("old selected row: $selectedRow, selected item id: ${it.id}")
             model.getPriceHistory(pair.baseCurrency, pair.quoteCurrency, pair.exId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
             if (it == selectedRow) return@setOnClickListener
             selectedRow?.setBackgroundColor(defaultColor)

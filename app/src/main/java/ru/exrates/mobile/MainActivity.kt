@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -13,7 +14,6 @@ import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
 import ru.exrates.mobile.logic.activities.SearchButtonClickListener
-import ru.exrates.mobile.logic.entities.BindedImageView
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
@@ -44,7 +44,7 @@ class MainActivity : ExratesActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         try {
-            log_trace("main oncreate")
+            logTrace("main oncreate")
             setContentView(R.layout.activity_main)
             //storage = Storage(applicationContext, app.om)
 
@@ -63,8 +63,8 @@ class MainActivity : ExratesActivity() {
             curAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
             exchAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item)
 
-            curAdapter.add("Currency")
-            exchAdapter.add("Exchange")
+            /*curAdapter.add("Currency")
+            exchAdapter.add("Exchange")*/
 
             currencyName.adapter = curAdapter
             exchangeName.adapter = exchAdapter
@@ -79,51 +79,40 @@ class MainActivity : ExratesActivity() {
                 layoutManager = viewManager
             }
 
-            exchangeName.setSelection(0, true)
+            exchangeName.setSelection(0)
 
             exchangeName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
+                    /*startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
                         putExtra(EXTRA_EXCHANGE_ICO, app.currentExchange?.exId)
-                    })
+                    })*/
                 }
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val exchName = parent?.getItemAtPosition(position)
-                    val exId = app.exchangeNamesList!!.find { it.name == exchName }!!.id
+                    if (app.exchangeNamesList == null || parent == null || parent.size < 2) return
+
+                    val exchName = parent.getItemAtPosition(position)
+                    val exId = app.exchangeNamesList!!.find { it.name == exchName }?.id ?: throw IllegalArgumentException("ex id not found in exchangeNamesList with $exchName ex name")
 
                     startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
-                        putExtra(EXTRA_EXCHANGE_ICO, getIcoId(exchName.toString()))
+                        putExtra(EXTRA_EXCHANGE_ICO, getIcoId(exId))
                         putExtra(EXTRA_EXCHANGE_ID, exId)
                     })
                 }
 
-                fun getIcoId(exName: String) = when(exName){
-                    "binanceExchange" -> R.drawable.binance
-                    "p2pb2b" -> R.drawable.p2pb2b
-                    else -> throw IllegalArgumentException("ex $exName icon id  not found")
+                fun getIcoId(exId: Int) = when(exId){
+                    1 -> R.drawable.binance
+                    2 -> R.drawable.p2pb2b
+                    else -> throw IllegalArgumentException("ex $exId icon id  not found")
                 }
 
             }
 
-            currencyName.setSelection(0, false)
+            currencyName.setSelection(0)
 
             currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     startCurActivity(position)
-                    /*if (curIdx == position) return
-                    curIdx = position
-                    val curName = parent?.getItemAtPosition(position)
-                    log_trace("item selected pos: $position, name: $curName, id: $id")
-                    val curs = parseSymbol(curName.toString())
-                    app.currentCur1 = curs.first
-                    app.currentCur2 = curs.second
-                    startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
-                        putExtra(EXTRA_CURRENCY_NAME_1, curs.first)
-                        putExtra(EXTRA_CURRENCY_NAME_2, curs.second)
-                        putExtra(EXTRA_CUR_ICO, app.baseContext.resources.getIdentifier(curs.first.toLowerCase(), "drawable", app.baseContext.packageName))
-                        //putExtra(EXTRA_EXCHANGE_ICO, exchangeName.selectedItem as String)
-                    })*/
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -135,7 +124,7 @@ class MainActivity : ExratesActivity() {
 
             autoCompleteTextView.setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line ))
 
-            log_d("Main activity created")
+            logD("Main activity created")
 
         }catch (e: Exception){
             e.printStackTrace()
@@ -148,6 +137,7 @@ class MainActivity : ExratesActivity() {
             if (curIdx == position) return
             curIdx = position
         }
+
         startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
             val symbol = currencyName.getItemAtPosition(curIdx).toString()
             val curs = parseSymbol(symbol)
@@ -161,12 +151,25 @@ class MainActivity : ExratesActivity() {
             var id = app.baseContext.resources.getIdentifier(curs.first.toLowerCase(), "drawable", app.baseContext.packageName)
             if (id == 0) id = android.R.drawable.ic_menu_help
             putExtra(EXTRA_CUR_ICO, id)
-            val defExId = if (app.exchangeNamesList?.get(0)?.pairs?.contains(symbol) == true) 1 else {
-                app.exchangeNamesList?.find { it.pairs.contains(symbol) }?.id
+            val defExId = if (app.exchangeNamesList!![0].pairs.contains(symbol)) 1 else {
+                app.exchangeNamesList!!.find { it.pairs.contains(symbol) }!!.id
             }
             putExtra(EXTRA_EXCHANGE_ID, defExId)
 
+            rebuildExSpinner(defExId)
+
+            save(SAVED_EXID to defExId/*, SAVED_EX_IDX to pos*/)
+
         })
+    }
+
+    private fun rebuildExSpinner(exId : Int){
+        val adapter = (exchangeName.adapter as ArrayAdapter<String>)
+        val pos = adapter.getPosition(app.exchangeNamesList?.find { it.id == exId }?.name)
+        val ex = adapter.getItem(pos)
+        adapter.remove(ex)
+        adapter.insert(ex, 0)
+        exchangeName.setSelection(0)
     }
 
     private fun parseSymbol(symbol: String): Pair<String, String>{
@@ -175,11 +178,11 @@ class MainActivity : ExratesActivity() {
     }
 
     override fun updateExchangeData(exchange: Exchange){
-        log_d("updateExData")
+        logD("updateExData")
         super.updateExchangeData(exchange)
         //if(app.currentExchange != null) exchange.pairs.addAll(app.currentExchange!!.pairs.intersect(exchange.pairs)) //todo
         app.currentExchange = exchange
-        log_d("incoming pairs: ${exchange.pairs.joinToString{it.symbol}}")
+        logD("incoming pairs: ${exchange.pairs.joinToString{it.symbol}}")
         val adapter = currenciesRecyclerView.adapter as PairsAdapter
         adapter.dataPairs.clear()
         adapter.dataPairs.addAll(exchange.pairs)
@@ -187,12 +190,12 @@ class MainActivity : ExratesActivity() {
     }
 
     override fun updatePairData(list: MutableList<CurrencyPair>) {
-        log_d("updatePairData")
+        logD("updatePairData")
         if (list.isEmpty()){
-            log_e("Incoming list of pairData is empty")
+            logE("Incoming list of pairData is empty")
             return
         }
-        log_d(list.joinToString{"${it.symbol} | ${it.exchangeName}"})
+        logD(list.joinToString{"${it.symbol} | ${it.exchangeName}"})
         app.currentCur1 = list[0].baseCurrency
         app.currentCur2 = list[0].quoteCurrency
         super.updatePairData(list)
@@ -200,14 +203,14 @@ class MainActivity : ExratesActivity() {
         var count = 0.0
         list.forEach { count += it.price }
         currencyPrice.text = (count / list.size).toNumeric()
-        val cur = list.find { it.exId == app.currentExchange?.exId ?: 1 } ?: list[0] //todo right? app.currentExchange outdated. how to choose right pair?
-        log_d("current currency in graph: $cur")
+        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)}!! //todo right? app.currentExchange outdated. how to choose right pair?
+        logTrace("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
-        log_d("priceHistory:" + cur.priceHistory.joinToString())
-        log_d("priceHistory truncated:" + cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1).joinToString())
+        logTrace("priceHistory:" + cur.priceHistory.joinToString())
+        logTrace("priceHistory truncated:" + cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1).joinToString())
         if (cur.priceHistory.isEmpty()) {
             root.removeView(anyChartView)
-            log_e("Graph removed")
+            logE("Graph removed")
             val notice = TextView(app.baseContext).apply {
                 text = "Data not available"
             }
@@ -216,12 +219,12 @@ class MainActivity : ExratesActivity() {
     }
 
     override fun task() {
-        log_d("task")
+        logTrace("task")
         if (currentDataIsNull()){
-            log_d("current data  is null")
+            logTrace("current data  is null")
             return
         }
-        log_d( "pairs: " + app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray().joinToString())
+        logTrace( "pairs: " + app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray().joinToString())
         model.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
@@ -235,10 +238,10 @@ class MainActivity : ExratesActivity() {
         startProgress()
         coroutineScope {
             try {
-                log_d("before request")
+                logTrace("before request")
                 model.getLists()
             }catch (e: Exception){
-                log_e("exception")
+                logE("exception")
                 return@coroutineScope
             }
             res = true
@@ -249,19 +252,20 @@ class MainActivity : ExratesActivity() {
     }
 
     fun initData(exchangeNamesList: List<ExchangeNamesObject>){
-        log_d("init data")
+        logTrace("init data")
         try {
             app.exchangeNamesList = exchangeNamesList
             GlobalScope.launch {
                 save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
-                log_d("list saved")
+                logTrace("list saved")
 
             }
-            log_d("get exchange")
+            logTrace("get exchange")
 
 
             val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
-            model.getActualExchange(ExchangePayload(exchangeNamesList.find { it.pairs.contains(allPairs[0]) }!!.id, app.currentInterval, emptyArray()))
+            val defExId = exchangeNamesList.find { it.pairs.contains(allPairs[0]) }!!.id
+            model.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
             val curs = parseSymbol(allPairs[0])
             model.getActualPair(
                 curs.first, curs.second,
@@ -272,9 +276,10 @@ class MainActivity : ExratesActivity() {
             updateCurrenciesList(allPairs)
             val adapter = autoCompleteTextView.adapter as ArrayAdapter<String>
             adapter.addAll(allPairs)
+            rebuildExSpinner(defExId)
 
         }catch (e: Exception){
-            log_e("exception in init method")
+            logE("exception in init method")
             e.printStackTrace()
         }
 
@@ -282,17 +287,17 @@ class MainActivity : ExratesActivity() {
 
     private fun updateExchangesList(exchangeNames: List<String>?){
         if (exchangeNames == null) return
-        log_d( "exchanges: $exchangeNames")
+        logD( "exchanges: $exchangeNames")
         with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
-        exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
+        //exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
 
     }
 
     private fun updateCurrenciesList(curNames: List<String>?){
         if (curNames == null) return
-        log_d( "curNames : $curNames")
+        logD( "curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
-        currencyName.setSelection(curIdx)
+        //currencyName.setSelection(curIdx)
     }
 
     private fun getListWithAllPairs(exchangeNamesList: List<ExchangeNamesObject>): List<String>{
@@ -303,7 +308,7 @@ class MainActivity : ExratesActivity() {
 
     override fun startProgress(){
         super.startProgress()
-        log_trace( "Snack started..")
+        logTrace( "Snack started..")
         Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
     }
 
@@ -317,30 +322,30 @@ class MainActivity : ExratesActivity() {
             SAVED_CUR_IDX to currencyName.selectedItemPosition,
             SAVED_CURRENCIES_ADAPTER to adapterName,
             adapterName to currenciesRecyclerView.adapter!!,
-            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC")), //todo hardcode
-            SAVED_EXID to (app.currentExchange?.exId ?: 1))
+            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC"))/*, //todo hardcode
+            SAVED_EXID to (app.currentExchange?.exId ?: 1)*/)
     }
 
 
     override fun onResume() {
         super.onResume()
+        var exId = 0
         try {
             app = this.application as MyApp
             var flag = true
-            log_d("main onresume")
+            logTrace("main onresume")
             val listsReq = GlobalScope.launch(Dispatchers.IO) {
-                log_d("start coroutine")
+                logTrace("start coroutine")
                 if (storage.getValue(IS_FIRST_LOAD, true)) {
-                    log_d("before first load")
+                    logTrace("before first load")
                     flag = firstLoadActivity()
-                    log_d("flaq is $flag")
+                    logTrace("flaq is $flag")
                 }
 
                 else {
-                    log_trace("Saved lists loaded")
+                    logTrace("Saved lists loaded")
                     try{
                         if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST, ArrayList<ExchangeNamesObject>())
-                        log_d("ds")
 
                     }catch (e: FileNotFoundException){
                         flag = false
@@ -348,19 +353,21 @@ class MainActivity : ExratesActivity() {
                         storage.storeValue(IS_FIRST_LOAD, true)
                         return@launch
                     }catch (e: InvalidClassException){
-                        log_e("Class model of ex names list deprecated")
+                        logE("Class model of ex names list deprecated")
                         flag = firstLoadActivity()
                     }catch (e: Exception){
-                        log_e(e.message.toString())
+                        logE(e.message.toString())
                     }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     val cur1 = storage.getValue(CURRENT_CUR_1, "AGIBTC")
                     val cur2 = storage.getValue(CURRENT_CUR_2, "AGIBTC")
-                    val exId = storage.getValue(SAVED_EXID, 1)
+                    exId = storage.getValue(SAVED_EXID, 1)
                     val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("AGIBTC")) //todo hardcode
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
+
+
 
 
                     model.getActualExchange(ExchangePayload(
@@ -382,12 +389,16 @@ class MainActivity : ExratesActivity() {
 
                 return
             }else model.ping()
+            //exchangeName.setSelection((exchangeName.adapter as ArrayAdapter<String>).getPosition(app.exchangeNamesList?.find { it.id == exId }?.name))
+
 
             GlobalScope.launch(Dispatchers.Main) {
                 if (app.exchangeNamesList == null || !currencyName.adapter.isEmpty) {
-                    log_d("exchange names list is null or currency name adapter is empty")
+                    logD("exchange names list is null or currency name adapter is empty")
                     return@launch
                 }
+
+
                 updateExchangesList(app.exchangeNamesList!!.map { it.name })
                 val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
                 updateCurrenciesList(allPairs)

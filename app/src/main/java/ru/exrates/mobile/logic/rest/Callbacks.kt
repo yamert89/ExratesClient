@@ -13,10 +13,10 @@ import java.net.SocketTimeoutException
 
 abstract class ExCallback<T>(protected val activity: ExratesActivity): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
-        log_e("failed response")
+        logE("failed response")
         if (t is SocketTimeoutException) activity.toast("Не удалось подключиться к серверу. Превышено время ожидания ответа")
         else {
-            log_e(t.message ?: "")
+            logE(t.message ?: "")
             activity.toast("Ошибка подключения ${t.message}")
         }
         activity.progressLayout.visibility = View.INVISIBLE

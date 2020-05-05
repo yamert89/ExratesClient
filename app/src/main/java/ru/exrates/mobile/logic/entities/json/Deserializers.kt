@@ -49,10 +49,10 @@ class KeyComparator : Comparator<String>, Serializable{
         var compNum = 0
         try {
             val regExp = "(\\d{1,2})(\\D)".toRegex()
-            val groups1 = regExp.find(o1!!)?.groups ?: throw NullPointerException("Reg exp not found")
+            val groups1 = regExp.find(o1!!)?.groups ?: throw NullPointerException("Reg exp not found for $o1")
             numToken1 = groups1[1]!!.value.toInt()
             stringToken1 = groups1[2]!!.value
-            val groups2 = regExp.find(o2!!)?.groups ?: throw NullPointerException("Reg exp not found")
+            val groups2 = regExp.find(o2!!)?.groups ?: throw NullPointerException("Reg exp not found for $o2")
             numToken2 = groups2[1]!!.value.toInt()
             stringToken2 = groups2[2]!!.value
             compString = stringToken1.compareStringToken(stringToken2)

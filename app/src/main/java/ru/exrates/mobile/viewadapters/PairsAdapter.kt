@@ -2,17 +2,13 @@ package ru.exrates.mobile.viewadapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import kotlinx.serialization.Transient
-import okhttp3.internal.lockAndWaitNanos
 import ru.exrates.mobile.*
-import ru.exrates.mobile.logic.entities.BindedImageView
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import java.math.BigDecimal
 import java.math.MathContext
@@ -57,13 +53,13 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             val cross = holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_delete)
             cross.setOnClickListener {
                 dataPairs.removeIf {it2 -> it2.symbol == pair.symbol }
-                log_d("${pair.symbol} deleted")
+                logD("${pair.symbol} deleted")
                 notifyDataSetChanged()
                 app.currentExchange?.pairs?.removeIf { it3 -> it3.symbol == pair.symbol }
             }
         }catch (e: Exception){
-            log_e(e.stackTrace.contentToString())
-            log_e("pair: $pair")
+            logE(e.stackTrace.contentToString())
+            logE("pair: $pair")
         }
 
 

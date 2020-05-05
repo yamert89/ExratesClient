@@ -5,7 +5,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.exrates.mobile.ExratesActivity
 import ru.exrates.mobile.MyApp
-import ru.exrates.mobile.log_d
+import ru.exrates.mobile.logD
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.rest.*
@@ -13,24 +13,24 @@ import ru.exrates.mobile.logic.rest.*
 class Model(private val app: MyApp, private val activity: ExratesActivity) {
 
     fun getActualExchange(payload: ExchangePayload, callback: ExCallback<Exchange> = OneExchangeCallback(activity)){
-        log_d("REQUEST: actual exchange")
+        logD("REQUEST: actual exchange: $payload")
         app.restService.getExchange(payload).enqueue(callback)
     }
 
     fun getActualPair(c1: String, c2: String, historyinterval: String, limit: Int){
-        log_d("REQUEST: actual pair")
+        logD("REQUEST: actual pair: $c1, $c2, interval=$historyinterval, limit=$limit")
         app.restService.getPair(c1, c2, historyinterval, limit).enqueue(PairCallback(activity))
     }
 
     fun getActualPair(c1: String, c2: String, limit: Int){
-        log_d("REQUEST: actual pair")
+        logD("REQUEST: actual pair: $c1, $c2, limit=$limit")
         app.restService.getPair(c1, c2, truncateLimit(limit)).enqueue(PairCallback(activity))
     }
 
 
 
     fun getLists(){
-        log_d("REQUEST: lists")
+        logD("REQUEST: lists")
         app.restService.lists().enqueue(ListsCallback(activity))
     }
 
@@ -48,7 +48,7 @@ class Model(private val app: MyApp, private val activity: ExratesActivity) {
     }
 
     fun getPriceHistory(c1: String, c2: String, exchId: Int, historyinterval: String, limit: Int){
-        log_d("REQUEST: price history")
+        logD("REQUEST: price history: $c1, $c2, exId: $exchId, historyinterval: $historyinterval, limit: $limit")
         app.restService.getPriceHistory(c1, c2, exchId, historyinterval, truncateLimit(limit)).enqueue(HistoryCallback(activity))
     }
 
