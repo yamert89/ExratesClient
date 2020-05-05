@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit
 class GraphFactory(private val anyChartView: LineChartView, val currentInterval: String) {
 
 
-    fun createSmallGraph(priceHistory: List<Double>){
+    fun createSmallGraph(priceHistory: List<Double>){ //fixme values y repeats
         val valueDataList = createChartValueDataList(priceHistory)
         val line = Line(valueDataList.values).apply {
             color = Color.RED

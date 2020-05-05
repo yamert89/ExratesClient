@@ -13,6 +13,7 @@ import kotlinx.coroutines.*
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.graph.GraphFactory
 import ru.exrates.mobile.logic.Model
+import ru.exrates.mobile.logic.activities.ExchangeSpinnerItemSelectedListener
 import ru.exrates.mobile.logic.activities.SearchButtonClickListener
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
@@ -81,40 +82,10 @@ class MainActivity : ExratesActivity() {
 
             exchangeName.setSelection(0)
 
-            exchangeName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    /*startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
-                        putExtra(EXTRA_EXCHANGE_ICO, app.currentExchange?.exId)
-                    })*/
-                }
-
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if (app.exchangeNamesList == null || parent == null || parent.size < 2) return
-
-                    val exchName = parent.getItemAtPosition(position)
-                    val exId = app.exchangeNamesList!!.find { it.name == exchName }?.id ?: throw IllegalArgumentException("ex id not found in exchangeNamesList with $exchName ex name")
-
-                    startActivity(Intent(applicationContext, ExchangeActivity::class.java).apply{
-                        putExtra(EXTRA_EXCHANGE_ICO, getIcoId(exId))
-                        putExtra(EXTRA_EXCHANGE_ID, exId)
-                    })
-                }
-
-                fun getIcoId(exId: Int) = when(exId){
-                    1 -> R.drawable.binance
-                    2 -> R.drawable.p2pb2b
-                    else -> throw IllegalArgumentException("ex $exId icon id  not found")
-                }
-
-            }
-
             currencyName.setSelection(0)
 
             currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    startCurActivity(position)
-                }
-
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = startCurActivity(position)
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
 
@@ -123,6 +94,8 @@ class MainActivity : ExratesActivity() {
             searchBtn.setOnClickListener(SearchButtonClickListener(autoCompleteTextView, currencyName, this))
 
             autoCompleteTextView.setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line ))
+
+            exchangeName.onItemSelectedListener = ExchangeSpinnerItemSelectedListener(this, app)
 
             logD("Main activity created")
 
@@ -164,6 +137,7 @@ class MainActivity : ExratesActivity() {
     }
 
     private fun rebuildExSpinner(exId : Int){
+        logD("rebuildExSpinner")
         val adapter = (exchangeName.adapter as ArrayAdapter<String>)
         val pos = adapter.getPosition(app.exchangeNamesList?.find { it.id == exId }?.name)
         val ex = adapter.getItem(pos)
@@ -289,6 +263,7 @@ class MainActivity : ExratesActivity() {
         if (exchangeNames == null) return
         logD( "exchanges: $exchangeNames")
         with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
+
         //exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
 
     }
@@ -408,6 +383,7 @@ class MainActivity : ExratesActivity() {
 
 
             currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
+
 
         }catch (e: Exception){e.printStackTrace()}
     }
