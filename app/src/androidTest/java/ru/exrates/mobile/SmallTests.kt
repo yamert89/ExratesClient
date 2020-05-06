@@ -2,7 +2,8 @@ package ru.exrates.mobile
 
 import org.junit.Assert
 import org.junit.Test
-import ru.exrates.mobile.structures.IntervalComparator
+import ru.exrates.mobile.logic.toNumeric
+import ru.exrates.mobile.logic.structures.IntervalComparator
 import java.util.*
 
 class SmallTests {

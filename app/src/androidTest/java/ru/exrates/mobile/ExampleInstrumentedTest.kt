@@ -20,6 +20,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
+import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.logic.rest.RestService
 import java.io.*
 import java.time.Duration
@@ -140,7 +141,7 @@ class ExampleInstrumentedTest {
             //log_d( payload.toString())
             val call: Call<Exchange> = restService.getExchange(payload)
             val response = call.execute()
-            logD( "!!!" + response.body())
+            logD("!!!" + response.body())
             val exchange = response.body()
 
             assertEquals(200, response.code())
@@ -180,7 +181,7 @@ class ExampleInstrumentedTest {
             call.enqueue(some)
            //assertEquals(true, bool)
             Thread.sleep(5000)
-            logD( "end test body")
+            logD("end test body")
             assertTrue(some.bool)
         }catch (e: Exception){
             Log.e("Exrates", e.message ?: "null message")
@@ -197,10 +198,21 @@ class ExampleInstrumentedTest {
         }
 
         override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
-            logD( "Async response success: ${response.body()}, code: ${response.code()} ," +
-                    " message: ${response.message()}, callIsExecuted: ${call.isExecuted} , error: ${response.errorBody().toString()}")
-            logD( "call: " + ObjectMapper().writeValueAsString(call))
-            logD( "response: " + ObjectMapper().writeValueAsString(response))
+            logD(
+                "Async response success: ${response.body()}, code: ${response.code()} ," +
+                        " message: ${response.message()}, callIsExecuted: ${call.isExecuted} , error: ${response.errorBody()
+                            .toString()}"
+            )
+            logD(
+                "call: " + ObjectMapper().writeValueAsString(
+                    call
+                )
+            )
+            logD(
+                "response: " + ObjectMapper().writeValueAsString(
+                    response
+                )
+            )
             bool = true
 
         }

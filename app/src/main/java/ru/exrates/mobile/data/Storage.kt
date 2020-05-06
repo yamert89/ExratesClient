@@ -1,10 +1,9 @@
-package ru.exrates.mobile.logic
+package ru.exrates.mobile.data
 
 import android.content.Context
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import ru.exrates.mobile.DEFAULT_STORAGE
+import ru.exrates.mobile.logic.DEFAULT_STORAGE
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths

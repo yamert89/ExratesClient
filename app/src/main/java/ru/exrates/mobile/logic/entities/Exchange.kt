@@ -1,6 +1,6 @@
 package ru.exrates.mobile.logic.entities
 
-import ru.exrates.mobile.logD
+import ru.exrates.mobile.logic.logD
 
 data class Exchange(val exId: Int, val name: String, val pairs: MutableList<CurrencyPair>,
                     val changePeriods: List<String>,

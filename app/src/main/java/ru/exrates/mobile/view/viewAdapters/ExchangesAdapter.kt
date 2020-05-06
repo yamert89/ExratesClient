@@ -1,4 +1,4 @@
-package ru.exrates.mobile.viewadapters
+package ru.exrates.mobile.view.viewAdapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -9,14 +9,17 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.*
-import ru.exrates.mobile.logic.Model
+import ru.exrates.mobile.logic.CURRENCY_HISTORIES_CUR_NUMBER
+import ru.exrates.mobile.data.Model
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.SelectedExchange
+import ru.exrates.mobile.logic.logD
+import ru.exrates.mobile.logic.toNumeric
 
 class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
                        private val model: Model,
                        private val app: MyApp,
-                       var interval: String ,
+                       var interval: String,
                        val selectedExchange: SelectedExchange ): RecyclerView.Adapter<ExchangesAdapter.ExchangeViewHolder>() {
     private val selectedColor = Color.parseColor("#4003A9F4")
     private val defaultColor = Color.parseColor("#40E4E4E4")
@@ -25,7 +28,9 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExchangeViewHolder {
         val linearLayout = LayoutInflater.from(parent.context).inflate(R.layout.exchange_row,
             parent, false) as LinearLayout
-        return ExchangeViewHolder(linearLayout)
+        return ExchangeViewHolder(
+            linearLayout
+        )
     }
 
     override fun getItemCount() = pairsByExchanges.size
@@ -49,7 +54,9 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
         ))
         holder.linearLayout.setOnClickListener {
             logD("old selected row: $selectedRow, selected item id: ${it.id}")
-            model.getPriceHistory(pair.baseCurrency, pair.quoteCurrency, pair.exId, interval, CURRENCY_HISTORIES_CUR_NUMBER)
+            model.getPriceHistory(pair.baseCurrency, pair.quoteCurrency, pair.exId, interval,
+                CURRENCY_HISTORIES_CUR_NUMBER
+            )
             if (it == selectedRow) return@setOnClickListener
             selectedRow?.setBackgroundColor(defaultColor)
             it.setBackgroundColor(selectedColor)

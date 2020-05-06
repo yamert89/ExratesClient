@@ -2,6 +2,7 @@ package ru.exrates.mobile
 
 import kotlinx.coroutines.*
 import org.junit.Test
+import ru.exrates.mobile.logic.logD
 import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine

@@ -1,4 +1,4 @@
-package ru.exrates.mobile
+package ru.exrates.mobile.view
 
 import android.os.Bundle
 import android.util.Log
@@ -9,12 +9,15 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import lecho.lib.hellocharts.view.LineChartView
-import ru.exrates.mobile.graph.GraphFactory
-import ru.exrates.mobile.logic.Model
+import ru.exrates.mobile.MyApp
+import ru.exrates.mobile.R
+import ru.exrates.mobile.data.Model
+import ru.exrates.mobile.logic.*
+import ru.exrates.mobile.view.graph.GraphFactory
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.SelectedExchange
-import ru.exrates.mobile.structures.IntervalComparator
-import ru.exrates.mobile.viewadapters.ExchangesAdapter
+import ru.exrates.mobile.logic.structures.IntervalComparator
+import ru.exrates.mobile.view.viewAdapters.ExchangesAdapter
 import java.util.*
 
 class CurrencyActivity : ExratesActivity() {
@@ -61,11 +64,14 @@ class CurrencyActivity : ExratesActivity() {
             val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
             //app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
             selectedExchange.id = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
-            currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL,
+            currentGraphInterval = storage.getValue(
+                CURRENT_GRAPH_INTERVAL,
                 app.currentPairInfo!!.find { selectedExchange.id == it.exId }?.historyPeriods?.get(0) ?: "1h"
             )
 
-            model.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
+            model.getActualPair(currName1, currName2, currentGraphInterval,
+                CURRENCY_HISTORIES_CUR_NUMBER
+            )
 
             //updateIntervals()
 
@@ -91,7 +97,9 @@ class CurrencyActivity : ExratesActivity() {
                     val interval = parent?.getItemAtPosition(position) as String
                     currentGraphInterval = interval
                     currentGraphIntervalIdx = position
-                    model.getPriceHistory(currName1, currName2, selectedExchange.id, interval, CURRENCY_HISTORIES_CUR_NUMBER)
+                    model.getPriceHistory(currName1, currName2, selectedExchange.id, interval,
+                        CURRENCY_HISTORIES_CUR_NUMBER
+                    )
                     val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
                     storage.storeValue(key, position )
                     logD("Graph interval saved with key $key and value $position")
@@ -101,7 +109,14 @@ class CurrencyActivity : ExratesActivity() {
 
             currencyName.text = "$currName1 / $currName2"
 
-            exchangesAdapter = ExchangesAdapter(app.currentPairInfo ?: mutableListOf(), model, app, app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!!, selectedExchange)
+            exchangesAdapter =
+                ExchangesAdapter(
+                    app.currentPairInfo ?: mutableListOf(),
+                    model,
+                    app,
+                    app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!!,
+                    selectedExchange
+                )
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
@@ -187,7 +202,10 @@ class CurrencyActivity : ExratesActivity() {
             }
             root.addView(notice, 2)
         } else {
-            GraphFactory(anyChartView, currentGraphInterval).createBigGraph(cur.priceHistory)
+            GraphFactory(
+                anyChartView,
+                currentGraphInterval
+            ).createBigGraph(cur.priceHistory)
             // anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
             //set.data(dataList as List<ValueDataEntry>)
             logD("updating graph from pairData with ${cur.priceHistory.joinToString()}")
@@ -206,7 +224,10 @@ class CurrencyActivity : ExratesActivity() {
             }
             root.addView(notice, 2)
         } else {
-            GraphFactory(anyChartView, currentGraphInterval).createBigGraph(list)
+            GraphFactory(
+                anyChartView,
+                currentGraphInterval
+            ).createBigGraph(list)
 
 
             //list.forEach { data.add(ValueDataEntry("1", it)) }
@@ -223,7 +244,9 @@ class CurrencyActivity : ExratesActivity() {
 
     override fun task() {
         logD("task cur activ started with cur1: ${app.currentCur1}, cur2: ${app.currentCur2}, curGraphInterval: $currentGraphInterval")
-        model.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
+        model.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval,
+            CURRENCY_HISTORIES_CUR_NUMBER
+        )
     }
 
     override fun saveState() {

@@ -1,4 +1,4 @@
-package ru.exrates.mobile.structures
+package ru.exrates.mobile.logic.structures
 
 class IntervalComparator : Comparator<String>{
     override fun compare(o1: String?, o2: String?): Int {

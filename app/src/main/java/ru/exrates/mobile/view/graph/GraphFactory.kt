@@ -1,9 +1,9 @@
-package ru.exrates.mobile.graph
+package ru.exrates.mobile.view.graph
 
 import android.graphics.Color
 import lecho.lib.hellocharts.model.*
 import lecho.lib.hellocharts.view.LineChartView
-import ru.exrates.mobile.logTrace
+import ru.exrates.mobile.logic.logTrace
 import java.text.DecimalFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -143,7 +143,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             labelValueList.add(start.toEpochSecond(ZoneOffset.UTC).toFloat())
 
         }
-        logTrace("price history values: ${if(priceHistory.isEmpty()) "0" else priceHistory.joinToString()}")
+        logTrace("price history values: ${if (priceHistory.isEmpty()) "0" else priceHistory.joinToString()}")
 
         var yLabels: List<String>? = null
         var yAxisLabelValues: List<Float>? = null
@@ -153,7 +153,14 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             f.maximumFractionDigits = 8
             val maxYL = priceHistory.max()!!.toFloat()
             val minYL = priceHistory.min()!!.toFloat()
-            if(maxYL == minYL) return ValueDataList(dataList, labelList,  labelValueList, listOf(f.format(minYL)), listOf(minYL),  xLabel)
+            if(maxYL == minYL) return ValueDataList(
+                dataList,
+                labelList,
+                labelValueList,
+                listOf(f.format(minYL)),
+                listOf(minYL),
+                xLabel
+            )
             val step = (maxYL - minYL) / 8
             yLabels = ArrayList<String>(8)
             yAxisLabelValues = ArrayList<Float>(8)

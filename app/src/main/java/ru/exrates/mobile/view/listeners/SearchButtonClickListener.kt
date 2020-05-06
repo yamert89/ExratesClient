@@ -1,4 +1,4 @@
-package ru.exrates.mobile.logic.activities
+package ru.exrates.mobile.view.listeners
 
 import android.content.Context
 import android.view.View

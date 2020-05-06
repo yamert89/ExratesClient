@@ -1,4 +1,4 @@
-package ru.exrates.mobile
+package ru.exrates.mobile.view
 
 import android.os.Bundle
 import android.widget.Button
@@ -7,12 +7,15 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.exrates.mobile.logic.Model
-import ru.exrates.mobile.logic.Storage
+import ru.exrates.mobile.R
+import ru.exrates.mobile.logic.CURRENT_INTERVAL
+import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
+import ru.exrates.mobile.data.Model
+import ru.exrates.mobile.logic.SAVED_EXCHANGE_NAME_LIST
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
-import ru.exrates.mobile.viewadapters.PairsAdapter
+import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 
 class ExchangeActivity : ExratesActivity() {
     private lateinit var exIco: ImageView
@@ -45,7 +48,11 @@ class ExchangeActivity : ExratesActivity() {
 
             val pairsOfAdapter = if(currentDataIsNull()) mutableListOf<CurrencyPair>() else
                 if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.filter{it.visible}.toMutableList() //todo base filtering on server
-            pairsAdapter = PairsAdapter(pairsOfAdapter, currentInterval, app)
+            pairsAdapter = PairsAdapter(
+                pairsOfAdapter,
+                currentInterval,
+                app
+            )
             viewManager = LinearLayoutManager(this)
 
             pairs = findViewById<RecyclerView>(R.id.pairs).apply {

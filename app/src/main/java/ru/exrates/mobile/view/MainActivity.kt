@@ -1,25 +1,27 @@
-package ru.exrates.mobile
+package ru.exrates.mobile.view
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import lecho.lib.hellocharts.view.LineChartView
-import ru.exrates.mobile.graph.GraphFactory
-import ru.exrates.mobile.logic.Model
-import ru.exrates.mobile.logic.activities.ExchangeSpinnerItemSelectedListener
-import ru.exrates.mobile.logic.activities.SearchButtonClickListener
+import ru.exrates.mobile.MyApp
+import ru.exrates.mobile.R
+import ru.exrates.mobile.data.Model
+import ru.exrates.mobile.logic.*
+import ru.exrates.mobile.view.graph.GraphFactory
+import ru.exrates.mobile.view.listeners.ExchangeSpinnerItemSelectedListener
+import ru.exrates.mobile.view.listeners.SearchButtonClickListener
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
-import ru.exrates.mobile.viewadapters.PairsAdapter
+import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 import java.io.FileNotFoundException
 import java.io.InvalidClassException
 
@@ -72,8 +74,16 @@ class MainActivity : ExratesActivity() {
 
             viewManager = LinearLayoutManager(this)
 
-            val savedAdapter = storage.getValue(SAVED_CURRENCIES_ADAPTER, SAVED_CURRENCIES_ADAPTER_BINANCE)
-            pairsAdapter = storage.getValue(savedAdapter, PairsAdapter(mutableListOf(), app = app))
+            val savedAdapter = storage.getValue(
+                SAVED_CURRENCIES_ADAPTER,
+                SAVED_CURRENCIES_ADAPTER_BINANCE
+            )
+            pairsAdapter = storage.getValue(savedAdapter,
+                PairsAdapter(
+                    mutableListOf(),
+                    app = app
+                )
+            )
             pairsAdapter.app = app
             currenciesRecyclerView = findViewById<RecyclerView>(R.id.main_cur_list).apply {
                 adapter = pairsAdapter
@@ -91,11 +101,21 @@ class MainActivity : ExratesActivity() {
 
             goToCurBtn.setOnClickListener { startCurActivity() }
 
-            searchBtn.setOnClickListener(SearchButtonClickListener(autoCompleteTextView, currencyName, this))
+            searchBtn.setOnClickListener(
+                SearchButtonClickListener(
+                    autoCompleteTextView,
+                    currencyName,
+                    this
+                )
+            )
 
             autoCompleteTextView.setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line ))
 
-            exchangeName.onItemSelectedListener = ExchangeSpinnerItemSelectedListener(this, app)
+            exchangeName.onItemSelectedListener =
+                ExchangeSpinnerItemSelectedListener(
+                    this,
+                    app
+                )
 
             logD("Main activity created")
 
@@ -156,7 +176,7 @@ class MainActivity : ExratesActivity() {
         super.updateExchangeData(exchange)
         //if(app.currentExchange != null) exchange.pairs.addAll(app.currentExchange!!.pairs.intersect(exchange.pairs)) //todo
         app.currentExchange = exchange
-        logD("incoming pairs: ${exchange.pairs.joinToString{it.symbol}}")
+        logD("incoming pairs: ${exchange.pairs.joinToString { it.symbol }}")
         val adapter = currenciesRecyclerView.adapter as PairsAdapter
         adapter.dataPairs.clear()
         adapter.dataPairs.addAll(exchange.pairs)
@@ -169,7 +189,7 @@ class MainActivity : ExratesActivity() {
             logE("Incoming list of pairData is empty")
             return
         }
-        logD(list.joinToString{"${it.symbol} | ${it.exchangeName}"})
+        logD(list.joinToString { "${it.symbol} | ${it.exchangeName}" })
         app.currentCur1 = list[0].baseCurrency
         app.currentCur2 = list[0].quoteCurrency
         super.updatePairData(list)
@@ -181,7 +201,12 @@ class MainActivity : ExratesActivity() {
         logTrace("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         logTrace("priceHistory:" + cur.priceHistory.joinToString())
-        logTrace("priceHistory truncated:" + cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1).joinToString())
+        logTrace(
+            "priceHistory truncated:" + cur.priceHistory.subList(
+                cur.priceHistory.size - 10,
+                cur.priceHistory.lastIndex + 1
+            ).joinToString()
+        )
         if (cur.priceHistory.isEmpty()) {
             root.removeView(anyChartView)
             logE("Graph removed")
@@ -189,7 +214,8 @@ class MainActivity : ExratesActivity() {
                 text = "Data not available"
             }
             root.addView(notice, 4)
-        } else GraphFactory(anyChartView, "1h").createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1))
+        } else GraphFactory(anyChartView, "1h")
+            .createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1))
     }
 
     override fun task() {
@@ -198,13 +224,16 @@ class MainActivity : ExratesActivity() {
             logTrace("current data  is null")
             return
         }
-        logTrace( "pairs: " + app.currentExchange!!.pairs.filter{it.visible}.map { it.symbol }.toTypedArray().joinToString())
+        logTrace("pairs: " + app.currentExchange!!.pairs.filter { it.visible }
+            .map { it.symbol }.toTypedArray().joinToString())
         model.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
             app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
         ))
-        model.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
+        model.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
+            CURRENCY_HISTORIES_MAIN_NUMBER
+        )
     }
 
     private suspend fun firstLoadActivity(): Boolean{
@@ -261,7 +290,7 @@ class MainActivity : ExratesActivity() {
 
     private fun updateExchangesList(exchangeNames: List<String>?){
         if (exchangeNames == null) return
-        logD( "exchanges: $exchangeNames")
+        logD("exchanges: $exchangeNames")
         with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
 
         //exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
@@ -270,7 +299,7 @@ class MainActivity : ExratesActivity() {
 
     private fun updateCurrenciesList(curNames: List<String>?){
         if (curNames == null) return
-        logD( "curNames : $curNames")
+        logD("curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
         //currencyName.setSelection(curIdx)
     }
@@ -283,7 +312,7 @@ class MainActivity : ExratesActivity() {
 
     override fun startProgress(){
         super.startProgress()
-        logTrace( "Snack started..")
+        logTrace("Snack started..")
         Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
     }
 
@@ -293,7 +322,8 @@ class MainActivity : ExratesActivity() {
             1 -> SAVED_CURRENCIES_ADAPTER_BINANCE
             else -> SAVED_CURRENCIES_ADAPTER_P2PB2B
         }
-        save(SAVED_EX_IDX to exchangeName.selectedItemPosition,
+        save(
+            SAVED_EX_IDX to exchangeName.selectedItemPosition,
             SAVED_CUR_IDX to currencyName.selectedItemPosition,
             SAVED_CURRENCIES_ADAPTER to adapterName,
             adapterName to currenciesRecyclerView.adapter!!,
@@ -320,7 +350,8 @@ class MainActivity : ExratesActivity() {
                 else {
                     logTrace("Saved lists loaded")
                     try{
-                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST, ArrayList<ExchangeNamesObject>())
+                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(
+                            SAVED_EXCHANGE_NAME_LIST, ArrayList<ExchangeNamesObject>())
 
                     }catch (e: FileNotFoundException){
                         flag = false
@@ -351,7 +382,9 @@ class MainActivity : ExratesActivity() {
                         app.currentExchange?.pairs?.map { it.baseCurrency + it.quoteCurrency }?.toTypedArray()?.plus(
                             arrayOf(app.currentCur1 + app.currentCur2)) ?: pairs)
                     )
-                    model.getActualPair(cur1, cur2, "1h", CURRENCY_HISTORIES_MAIN_NUMBER)
+                    model.getActualPair(cur1, cur2, "1h",
+                        CURRENCY_HISTORIES_MAIN_NUMBER
+                    )
 
 
                 }

@@ -1,9 +1,13 @@
-package ru.exrates.mobile.logic.activities
+package ru.exrates.mobile.view.listeners
 
 import android.content.Intent
 import android.view.View
 import android.widget.AdapterView
 import ru.exrates.mobile.*
+import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
+import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ID
+import ru.exrates.mobile.view.ExchangeActivity
+import ru.exrates.mobile.view.MainActivity
 
 class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity, private val app: MyApp) : AdapterView.OnItemSelectedListener {
     private var activated = false

@@ -1,12 +1,14 @@
-package ru.exrates.mobile
+package ru.exrates.mobile.view
 
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import ru.exrates.mobile.logic.Model
-import ru.exrates.mobile.logic.Storage
+import ru.exrates.mobile.MyApp
+import ru.exrates.mobile.data.Model
+import ru.exrates.mobile.data.Storage
+import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import java.util.*

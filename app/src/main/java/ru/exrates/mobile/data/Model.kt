@@ -1,13 +1,13 @@
-package ru.exrates.mobile.logic
+package ru.exrates.mobile.data
 
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import ru.exrates.mobile.ExratesActivity
+import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.MyApp
-import ru.exrates.mobile.logD
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
+import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.logic.rest.*
 
 class Model(private val app: MyApp, private val activity: ExratesActivity) {

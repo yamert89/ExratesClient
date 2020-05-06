@@ -4,10 +4,13 @@ import android.view.View
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
+import ru.exrates.mobile.logic.logE
+import ru.exrates.mobile.view.CurrencyActivity
+import ru.exrates.mobile.view.ExratesActivity
+import ru.exrates.mobile.view.MainActivity
 import java.net.SocketTimeoutException
 
 

@@ -1,4 +1,4 @@
-package ru.exrates.mobile.viewadapters
+package ru.exrates.mobile.view.viewAdapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
+import ru.exrates.mobile.logic.logD
+import ru.exrates.mobile.logic.logE
+import ru.exrates.mobile.logic.toNumeric
 import java.math.BigDecimal
 import java.math.MathContext
 
@@ -30,7 +33,9 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PairsViewHolder {
         val linearLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.currency_row, parent, false) as LinearLayout
-        return PairsViewHolder(linearLayout)
+        return PairsViewHolder(
+            linearLayout
+        )
     }
 
     override fun getItemCount() = dataPairs.size

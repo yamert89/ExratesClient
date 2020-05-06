@@ -1,7 +1,6 @@
-package ru.exrates.mobile
+package ru.exrates.mobile.logic
 
 import android.util.Log
-import android.widget.AbsSpinner
 import java.text.DecimalFormat
 import java.util.*
 
