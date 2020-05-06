@@ -10,14 +10,14 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.CURRENCY_HISTORIES_CUR_NUMBER
-import ru.exrates.mobile.data.Model
+import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.SelectedExchange
 import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.logic.toNumeric
 
 class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
-                       private val model: Model,
+                       private val restModel: RestModel,
                        private val app: MyApp,
                        var interval: String,
                        val selectedExchange: SelectedExchange ): RecyclerView.Adapter<ExchangesAdapter.ExchangeViewHolder>() {
@@ -54,7 +54,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
         ))
         holder.linearLayout.setOnClickListener {
             logD("old selected row: $selectedRow, selected item id: ${it.id}")
-            model.getPriceHistory(pair.baseCurrency, pair.quoteCurrency, pair.exId, interval,
+            restModel.getPriceHistory(pair.baseCurrency, pair.quoteCurrency, pair.exId, interval,
                 CURRENCY_HISTORIES_CUR_NUMBER
             )
             if (it == selectedRow) return@setOnClickListener

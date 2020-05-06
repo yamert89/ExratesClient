@@ -11,9 +11,11 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.rest.RestService
+import ru.exrates.mobile.presenters.BasePresenter
 import java.time.Duration
 
 class MyApp(): Application(){
+    val presenter = BasePresenter(this)
     var currentExchange: Exchange? = null
     var currentPairInfo: MutableList<CurrencyPair>? = null
     //var currentExchangeId = 1

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.CURRENT_INTERVAL
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
-import ru.exrates.mobile.data.Model
+import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.logic.SAVED_EXCHANGE_NAME_LIST
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
@@ -38,7 +38,7 @@ class ExchangeActivity : ExratesActivity() {
             intervalValue = findViewById(R.id.intervalValue)
             progressLayout = findViewById(R.id.progressLayout)
 
-            model = Model(app, this)
+            restModel = RestModel(app, this)
 
             if (currentNameListsIsNull()){
                 app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST) //todo ? delete
@@ -71,7 +71,7 @@ class ExchangeActivity : ExratesActivity() {
             val icoId = intent.getIntExtra(EXTRA_EXCHANGE_ICO, 0)
             exIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, icoId, null ))
             //val exId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
-            model.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, arrayOf()))
+            restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, arrayOf()))
             startProgress()
 
         }catch (e: Exception){
@@ -92,7 +92,7 @@ class ExchangeActivity : ExratesActivity() {
 
     override fun task() {
         if (currentDataIsNull()) throw NullPointerException("current data in task is null")
-        model.getActualExchange(
+        restModel.getActualExchange(
             ExchangePayload(
                 app.currentExchange!!.exId,
                 currentInterval,

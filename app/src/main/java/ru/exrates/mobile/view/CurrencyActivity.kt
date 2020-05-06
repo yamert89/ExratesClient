@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.R
-import ru.exrates.mobile.data.Model
+import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.view.graph.GraphFactory
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -58,7 +58,7 @@ class CurrencyActivity : ExratesActivity() {
             //storage = Storage(applicationContext)
 
 
-            model = Model(app, this)
+            restModel = RestModel(app, this)
 
             val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
             val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
@@ -69,7 +69,7 @@ class CurrencyActivity : ExratesActivity() {
                 app.currentPairInfo!!.find { selectedExchange.id == it.exId }?.historyPeriods?.get(0) ?: "1h"
             )
 
-            model.getActualPair(currName1, currName2, currentGraphInterval,
+            restModel.getActualPair(currName1, currName2, currentGraphInterval,
                 CURRENCY_HISTORIES_CUR_NUMBER
             )
 
@@ -97,7 +97,7 @@ class CurrencyActivity : ExratesActivity() {
                     val interval = parent?.getItemAtPosition(position) as String
                     currentGraphInterval = interval
                     currentGraphIntervalIdx = position
-                    model.getPriceHistory(currName1, currName2, selectedExchange.id, interval,
+                    restModel.getPriceHistory(currName1, currName2, selectedExchange.id, interval,
                         CURRENCY_HISTORIES_CUR_NUMBER
                     )
                     val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
@@ -112,7 +112,7 @@ class CurrencyActivity : ExratesActivity() {
             exchangesAdapter =
                 ExchangesAdapter(
                     app.currentPairInfo ?: mutableListOf(),
-                    model,
+                    restModel,
                     app,
                     app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!!,
                     selectedExchange
@@ -244,7 +244,7 @@ class CurrencyActivity : ExratesActivity() {
 
     override fun task() {
         logD("task cur activ started with cur1: ${app.currentCur1}, cur2: ${app.currentCur2}, curGraphInterval: $currentGraphInterval")
-        model.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval,
+        restModel.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval,
             CURRENCY_HISTORIES_CUR_NUMBER
         )
     }

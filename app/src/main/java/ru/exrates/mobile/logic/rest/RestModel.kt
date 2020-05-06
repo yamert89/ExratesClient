@@ -1,4 +1,4 @@
-package ru.exrates.mobile.data
+package ru.exrates.mobile.logic.rest
 
 import retrofit2.Call
 import retrofit2.Callback
@@ -8,9 +8,8 @@ import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.logD
-import ru.exrates.mobile.logic.rest.*
 
-class Model(private val app: MyApp, private val activity: ExratesActivity) {
+class RestModel(private val app: MyApp, private val activity: ExratesActivity) {
 
     fun getActualExchange(payload: ExchangePayload, callback: ExCallback<Exchange> = OneExchangeCallback(activity)){
         logD("REQUEST: actual exchange: $payload")

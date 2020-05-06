@@ -12,7 +12,7 @@ import kotlinx.coroutines.*
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.R
-import ru.exrates.mobile.data.Model
+import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.view.graph.GraphFactory
 import ru.exrates.mobile.view.listeners.ExchangeSpinnerItemSelectedListener
@@ -34,24 +34,17 @@ class MainActivity : ExratesActivity() {
     private lateinit var currenciesRecyclerView: RecyclerView
     private lateinit var anyChartView: LineChartView
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var pairsAdapter: PairsAdapter
-    private lateinit var curAdapter: ArrayAdapter<String>
-    private lateinit var exchAdapter: ArrayAdapter<String>
     private lateinit var root: ConstraintLayout
     private lateinit var searchBtn: ImageView
     private lateinit var autoCompleteTextView: AutoCompleteTextView
-    private var curIdx = 0
-    private var exIdx = 0
-    private var cur: CurrencyPair? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         try {
             logTrace("main oncreate")
             setContentView(R.layout.activity_main)
-            //storage = Storage(applicationContext, app.om)
-
-            model = Model(app, this)
 
             currencyName = findViewById(R.id.main_currency_spinner)
             currencyPrice = findViewById(R.id.main_cur_price)
@@ -226,12 +219,12 @@ class MainActivity : ExratesActivity() {
         }
         logTrace("pairs: " + app.currentExchange!!.pairs.filter { it.visible }
             .map { it.symbol }.toTypedArray().joinToString())
-        model.getActualExchange(ExchangePayload(
+        restModel.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
             app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
         ))
-        model.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
+        restModel.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
             CURRENCY_HISTORIES_MAIN_NUMBER
         )
     }
@@ -242,7 +235,7 @@ class MainActivity : ExratesActivity() {
         coroutineScope {
             try {
                 logTrace("before request")
-                model.getLists()
+                restModel.getLists()
             }catch (e: Exception){
                 logE("exception")
                 return@coroutineScope
@@ -268,9 +261,9 @@ class MainActivity : ExratesActivity() {
 
             val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
             val defExId = exchangeNamesList.find { it.pairs.contains(allPairs[0]) }!!.id
-            model.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
+            restModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
             val curs = parseSymbol(allPairs[0])
-            model.getActualPair(
+            restModel.getActualPair(
                 curs.first, curs.second,
                 CURRENCY_HISTORIES_MAIN_NUMBER
             )
@@ -288,27 +281,8 @@ class MainActivity : ExratesActivity() {
 
     }
 
-    private fun updateExchangesList(exchangeNames: List<String>?){
-        if (exchangeNames == null) return
-        logD("exchanges: $exchangeNames")
-        with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
 
-        //exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
 
-    }
-
-    private fun updateCurrenciesList(curNames: List<String>?){
-        if (curNames == null) return
-        logD("curNames : $curNames")
-        with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
-        //currencyName.setSelection(curIdx)
-    }
-
-    private fun getListWithAllPairs(exchangeNamesList: List<ExchangeNamesObject>): List<String>{
-        val allPairs = ArrayList<String>(2000)
-        exchangeNamesList.forEach { allPairs.addAll(it.pairs.subtract(allPairs)) }
-        return allPairs.sorted()
-    }
 
     override fun startProgress(){
         super.startProgress()
@@ -334,91 +308,7 @@ class MainActivity : ExratesActivity() {
 
     override fun onResume() {
         super.onResume()
-        var exId = 0
-        try {
-            app = this.application as MyApp
-            var flag = true
-            logTrace("main onresume")
-            val listsReq = GlobalScope.launch(Dispatchers.IO) {
-                logTrace("start coroutine")
-                if (storage.getValue(IS_FIRST_LOAD, true)) {
-                    logTrace("before first load")
-                    flag = firstLoadActivity()
-                    logTrace("flaq is $flag")
-                }
 
-                else {
-                    logTrace("Saved lists loaded")
-                    try{
-                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(
-                            SAVED_EXCHANGE_NAME_LIST, ArrayList<ExchangeNamesObject>())
-
-                    }catch (e: FileNotFoundException){
-                        flag = false
-                        stopProgress()
-                        storage.storeValue(IS_FIRST_LOAD, true)
-                        return@launch
-                    }catch (e: InvalidClassException){
-                        logE("Class model of ex names list deprecated")
-                        flag = firstLoadActivity()
-                    }catch (e: Exception){
-                        logE(e.message.toString())
-                    }
-                    curIdx = storage.getValue(SAVED_CUR_IDX, 0)
-                    exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val cur1 = storage.getValue(CURRENT_CUR_1, "AGIBTC")
-                    val cur2 = storage.getValue(CURRENT_CUR_2, "AGIBTC")
-                    exId = storage.getValue(SAVED_EXID, 1)
-                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("AGIBTC")) //todo hardcode
-                    app.currentCur1 = cur1
-                    app.currentCur2 = cur2
-
-
-
-
-                    model.getActualExchange(ExchangePayload(
-                        exId,
-                        app.currentInterval,
-                        app.currentExchange?.pairs?.map { it.baseCurrency + it.quoteCurrency }?.toTypedArray()?.plus(
-                            arrayOf(app.currentCur1 + app.currentCur2)) ?: pairs)
-                    )
-                    model.getActualPair(cur1, cur2, "1h",
-                        CURRENCY_HISTORIES_MAIN_NUMBER
-                    )
-
-
-                }
-
-            }
-
-            runBlocking { listsReq.join() }
-            if (!flag) {
-                toast("Не удалось подключиться к серверу. Проверте интернет подключение и перезапустите приложение")
-
-                return
-            }else model.ping()
-            //exchangeName.setSelection((exchangeName.adapter as ArrayAdapter<String>).getPosition(app.exchangeNamesList?.find { it.id == exId }?.name))
-
-
-            GlobalScope.launch(Dispatchers.Main) {
-                if (app.exchangeNamesList == null || !currencyName.adapter.isEmpty) {
-                    logD("exchange names list is null or currency name adapter is empty")
-                    return@launch
-                }
-
-
-                updateExchangesList(app.exchangeNamesList!!.map { it.name })
-                val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
-                updateCurrenciesList(allPairs)
-                val adapter = autoCompleteTextView.adapter as ArrayAdapter<String>
-                adapter.addAll(allPairs)
-            }
-
-
-            currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
-
-
-        }catch (e: Exception){e.printStackTrace()}
     }
 
 
