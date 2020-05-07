@@ -1,12 +1,11 @@
 package ru.exrates.mobile.presenters
 
 import android.widget.ArrayAdapter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.*
+import ru.exrates.mobile.logic.entities.CurrencyPair
+import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.view.ExratesActivity
@@ -112,15 +111,144 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
                 searchAdapter.addAll(allPairs)
             }
 
-            mainActivity.updateCurrencyPrice(cur?.price?.toNumeric() ?: "0.0")
+            //mainActivity.updateCurrencyPrice(cur?.price?.toNumeric() ?: "0.0")
 
 
 
         }catch (e: Exception){e.printStackTrace()}
     }
 
-    private fun firstLoad(): Boolean{
+    override fun task() {
+        if (basic.currentDataIsNull()){
+            logTrace("current data  is null")
+            return
+        }
+        logTrace("pairs: " + app.currentExchange!!.pairs.filter { it.visible }
+            .map { it.symbol }.toTypedArray().joinToString())
+        restModel.getActualExchange(ExchangePayload(
+            app.currentExchange!!.exId,
+            app.currentInterval,
+            app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
+        ))
+        restModel.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
+            CURRENCY_HISTORIES_MAIN_NUMBER
+        )
+    }
 
+    private suspend fun firstLoad(): Boolean{
+        var res = false
+        mainActivity.startProgress()
+        coroutineScope {
+            try {
+                logTrace("before request")
+                restModel.getLists()
+            }catch (e: Exception){
+                logE("exception")
+                return@coroutineScope
+            }
+            res = true
+
+        }
+        if (res) storage.storeValue(IS_FIRST_LOAD, false)
+        return res
+    }
+
+    fun initData(exchangeNamesList: List<ExchangeNamesObject>){
+        logTrace("init data")
+        try {
+            app.exchangeNamesList = exchangeNamesList
+            GlobalScope.launch {
+                basic.save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
+                logTrace("list saved")
+
+            }
+            logTrace("get exchange")
+
+
+            val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
+            val defExId = exchangeNamesList.find { it.pairs.contains(allPairs[0]) }!!.id
+            restModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
+            val curs = parseSymbol(allPairs[0])
+            restModel.getActualPair(
+                curs.first, curs.second,
+                CURRENCY_HISTORIES_MAIN_NUMBER
+            )
+            updateExchangesList(exchangeNamesList.map { it.name })
+
+            updateCurrenciesList(allPairs)
+
+            searchAdapter.addAll(allPairs)
+            rebuildExSpinner(defExId)
+
+        }catch (e: Exception){
+            logE("exception in init method")
+            e.printStackTrace()
+        }
+
+    }
+
+    fun getCurrencyAdapter(): PairsAdapter{
+        val savedAdapter = storage.getValue(
+            SAVED_CURRENCIES_ADAPTER,
+            SAVED_CURRENCIES_ADAPTER_BINANCE
+        )
+        pairsAdapter = storage.getValue(savedAdapter,
+            PairsAdapter(
+                mutableListOf(),
+                app = app
+            )
+        )
+        pairsAdapter.app = app
+        return pairsAdapter
+    }
+
+    override fun saveState() {
+        val adapterName = when(app.currentExchange?.exId){
+            1 -> SAVED_CURRENCIES_ADAPTER_BINANCE
+            else -> SAVED_CURRENCIES_ADAPTER_P2PB2B
+        }
+        basic.save(
+            SAVED_EX_IDX to exchangeName.selectedItemPosition,
+            SAVED_CUR_IDX to currencyName.selectedItemPosition,
+            SAVED_CURRENCIES_ADAPTER to adapterName,
+            adapterName to currenciesRecyclerView.adapter!!,
+            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC"))/*, //todo hardcode
+            SAVED_EXID to (app.currentExchange?.exId ?: 1)*/)
+    }
+
+    override fun updateExchangeData(exchange: Exchange) {
+        app.currentExchange = exchange
+        logD("incoming pairs: ${exchange.pairs.joinToString { it.symbol }}")
+        val adapter = currenciesRecyclerView.adapter as PairsAdapter
+        adapter.dataPairs.clear()
+        adapter.dataPairs.addAll(exchange.pairs)
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun updatePairData(list: MutableList<CurrencyPair>) {
+        logD("updatePairData")
+        if (list.isEmpty()){
+            logE("Incoming list of pairData is empty")
+            return
+        }
+        logD(list.joinToString { "${it.symbol} | ${it.exchangeName}" })
+        app.currentCur1 = list[0].baseCurrency
+        app.currentCur2 = list[0].quoteCurrency
+        super.updatePairData(list)
+        app.currentPairInfo = list
+        var count = 0.0
+        list.forEach { count += it.price }
+        currencyPrice.text = (count / list.size).toNumeric()
+        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)}!! //todo right? app.currentExchange outdated. how to choose right pair?
+        logTrace("current currency in graph: $cur")
+        //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
+        logTrace("priceHistory:" + cur.priceHistory.joinToString())
+        logTrace(
+            "priceHistory truncated:" + cur.priceHistory.subList(
+                cur.priceHistory.size - 10,
+                cur.priceHistory.lastIndex + 1
+            ).joinToString()
+        )
     }
 
     private fun updateExchangesList(exchangeNames: List<String>?){
@@ -130,6 +258,21 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
 
         //exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
 
+    }
+
+    private fun rebuildExSpinner(exId : Int){
+        logD("rebuildExSpinner")
+        val adapter = (exchangeName.adapter as ArrayAdapter<String>)
+        val pos = adapter.getPosition(app.exchangeNamesList?.find { it.id == exId }?.name)
+        val ex = adapter.getItem(pos)
+        adapter.remove(ex)
+        adapter.insert(ex, 0)
+        exchangeName.setSelection(0)
+    }
+
+    private fun parseSymbol(symbol: String): Pair<String, String>{
+        val arr = symbol.split("/")
+        return arr[0] to arr[1]
     }
 
     private fun updateCurrenciesList(curNames: List<String>?){
