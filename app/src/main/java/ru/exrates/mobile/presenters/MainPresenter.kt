@@ -100,7 +100,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
 
 
             GlobalScope.launch(Dispatchers.Main) {
-                if (app.exchangeNamesList == null || !currencyName.adapter.isEmpty) {
+                if (app.exchangeNamesList == null || pairsAdapter.itemCount != 0) {
                     logD("exchange names list is null or currency name adapter is empty")
                     return@launch
                 }
@@ -108,13 +108,12 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
 
                 updateExchangesList(app.exchangeNamesList!!.map { it.name })
                 val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
-               updateCurrenciesList(allPairs)
-                val adapter = autoCompleteTextView.adapter as ArrayAdapter<String>
-                adapter.addAll(allPairs)
+                updateCurrenciesList(allPairs)
+                searchAdapter.addAll(allPairs)
             }
 
+            mainActivity.updateCurrencyPrice(cur?.price?.toNumeric() ?: "0.0")
 
-            currencyPrice.text = cur?.price?.toNumeric() ?: "0.0"
 
 
         }catch (e: Exception){e.printStackTrace()}

@@ -117,6 +117,9 @@ class MainActivity : ExratesActivity() {
         }
 
     }
+    fun updateCurrencyPrice(value: String){
+        currencyPrice.text = value
+    }
 
     private fun startCurActivity(position: Int = Int.MAX_VALUE){
         if (position != Int.MAX_VALUE) {
@@ -308,6 +311,7 @@ class MainActivity : ExratesActivity() {
 
     override fun onResume() {
         super.onResume()
+        currencyName.adapter.isEmpty
 
     }
 
