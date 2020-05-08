@@ -14,26 +14,26 @@ class RestModel(private val app: MyApp,
                 private val activity: ExratesActivity,
                 private val presenter: Presenter) {
 
-    fun getActualExchange(payload: ExchangePayload, callback: ExCallback<Exchange> = OneExchangeCallback(activity)){
+    fun getActualExchange(payload: ExchangePayload, callback: ExCallback<Exchange> = OneExchangeCallback(activity, presenter)){
         logD("REQUEST: actual exchange: $payload")
         app.restService.getExchange(payload).enqueue(callback)
     }
 
     fun getActualPair(c1: String, c2: String, historyinterval: String, limit: Int){
         logD("REQUEST: actual pair: $c1, $c2, interval=$historyinterval, limit=$limit")
-        app.restService.getPair(c1, c2, historyinterval, limit).enqueue(PairCallback(activity))
+        app.restService.getPair(c1, c2, historyinterval, limit).enqueue(PairCallback(activity, presenter))
     }
 
     fun getActualPair(c1: String, c2: String, limit: Int){
         logD("REQUEST: actual pair: $c1, $c2, limit=$limit")
-        app.restService.getPair(c1, c2, truncateLimit(limit)).enqueue(PairCallback(activity))
+        app.restService.getPair(c1, c2, truncateLimit(limit)).enqueue(PairCallback(activity, presenter))
     }
 
 
 
     fun getLists(){
         logD("REQUEST: lists")
-        app.restService.lists().enqueue(ListsCallback(activity))
+        app.restService.lists().enqueue(ListsCallback(activity, presenter))
     }
 
     fun ping(){
@@ -51,7 +51,7 @@ class RestModel(private val app: MyApp,
 
     fun getPriceHistory(c1: String, c2: String, exchId: Int, historyinterval: String, limit: Int){
         logD("REQUEST: price history: $c1, $c2, exId: $exchId, historyinterval: $historyinterval, limit: $limit")
-        app.restService.getPriceHistory(c1, c2, exchId, historyinterval, truncateLimit(limit)).enqueue(HistoryCallback(activity))
+        app.restService.getPriceHistory(c1, c2, exchId, historyinterval, truncateLimit(limit)).enqueue(HistoryCallback(activity, presenter))
     }
 
     private fun truncateLimit(limit: Int): Int{

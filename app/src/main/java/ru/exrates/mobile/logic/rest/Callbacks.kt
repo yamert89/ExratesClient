@@ -8,6 +8,7 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.logE
+import ru.exrates.mobile.presenters.CurrencyPresenter
 import ru.exrates.mobile.presenters.MainPresenter
 import ru.exrates.mobile.presenters.Presenter
 import ru.exrates.mobile.view.CurrencyActivity
@@ -16,7 +17,7 @@ import ru.exrates.mobile.view.MainActivity
 import java.net.SocketTimeoutException
 
 
-abstract class ExCallback<T>(protected val activity: ExratesActivity, val presenter: Presenter): Callback<T> {
+abstract class ExCallback<T>(private val activity: ExratesActivity, val presenter: Presenter): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
         logE("failed response")
         if (t is SocketTimeoutException) activity.toast("Не удалось подключиться к серверу. Превышено время ожидания ответа")
@@ -50,10 +51,10 @@ abstract class ExCallback<T>(protected val activity: ExratesActivity, val presen
 
 }*/
 
-class OneExchangeCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<Exchange>(activity){
+class OneExchangeCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<Exchange>(activity, presenter){
     override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
         super.onResponse(call, response)
-        mainFunc(response.body(), activity::updateExchangeData)
+        mainFunc(response.body(), presenter::updateExchangeData)
     }
 
 }
@@ -84,7 +85,7 @@ class HistoryCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
     override fun onResponse(call: Call<List<Double>>, response: Response<List<Double>>) {
         super.onResponse(call, response)
         //activity as CurrencyActivity
-        presenter as MainPresenter
+        presenter as CurrencyPresenter
         if (response.code() == 404) mainFunc(listOf(), presenter::updatePairData)
         mainFunc(response.body(), presenter::updatePairData)
     }
