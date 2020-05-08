@@ -8,13 +8,15 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.logE
+import ru.exrates.mobile.presenters.MainPresenter
+import ru.exrates.mobile.presenters.Presenter
 import ru.exrates.mobile.view.CurrencyActivity
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
 import java.net.SocketTimeoutException
 
 
-abstract class ExCallback<T>(protected val activity: ExratesActivity): Callback<T> {
+abstract class ExCallback<T>(protected val activity: ExratesActivity, val presenter: Presenter): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
         logE("failed response")
         if (t is SocketTimeoutException) activity.toast("Не удалось подключиться к серверу. Превышено время ожидания ответа")
@@ -41,14 +43,14 @@ abstract class ExCallback<T>(protected val activity: ExratesActivity): Callback<
     }
 }
 
-class ExchangesCallback(activity: ExratesActivity):ExCallback<Map<String, Exchange>>(activity) {
+/*class ExchangesCallback(activity: ExratesActivity):ExCallback<Map<String, Exchange>>(activity, presenter = ) {
     override fun onResponse(call: Call<Map<String, Exchange>>, response: Response<Map<String, Exchange>>) {
         //mainActivity.updateExchangeData(response.body() ?: throw IllegalStateException("Response is null"))
     }
 
-}
+}*/
 
-class OneExchangeCallback(activity: ExratesActivity) : ExCallback<Exchange>(activity){
+class OneExchangeCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<Exchange>(activity){
     override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
         super.onResponse(call, response)
         mainFunc(response.body(), activity::updateExchangeData)
@@ -56,33 +58,35 @@ class OneExchangeCallback(activity: ExratesActivity) : ExCallback<Exchange>(acti
 
 }
 
-class PairCallback(activity: ExratesActivity) : ExCallback<MutableList<CurrencyPair>>(activity){
+class PairCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<MutableList<CurrencyPair>>(activity, presenter){
     override fun onResponse(
         call: Call<MutableList<CurrencyPair>>,
         response: Response<MutableList<CurrencyPair>>
     ) {
         super.onResponse(call, response)
-        mainFunc(response.body(), activity::updatePairData)
+        mainFunc(response.body(), presenter::updatePairData)
     }
 }
 
-class ListsCallback(activity: ExratesActivity) : ExCallback<List<ExchangeNamesObject>>(activity) {
+class ListsCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<List<ExchangeNamesObject>>(activity, presenter) {
     override fun onResponse(
         call: Call<List<ExchangeNamesObject>>,
         response: Response<List<ExchangeNamesObject>>
     ) {
         super.onResponse(call, response)
-        activity as MainActivity
-        mainFunc(response.body(), activity::initData)
+        //activity as MainActivity
+        presenter as MainPresenter
+        mainFunc(response.body(), presenter::initData)
     }
 }
 
-class HistoryCallback(activity: ExratesActivity) : ExCallback<List<Double>>(activity){
+class HistoryCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<List<Double>>(activity, presenter){
     override fun onResponse(call: Call<List<Double>>, response: Response<List<Double>>) {
         super.onResponse(call, response)
-        activity as CurrencyActivity
-        if (response.code() == 404) mainFunc(listOf(), activity::updateGraph)
-        mainFunc(response.body(), activity::updateGraph)
+        //activity as CurrencyActivity
+        presenter as MainPresenter
+        if (response.code() == 404) mainFunc(listOf(), presenter::updatePairData)
+        mainFunc(response.body(), presenter::updatePairData)
     }
 
 }

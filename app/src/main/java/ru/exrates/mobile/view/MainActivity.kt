@@ -93,11 +93,7 @@ class MainActivity : ExratesActivity() {
 
             autoCompleteTextView.setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line ))
 
-            exchangeName.onItemSelectedListener =
-                ExchangeSpinnerItemSelectedListener(
-                    this,
-                    app
-                )
+            exchangeName.onItemSelectedListener = ExchangeSpinnerItemSelectedListener(this, app, presenter )
 
             logD("Main activity created")
 
@@ -121,39 +117,28 @@ class MainActivity : ExratesActivity() {
 
     private fun startCurActivity(position: Int = Int.MAX_VALUE){
         if (position != Int.MAX_VALUE) {
-            if (curIdx == position) return
-            curIdx = position
+            if (currencyName.selectedItemPosition == position) return
+            presenter.updateCurIdx(position)
         }
 
         startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
-            val symbol = currencyName.getItemAtPosition(curIdx).toString()
-            val curs = parseSymbol(symbol)
-            app.currentCur1 = curs.first
-            app.currentCur2 = curs.second
+            val preparedValues = presenter.prepareStartCurActivity()
 
-            putExtra(EXTRA_CURRENCY_NAME_1, curs.first )
-            putExtra(EXTRA_CURRENCY_NAME_2, curs.second )
+            putExtra(EXTRA_CURRENCY_NAME_1, preparedValues.first )
+            putExtra(EXTRA_CURRENCY_NAME_2, preparedValues.second )
             // putExtra(EXTRA_EXCHANGE_NAME, exName)
             // putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
-            var id = app.baseContext.resources.getIdentifier(curs.first.toLowerCase(), "drawable", app.baseContext.packageName)
+            var id = app.baseContext.resources.getIdentifier(preparedValues.first.toLowerCase(), "drawable", app.baseContext.packageName)
             if (id == 0) id = android.R.drawable.ic_menu_help
             putExtra(EXTRA_CUR_ICO, id)
-            val defExId = if (app.exchangeNamesList!![0].pairs.contains(symbol)) 1 else {
-                app.exchangeNamesList!!.find { it.pairs.contains(symbol) }!!.id
-            }
-            putExtra(EXTRA_EXCHANGE_ID, defExId)
-
-            rebuildExSpinner(defExId)
-
-            save(SAVED_EXID to defExId/*, SAVED_EX_IDX to pos*/)
+            putExtra(EXTRA_EXCHANGE_ID, preparedValues.third)
 
         })
     }
 
 
 
-    fun updatePairData(list: MutableList<CurrencyPair>) {
-
+    fun updateGraph(cur: CurrencyPair) {
         if (cur.priceHistory.isEmpty()) {
             root.removeView(anyChartView)
             logE("Graph removed")

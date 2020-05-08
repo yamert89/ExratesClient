@@ -8,8 +8,11 @@ import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.logD
+import ru.exrates.mobile.presenters.Presenter
 
-class RestModel(private val app: MyApp, private val activity: ExratesActivity) {
+class RestModel(private val app: MyApp,
+                private val activity: ExratesActivity,
+                private val presenter: Presenter) {
 
     fun getActualExchange(payload: ExchangePayload, callback: ExCallback<Exchange> = OneExchangeCallback(activity)){
         logD("REQUEST: actual exchange: $payload")

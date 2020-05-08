@@ -37,6 +37,7 @@ class CurrencyActivity : ExratesActivity() {
     private var currentGraphInterval = ""
     private var currentGraphIntervalIdx = 0
     private var selectedExchange = SelectedExchange(1)
+
         //private var activeExchangeName = "binanceExchange"
 
 
@@ -63,7 +64,7 @@ class CurrencyActivity : ExratesActivity() {
             val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
             val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
             //app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
-            selectedExchange.id = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+            selectedExchange.id = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1) //todo replace with strorage saved_exid
             currentGraphInterval = storage.getValue(
                 CURRENT_GRAPH_INTERVAL,
                 app.currentPairInfo!!.find { selectedExchange.id == it.exId }?.historyPeriods?.get(0) ?: "1h"

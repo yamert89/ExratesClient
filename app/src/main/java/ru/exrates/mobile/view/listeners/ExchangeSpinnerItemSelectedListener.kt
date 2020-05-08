@@ -6,10 +6,12 @@ import android.widget.AdapterView
 import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ID
+import ru.exrates.mobile.presenters.MainPresenter
 import ru.exrates.mobile.view.ExchangeActivity
 import ru.exrates.mobile.view.MainActivity
 
-class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity, private val app: MyApp) : AdapterView.OnItemSelectedListener {
+class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity,
+                                          private val app: MyApp, private val presenter: MainPresenter) : AdapterView.OnItemSelectedListener {
     private var activated = false
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -23,6 +25,7 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
         }
         if (app.exchangeNamesList == null || parent == null || parent.count < 2) return
 
+        presenter.updateExIdx(position)
         val exchName = parent.getItemAtPosition(position)
         val exId = app.exchangeNamesList!!.find { it.name == exchName }?.id ?: throw IllegalArgumentException("ex id not found in exchangeNamesList with $exchName ex name")
 

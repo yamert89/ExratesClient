@@ -35,6 +35,11 @@ open class BasePresenter(val app: MyApp) : Presenter{
 
     fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
 
+    fun parseSymbol(symbol: String): Pair<String, String>{
+        val arr = symbol.split("/")
+        return arr[0] to arr[1]
+    }
+
     override fun saveState(){
         logD("saving state....")
         if(currentDataIsNull()) return
@@ -57,6 +62,10 @@ open class BasePresenter(val app: MyApp) : Presenter{
     override fun stop(){
         saveState()
         timer.cancel()
+    }
+
+    override fun pause() {
+        stop()
     }
 
     override fun resume(){

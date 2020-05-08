@@ -15,6 +15,8 @@ interface Presenter {
 
     fun start()
 
+    fun pause()
+
     fun stop()
 
     fun resume()
