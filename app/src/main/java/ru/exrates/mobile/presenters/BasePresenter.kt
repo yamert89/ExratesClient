@@ -15,7 +15,7 @@ import java.util.*
 open class BasePresenter(val app: MyApp) : Presenter{
 
     var activity: ExratesActivity? = null
-    val storage = Storage(app.applicationContext, app.om)
+    val storage = Storage(app.baseContext, app.om)
     var timer: Timer = Timer()
     lateinit var restModel: RestModel
 
@@ -83,6 +83,7 @@ open class BasePresenter(val app: MyApp) : Presenter{
 
     override fun attachView(view: ExratesActivity) {
         activity = view
+        restModel = RestModel(app, view, this)
     }
 
     override fun detachView() {

@@ -167,6 +167,8 @@ class MainActivity : ExratesActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (!this::presenter.isInitialized) presenter = MainPresenter(app.presenter)
+        presenter.attachView(this)
         presenter.resume()
     }
 

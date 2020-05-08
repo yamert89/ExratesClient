@@ -85,9 +85,9 @@ class HistoryCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
     override fun onResponse(call: Call<List<Double>>, response: Response<List<Double>>) {
         super.onResponse(call, response)
         //activity as CurrencyActivity
-        presenter as CurrencyPresenter
+       /* presenter as CurrencyPresenter
         if (response.code() == 404) mainFunc(listOf(), presenter::updatePairData)
-        mainFunc(response.body(), presenter::updatePairData)
+        mainFunc(response.body(), presenter::updatePairData)*/
     }
 
 }

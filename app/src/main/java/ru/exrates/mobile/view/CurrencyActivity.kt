@@ -44,7 +44,7 @@ class CurrencyActivity : ExratesActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try{
+        /*try{
             setContentView(R.layout.currency)
             app = this.application as MyApp
             //currencyExchange = findViewById(R.id.cur_exchange)
@@ -153,13 +153,13 @@ class CurrencyActivity : ExratesActivity() {
 
         }catch (e: Exception){
             Log.d(null, "Current activity start failed", e)
-        }
+        }*/
 
     }
 
 
     private fun updateIntervals(){
-        app.currentPairInfo!!.forEach { //todo mb null?
+        /*app.currentPairInfo!!.forEach { //todo mb null?
             intervals.addAll(it.historyPeriods!!.subtract(intervals))
         }
         val interval = intervals.first()
@@ -169,11 +169,11 @@ class CurrencyActivity : ExratesActivity() {
         val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}$pairSymbol"
         currentGraphIntervalIdx = storage.getValue(key, 0) //todo sync with currentGraphInterval
         currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
-        logD("Graph interval loaded with key $key and value $currentGraphIntervalIdx")
+        logD("Graph interval loaded with key $key and value $currentGraphIntervalIdx")*/
 
     }
 
-    override fun updatePairData(list: MutableList<CurrencyPair>) {
+    /*override fun updatePairData(list: MutableList<CurrencyPair>) {
         super.updatePairData(list)
         app.currentPairInfo = list
         updateIntervals()
@@ -236,9 +236,9 @@ class CurrencyActivity : ExratesActivity() {
 
             //set.data(dataList as List<ValueDataEntry>)
             //anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
-            /*val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
+            *//*val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
             historyAdapter.addAll(list.mapTo(mutableListOf<String>(), {it.toString()}))
-            historyAdapter.notifyDataSetChanged()*/
+            historyAdapter.notifyDataSetChanged()*//*
         }
 
     }
@@ -255,7 +255,7 @@ class CurrencyActivity : ExratesActivity() {
         storage.storeValue(CURRENT_GRAPH_INTERVAL, currentGraphInterval)
         storage.storeValue(CURRENT_GRAPH_INTERVAL_IDX, currentGraphIntervalIdx)
 
-    }
+    }*/
 
 
 

@@ -19,7 +19,7 @@ import java.util.*
 
 abstract class ExratesActivity : AppCompatActivity() {
     protected lateinit var app: MyApp
-    private lateinit var presenter: Presenter
+    //private lateinit var presenter: Presenter
     lateinit var progressLayout: ConstraintLayout
 
     open fun startProgress() {
@@ -35,23 +35,24 @@ abstract class ExratesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = this.application as MyApp
+
         logD("Basic exrates activity created")
     }
 
     override fun onResume() {
         super.onResume()
-        presenter.resume()
+
     }
 
     override fun onPause() {
         super.onPause()
         logD("root onpause")
-        presenter.stop()
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.destroy()
+
         logD("root ondestroy")
     }
 

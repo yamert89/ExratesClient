@@ -28,7 +28,7 @@ class ExchangeActivity : ExratesActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
+        /*try {
             setContentView(R.layout.exchange)
             //storage = Storage(applicationContext)
 
@@ -77,12 +77,12 @@ class ExchangeActivity : ExratesActivity() {
         }catch (e: Exception){
             e.printStackTrace()
 
-        }
+        }*/
 
 
     }
 
-    override fun updateExchangeData(exchange: Exchange) {
+    /*override fun updateExchangeData(exchange: Exchange) {
         super.updateExchangeData(exchange)
         app.currentExchange = exchange
         val adapter = pairs.adapter as PairsAdapter
@@ -101,7 +101,7 @@ class ExchangeActivity : ExratesActivity() {
         )
     }
 
-
+*/
 
 
 

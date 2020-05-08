@@ -15,7 +15,7 @@ import ru.exrates.mobile.presenters.BasePresenter
 import java.time.Duration
 
 class MyApp(): Application(){
-    val presenter = BasePresenter(this)
+    lateinit var presenter: BasePresenter
     var currentExchange: Exchange? = null
     var currentPairInfo: MutableList<CurrencyPair>? = null
     //var currentExchangeId = 1
@@ -24,12 +24,16 @@ class MyApp(): Application(){
     //var currencyNameslist: List<String>? = null
     var exchangeNamesList: List<ExchangeNamesObject>? = null
     var currentInterval: String = ""
-    var restService: RestService
+    lateinit var restService: RestService
     val om = ObjectMapper()
     val ip = "192.168.0.100"
     // val ip = "192.168.43.114"
     //val ip = "192.168.1.72"
-    init {
+
+
+    override fun onCreate() {
+        super.onCreate()
+        presenter = BasePresenter(this)
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
             .callTimeout(Duration.ofMinutes(3))
@@ -41,7 +45,6 @@ class MyApp(): Application(){
             .client(client)
             .build()
         restService = retrofit.create(RestService::class.java)
-        
     }
 
 

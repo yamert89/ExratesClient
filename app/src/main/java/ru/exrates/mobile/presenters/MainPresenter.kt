@@ -7,6 +7,7 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
+import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
@@ -20,7 +21,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
     private lateinit var exchAdapter: ArrayAdapter<String>
     private val storage = basic.storage
     private val app = basic.app
-    private val restModel = basic.restModel
+    private lateinit var restModel: RestModel
     private var activity: ExratesActivity? = null
     private lateinit var mainActivity: MainActivity
 
@@ -288,8 +289,10 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
     }
 
     override fun attachView(view: ExratesActivity) {
+        basic.attachView(view)
         activity = view
         mainActivity = activity as MainActivity
+        restModel = basic.restModel
     }
 
     override fun detachView() {
