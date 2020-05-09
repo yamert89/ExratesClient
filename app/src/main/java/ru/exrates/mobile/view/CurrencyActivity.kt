@@ -125,15 +125,8 @@ class CurrencyActivity : ExratesActivity() {
                 currentGraphInterval
             ).createBigGraph(list)
 
-
             //list.forEach { data.add(ValueDataEntry("1", it)) }
             logD("updating graph with ${list.joinToString()}")
-
-            //set.data(dataList as List<ValueDataEntry>)
-            //anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
-            val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
-            historyAdapter.addAll(list.mapTo(mutableListOf<String>(), {it.toString()}))
-            historyAdapter.notifyDataSetChanged()
         }
 
     }
