@@ -1,7 +1,10 @@
 package ru.exrates.mobile.view.listeners
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Spinner
@@ -43,8 +46,23 @@ class SearchButtonClickListener(private val autoCompleteTextView: AutoCompleteTe
     }
 
     private fun hideSearch(){
+
         autoCompleteTextView.visibility = View.INVISIBLE
         spinner.visibility = View.VISIBLE
         activated = false
+
+        /*val activity = (context as ContextWrapper).baseContext as Activity
+
+        val imm: InputMethodManager = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+
+        var view: View? = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)*/
+
     }
 }

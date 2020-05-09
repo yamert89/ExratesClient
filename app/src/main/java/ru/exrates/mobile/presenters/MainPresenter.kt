@@ -330,17 +330,17 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
     }
 
     fun getExSpinnerAdapter(): ArrayAdapter<String>{
-        if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
+        if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_item)
         return exchAdapter
     }
 
     fun getCurSpinnerAdapter(): ArrayAdapter<String>{
-        if (!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
+        if (!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_item)
         return curAdapter
     }
 
     fun getSearchAdapter(): ArrayAdapter<String>{
-        if (!this::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
+        if (!this::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_item )
         return searchAdapter
     }
 
