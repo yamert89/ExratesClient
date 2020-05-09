@@ -81,9 +81,9 @@ open class BasePresenter(val app: MyApp) : Presenter{
         stop()
     }
 
-    override fun attachView(view: ExratesActivity) {
+    override fun attachView(view: ExratesActivity, presenter: Presenter?) {
         activity = view
-        restModel = RestModel(app, view, this)
+        restModel = RestModel(app, view, presenter ?: this)
     }
 
     override fun detachView() {

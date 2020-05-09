@@ -61,8 +61,8 @@ class MainActivity : ExratesActivity() {
             autoCompleteTextView = findViewById(R.id.main_autoComplete)
             presenter = MainPresenter(app.presenter)
 
-            currencyName.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-            exchangeName.adapter =  ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
+            currencyName.adapter = presenter.getCurSpinnerAdapter()
+            exchangeName.adapter =  presenter.getExSpinnerAdapter()
 
             viewManager = LinearLayoutManager(this)
 
@@ -91,7 +91,7 @@ class MainActivity : ExratesActivity() {
                 )
             )
 
-            autoCompleteTextView.setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line ))
+            autoCompleteTextView.setAdapter(presenter.getSearchAdapter())
 
             exchangeName.onItemSelectedListener = ExchangeSpinnerItemSelectedListener(this, app, presenter )
 
@@ -168,7 +168,7 @@ class MainActivity : ExratesActivity() {
     override fun onResume() {
         super.onResume()
         if (!this::presenter.isInitialized) presenter = MainPresenter(app.presenter)
-        presenter.attachView(this)
+        presenter.attachView(this, null)
         presenter.resume()
     }
 

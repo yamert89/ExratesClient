@@ -15,7 +15,13 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.SelectedExchange
 import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.logic.toNumeric
-
+/**
+ * Adapter for exchanges spinner on main activity
+ * @param pairsByExchanges list of currency pair
+ * @param restModel restModel from presenter
+ * @param app this app
+ * @param interval curreny change interval
+ * @param selectedExchange selected exchange*/
 class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
                        private val restModel: RestModel,
                        private val app: MyApp,

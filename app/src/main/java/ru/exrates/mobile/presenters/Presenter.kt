@@ -23,7 +23,7 @@ interface Presenter {
 
     fun destroy()
 
-    fun attachView(view: ExratesActivity)
+    fun attachView(view: ExratesActivity, presenter: Presenter?)
 
     fun detachView()
 }

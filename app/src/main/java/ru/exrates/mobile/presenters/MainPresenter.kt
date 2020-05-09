@@ -10,6 +10,7 @@ import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
+import ru.exrates.mobile.view.viewAdapters.ExchangesAdapter
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 import java.io.FileNotFoundException
 import java.io.InvalidClassException
@@ -32,7 +33,8 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
 
 
 
-    /**************************************************************************
+    /*
+     *************************************************************************
      * Binded methods
     ***************************************************************************/
 
@@ -119,6 +121,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
                 updateExchangesList(app.exchangeNamesList!!.map { it.name })
                 val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
                 updateCurrenciesList(allPairs)
+                if (!this@MainPresenter::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
                 searchAdapter.addAll(allPairs)
             }
 
@@ -129,7 +132,8 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
         }catch (e: Exception){e.printStackTrace()}
     }
 
-    /********************************************************************************
+    /*
+     *******************************************************************************
      * Callback methods
      *******************************************************************************/
 
@@ -156,6 +160,8 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
             updateExchangesList(exchangeNamesList.map { it.name })
 
             updateCurrenciesList(allPairs)
+
+            if (!this::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
 
             searchAdapter.addAll(allPairs)
             rebuildExAdapter(defExId)
@@ -201,7 +207,8 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
         mainActivity.updateGraph(cur)
     }
 
-    /********************************************************************************
+    /*
+     *******************************************************************************
      * Private methods
      *******************************************************************************/
     private suspend fun firstLoad(): Boolean{
@@ -224,6 +231,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
 
     private fun updateExchangesList(exchangeNames: List<String>?){
         if (exchangeNames == null) return
+        if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
         logD("exchanges: $exchangeNames")
         with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
 
@@ -233,6 +241,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
 
     private fun updateCurrenciesList(curNames: List<String>?){
         if (curNames == null) return
+        if(!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
         logD("curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
         //currencyName.setSelection(curIdx)
@@ -253,7 +262,8 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
         mainActivity.selectExchangeItem(0)
     }
 
-    /********************************************************************************
+    /*
+     *******************************************************************************
      * Basic methods
      *******************************************************************************/
 
@@ -288,8 +298,8 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
             SAVED_EXID to (app.currentExchange?.exId ?: 1)*/)
     }
 
-    override fun attachView(view: ExratesActivity) {
-        basic.attachView(view)
+    override fun attachView(view: ExratesActivity, presenter: Presenter?) {
+        basic.attachView(view, this)
         activity = view
         mainActivity = activity as MainActivity
         restModel = basic.restModel
@@ -299,7 +309,8 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
         activity = null
     }
 
-    /********************************************************************************
+    /*
+     ******************************************************************************
      * Public methods for activity
      *******************************************************************************/
 
@@ -316,6 +327,21 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
         )
         pairsAdapter.app = app
         return pairsAdapter
+    }
+
+    fun getExSpinnerAdapter(): ArrayAdapter<String>{
+        if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
+        return exchAdapter
+    }
+
+    fun getCurSpinnerAdapter(): ArrayAdapter<String>{
+        if (!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
+        return curAdapter
+    }
+
+    fun getSearchAdapter(): ArrayAdapter<String>{
+        if (!this::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
+        return searchAdapter
     }
 
     fun updateCurIdx(idx: Int){
