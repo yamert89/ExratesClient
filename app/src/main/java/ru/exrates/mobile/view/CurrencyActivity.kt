@@ -17,30 +17,28 @@ import ru.exrates.mobile.view.graph.GraphFactory
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.SelectedExchange
 import ru.exrates.mobile.logic.structures.IntervalComparator
+import ru.exrates.mobile.presenters.CurrencyPresenter
+import ru.exrates.mobile.presenters.Presenter
 import ru.exrates.mobile.view.viewAdapters.ExchangesAdapter
 import java.util.*
 
 class CurrencyActivity : ExratesActivity() {
-/*    private lateinit var currencyName: TextView
+    private lateinit var currencyName: TextView
     private lateinit var currencyInterval: Button
     private lateinit var currencyIntervalValue: TextView
     private lateinit var anyChartView: LineChartView
     //private lateinit var currencyExchange: TextView
     private lateinit var currencyExchanges: RecyclerView
-    private lateinit var exchangesAdapter: RecyclerView.Adapter<*>
+
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var historyPeriodSpinner: Spinner
     private lateinit var root: ConstraintLayout
     private lateinit var curIco : ImageView
-    private var intervals: TreeSet<String> = TreeSet(IntervalComparator())
-    private var currentInterval = ""
-    private var currentGraphInterval = ""
-    private var currentGraphIntervalIdx = 0
-    private var selectedExchange = SelectedExchange(1)
+
+    private lateinit var presenter: CurrencyPresenter
+
 
         //private var activeExchangeName = "binanceExchange"
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,98 +55,48 @@ class CurrencyActivity : ExratesActivity() {
             curIco = findViewById(R.id.cur_ico)
             root = findViewById(R.id.currency)
             //storage = Storage(applicationContext)
+            presenter = CurrencyPresenter(app)
+            presenter.attachView(this)
 
 
-            restModel = RestModel(app, this)
 
             val currName1: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_1)!!
             val currName2: String = intent.getStringExtra(EXTRA_CURRENCY_NAME_2)!!
+            presenter.setCurNames(currName1, currName2)
+            presenter.start()
             //app.currentExchangeId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
-            selectedExchange.id = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1) //todo replace with strorage saved_exid
-            currentGraphInterval = storage.getValue(
-                CURRENT_GRAPH_INTERVAL,
-                app.currentPairInfo!!.find { selectedExchange.id == it.exId }?.historyPeriods?.get(0) ?: "1h"
-            )
-
-            restModel.getActualPair(currName1, currName2, currentGraphInterval,
-                CURRENCY_HISTORIES_CUR_NUMBER
-            )
 
             //updateIntervals()
-
-            logD(intervals.joinToString())
-
-            if(currentNameListsIsNull()){
-                currentInterval = storage.getValue(CURRENT_INTERVAL, intervals.first())
-                logD("Loaded saved pair data from storage")
-            }
-            if (currentNameListsIsNull()) throw NullPointerException("current data is null")
 
             val curIcoId = intent.getIntExtra(EXTRA_CUR_ICO, 0)
             curIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, curIcoId, null))
 
-            historyPeriodSpinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
+            historyPeriodSpinner.adapter = presenter.getHistorySpinnerAdapter()
 
 
             //historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
             historyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onNothingSelected(parent: AdapterView<*>?){}
-
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val interval = parent?.getItemAtPosition(position) as String
-                    currentGraphInterval = interval
-                    currentGraphIntervalIdx = position
-                    restModel.getPriceHistory(currName1, currName2, selectedExchange.id, interval,
-                        CURRENCY_HISTORIES_CUR_NUMBER
-                    )
-                    val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
-                    storage.storeValue(key, position )
-                    logD("Graph interval saved with key $key and value $position")
-
+                    //val interval = parent?.getItemAtPosition(position) as String
+                    presenter.selectHistoryInterval(position)
                 }
             }
 
             currencyName.text = "$currName1 / $currName2"
 
-            exchangesAdapter =
-                ExchangesAdapter(
-                    app.currentPairInfo ?: mutableListOf(),
-                    restModel,
-                    app,
-                    app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!!,
-                    selectedExchange
-                )
             viewManager = LinearLayoutManager(this)
 
             currencyExchanges = findViewById<RecyclerView>(R.id.cur_exchanges).apply{
-                adapter = exchangesAdapter
+                adapter = presenter.getExchAdapter()
                 layoutManager = viewManager
-
             }
 
             //currencyIntervalValue.text = intervals.first()
 
             currencyInterval.setOnClickListener {
-                val interval = if(currentDataIsNull()) app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!! else
-                    intervals.higher(currentInterval)
-                        ?: app.currentPairInfo!![0].priceChange.firstKey()
-                currencyIntervalValue.text = interval
-                currentInterval = interval
-                val adapter = currencyExchanges.adapter as ExchangesAdapter
-                adapter.interval = currentInterval
-                adapter.notifyDataSetChanged()
+                currencyIntervalValue.text = presenter.clickOnInterval()
 
-            }
-            selectedExchange.listener = {
-                val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
-                historyAdapter.clear()
-                historyAdapter.addAll(
-                    app.currentPairInfo?.find { it.exId == selectedExchange.id }?.historyPeriods!!
-                )
-                historyAdapter.notifyDataSetChanged()
-                val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
-                currentGraphIntervalIdx = storage.getValue(key, 0)
-                historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
             }
 
         }catch (e: Exception){
@@ -157,66 +105,13 @@ class CurrencyActivity : ExratesActivity() {
 
     }
 
+    fun selectHistory(idx: Int) = historyPeriodSpinner.setSelection(idx)
 
-    private fun updateIntervals(){
-        app.currentPairInfo!!.forEach { //todo mb null?
-            intervals.addAll(it.historyPeriods!!.subtract(intervals))
-        }
-        val interval = intervals.first()
-        currentInterval = interval
-        currencyIntervalValue.text = interval
-        val pairSymbol = app.currentPairInfo!![0].symbol
-        val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}$pairSymbol"
-        currentGraphIntervalIdx = storage.getValue(key, 0) //todo sync with currentGraphInterval
-        currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
-        logD("Graph interval loaded with key $key and value $currentGraphIntervalIdx")
-
+    fun setInterval(value: String){
+        currencyIntervalValue.text = value
     }
 
-    override fun updatePairData(list: MutableList<CurrencyPair>) {
-        super.updatePairData(list)
-        app.currentPairInfo = list
-        updateIntervals()
-        val adapter = currencyExchanges.adapter as ExchangesAdapter
-        adapter.interval = currencyIntervalValue.text.toString()
-        adapter.pairsByExchanges.clear()
-        adapter.pairsByExchanges.addAll(list)
-        adapter.notifyDataSetChanged()
-        val pair = list.find { it.exId == selectedExchange.id }
-        updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in exId: ${selectedExchange.id}, and pairData: ${list.joinToString()}"))
-        if (historyPeriodSpinner.adapter.isEmpty) {
-            val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>
-            historyAdapter.clear()
-            historyAdapter.addAll(
-                list[0].historyPeriods!! //fixme
-            )//todo not null?
-            historyAdapter.notifyDataSetChanged()
-            historyPeriodSpinner.setSelection(currentGraphIntervalIdx)
-        }
-
-        val cur = list.find { it.exId == selectedExchange.id }!!
-
-        if (cur.priceHistory.isEmpty()) {
-            root.removeView(anyChartView)
-            val notice = TextView(app.baseContext).apply {
-                text = "Data not available"
-            }
-            root.addView(notice, 2)
-        } else {
-            GraphFactory(
-                anyChartView,
-                currentGraphInterval
-            ).createBigGraph(cur.priceHistory)
-            // anyChartView.setChart(GraphFactory(anyChartView).getBigGraph(dataList))
-            //set.data(dataList as List<ValueDataEntry>)
-            logD("updating graph from pairData with ${cur.priceHistory.joinToString()}")
-        }
-
-
-
-    }
-
-    fun updateGraph(list: List<Double>){
+    fun updateGraph(list: List<Double>, currentGraphInterval: String){
         //val data = mutableListOf<ValueDataEntry>()
         if (list.isEmpty()) {
             root.removeView(anyChartView)
@@ -242,24 +137,5 @@ class CurrencyActivity : ExratesActivity() {
         }
 
     }
-
-    override fun task() {
-        logD("task cur activ started with cur1: ${app.currentCur1}, cur2: ${app.currentCur2}, curGraphInterval: $currentGraphInterval")
-        restModel.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval,
-            CURRENCY_HISTORIES_CUR_NUMBER
-        )
-    }
-
-    override fun saveState() {
-        super.saveState()
-        storage.storeValue(CURRENT_GRAPH_INTERVAL, currentGraphInterval)
-        storage.storeValue(CURRENT_GRAPH_INTERVAL_IDX, currentGraphIntervalIdx)
-
-    }*/
-
-
-
-
-
 
 }

@@ -181,6 +181,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     }
 
     override fun updatePairData(list: MutableList<CurrencyPair>) {
+
         logD("updatePairData")
         if (list.isEmpty()){
             logE("Incoming list of pairData is empty")
