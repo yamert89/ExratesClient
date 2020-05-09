@@ -21,7 +21,7 @@ import ru.exrates.mobile.view.viewAdapters.ExchangesAdapter
 import java.util.*
 
 class CurrencyActivity : ExratesActivity() {
-    private lateinit var currencyName: TextView
+/*    private lateinit var currencyName: TextView
     private lateinit var currencyInterval: Button
     private lateinit var currencyIntervalValue: TextView
     private lateinit var anyChartView: LineChartView
@@ -255,7 +255,7 @@ class CurrencyActivity : ExratesActivity() {
         storage.storeValue(CURRENT_GRAPH_INTERVAL, currentGraphInterval)
         storage.storeValue(CURRENT_GRAPH_INTERVAL_IDX, currentGraphIntervalIdx)
 
-    }
+    }*/
 
 
 

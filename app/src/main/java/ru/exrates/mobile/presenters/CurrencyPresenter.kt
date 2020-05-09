@@ -5,7 +5,7 @@ import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
 
 class CurrencyPresenter(private val basic: BasePresenter) : Presenter by basic{
-    private val storage = basic.storage
+/*    private val storage = basic.storage
     private val app = basic.app
     private lateinit var restModel: RestModel
     private var activity: ExratesActivity? = null
@@ -16,15 +16,15 @@ class CurrencyPresenter(private val basic: BasePresenter) : Presenter by basic{
     }
 
 
-    /*
+    *//*
      *******************************************************************************
      * Callback methods
-     *******************************************************************************/
+     *******************************************************************************//*
 
-    /*
+    *//*
      *******************************************************************************
      * Private methods
-     *******************************************************************************/
+     *******************************************************************************//*
 
     override fun task() {
         TODO("Not yet implemented")
@@ -43,7 +43,7 @@ class CurrencyPresenter(private val basic: BasePresenter) : Presenter by basic{
     }
 
 
-    /*
+    *//*
      ******************************************************************************
      * Public methods for activity
      *******************************************************************************/

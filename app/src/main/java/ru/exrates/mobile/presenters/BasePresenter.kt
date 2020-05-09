@@ -12,7 +12,7 @@ import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.view.ExratesActivity
 import java.util.*
 
-open class BasePresenter(val app: MyApp) : Presenter{
+abstract class BasePresenter(val app: MyApp) : Presenter{
 
     var activity: ExratesActivity? = null
     val storage = Storage(app.baseContext, app.om)
@@ -81,9 +81,9 @@ open class BasePresenter(val app: MyApp) : Presenter{
         stop()
     }
 
-    override fun attachView(view: ExratesActivity, presenter: Presenter?) {
+    override fun attachView(view: ExratesActivity) {
         activity = view
-        restModel = RestModel(app, view, presenter ?: this)
+        restModel = RestModel(app, view, this)
     }
 
     override fun detachView() {

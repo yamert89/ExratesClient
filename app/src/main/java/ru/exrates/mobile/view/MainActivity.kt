@@ -59,7 +59,7 @@ class MainActivity : ExratesActivity() {
             root = findViewById(R.id.root)
             searchBtn = findViewById(R.id.main_search_btn)
             autoCompleteTextView = findViewById(R.id.main_autoComplete)
-            presenter = MainPresenter(app.presenter)
+            presenter = MainPresenter(app)
 
             currencyName.adapter = presenter.getCurSpinnerAdapter()
             exchangeName.adapter =  presenter.getExSpinnerAdapter()
@@ -167,8 +167,8 @@ class MainActivity : ExratesActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (!this::presenter.isInitialized) presenter = MainPresenter(app.presenter)
-        presenter.attachView(this, null)
+        //if (!this::presenter.isInitialized) presenter = MainPresenter(app)
+        presenter.attachView(this)
         presenter.resume()
     }
 

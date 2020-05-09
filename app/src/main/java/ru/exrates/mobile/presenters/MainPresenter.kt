@@ -2,6 +2,7 @@ package ru.exrates.mobile.presenters
 
 import android.widget.ArrayAdapter
 import kotlinx.coroutines.*
+import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
@@ -15,15 +16,13 @@ import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 import java.io.FileNotFoundException
 import java.io.InvalidClassException
 
-class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
+class MainPresenter (app: MyApp) : BasePresenter(app){
     private lateinit var pairsAdapter: PairsAdapter
     private lateinit var searchAdapter: ArrayAdapter<String>
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
-    private val storage = basic.storage
-    private val app = basic.app
-    private lateinit var restModel: RestModel
-    private var activity: ExratesActivity? = null
+
+    //private var activity: ExratesActivity? = null
     private lateinit var mainActivity: MainActivity
 
     private var curIdx = 0
@@ -142,7 +141,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
         try {
             app.exchangeNamesList = exchangeNamesList
             GlobalScope.launch {
-                basic.save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
+               save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
                 logTrace("list saved")
 
             }
@@ -152,7 +151,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
             val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
             val defExId = exchangeNamesList.find { it.pairs.contains(allPairs[0]) }!!.id
             restModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
-            val curs = basic.parseSymbol(allPairs[0])
+            val curs = parseSymbol(allPairs[0])
             restModel.getActualPair(
                 curs.first, curs.second,
                 CURRENCY_HISTORIES_MAIN_NUMBER
@@ -268,7 +267,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
      *******************************************************************************/
 
     override fun task() {
-        if (basic.currentDataIsNull()){
+        if (currentDataIsNull()){
             logTrace("current data  is null")
             return
         }
@@ -289,7 +288,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
             1 -> SAVED_CURRENCIES_ADAPTER_BINANCE
             else -> SAVED_CURRENCIES_ADAPTER_P2PB2B
         }
-        basic.save(
+        save(
             SAVED_EX_IDX to exIdx,
             SAVED_CUR_IDX to curIdx,
             SAVED_CURRENCIES_ADAPTER to adapterName,
@@ -298,11 +297,9 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
             SAVED_EXID to (app.currentExchange?.exId ?: 1)*/)
     }
 
-    override fun attachView(view: ExratesActivity, presenter: Presenter?) {
-        basic.attachView(view, this)
-        activity = view
+    override fun attachView(view: ExratesActivity) {
+        super.attachView(view)
         mainActivity = activity as MainActivity
-        restModel = basic.restModel
     }
 
     override fun detachView() {
@@ -354,7 +351,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
 
     fun prepareStartCurActivity(): Triple<String, String, Int>{
         val symbol = curAdapter.getItem(curIdx).toString()
-        val curs = basic.parseSymbol(symbol)
+        val curs = parseSymbol(symbol)
         app.currentCur1 = curs.first
         app.currentCur2 = curs.second
         val defExId = if (app.exchangeNamesList!![0].pairs.contains(symbol)) 1 else {
@@ -362,7 +359,7 @@ class MainPresenter (private val basic: BasePresenter) : Presenter by basic{
         }
         rebuildExAdapter(defExId)
 
-        basic.save(SAVED_EXID to defExId/*, SAVED_EX_IDX to pos*/)
+        save(SAVED_EXID to defExId/*, SAVED_EX_IDX to pos*/)
         return Triple(curs.first, curs.second, defExId)
 
     }

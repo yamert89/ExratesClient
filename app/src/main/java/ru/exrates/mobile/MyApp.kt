@@ -15,7 +15,6 @@ import ru.exrates.mobile.presenters.BasePresenter
 import java.time.Duration
 
 class MyApp(): Application(){
-    lateinit var presenter: BasePresenter
     var currentExchange: Exchange? = null
     var currentPairInfo: MutableList<CurrencyPair>? = null
     //var currentExchangeId = 1
@@ -33,7 +32,6 @@ class MyApp(): Application(){
 
     override fun onCreate() {
         super.onCreate()
-        presenter = BasePresenter(this)
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
             .callTimeout(Duration.ofMinutes(3))
