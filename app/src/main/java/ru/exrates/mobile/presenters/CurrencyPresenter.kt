@@ -98,6 +98,10 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
 
      }
 
+     fun updateHistory(list: List<Double>){
+         curActivity.updateGraph(list, currentGraphInterval)
+     }
+
 
      /*******************************************************************************
      * Private methods

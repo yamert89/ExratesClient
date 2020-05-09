@@ -42,7 +42,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     }
 
     override fun pause() {
-
+        saveState()
     }
 
     override fun resume() {
@@ -78,8 +78,9 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val cur1 = storage.getValue(CURRENT_CUR_1, "AGIBTC")
-                    val cur2 = storage.getValue(CURRENT_CUR_2, "AGIBTC")
+                    val curs = parseSymbol(curAdapter.getItem(0) ?: "AGI/BTC")
+                    val cur1 = storage.getValue(CURRENT_CUR_1, curs.first)
+                    val cur2 = storage.getValue(CURRENT_CUR_2, curs.second)
                     exId = storage.getValue(SAVED_EXID, 1)
                     val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("AGIBTC")) //todo hardcode
                     app.currentCur1 = cur1
@@ -289,11 +290,15 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
             1 -> SAVED_CURRENCIES_ADAPTER_BINANCE
             else -> SAVED_CURRENCIES_ADAPTER_P2PB2B
         }
+        /*val adapterValues = mutableListOf<String>()
+        for (i: Int in 0 until curAdapter.count){
+            adapterValues.add(curAdapter.getItem(i)!!)
+        }*/
         save(
             SAVED_EX_IDX to exIdx,
             SAVED_CUR_IDX to curIdx,
             SAVED_CURRENCIES_ADAPTER to adapterName,
-            adapterName to curAdapter,
+            adapterName to pairsAdapter,
             SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC"))/*, //todo hardcode
             SAVED_EXID to (app.currentExchange?.exId ?: 1)*/)
     }
@@ -313,38 +318,39 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
      *******************************************************************************/
 
     fun getCurrencyAdapter(): PairsAdapter{
-        val savedAdapter = storage.getValue(
+        val savedAdapterName = storage.getValue(
             SAVED_CURRENCIES_ADAPTER,
             SAVED_CURRENCIES_ADAPTER_BINANCE
         )
-        pairsAdapter = storage.getValue(savedAdapter,
-            PairsAdapter(
-                mutableListOf(),
-                app = app
-            )
-        )
+        //val values = storage.getValue(savedAdapterName, mutableListOf<String>())
+        pairsAdapter = storage.getValue(savedAdapterName, PairsAdapter(
+            mutableListOf(),
+            app = app
+        ) )
         pairsAdapter.app = app
         return pairsAdapter
     }
 
     fun getExSpinnerAdapter(): ArrayAdapter<String>{
-        if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_item)
+        if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(mainActivity, android.R.layout.simple_spinner_item)
         return exchAdapter
     }
 
     fun getCurSpinnerAdapter(): ArrayAdapter<String>{
-        if (!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_item)
+        if (!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(mainActivity, android.R.layout.simple_spinner_item)
         return curAdapter
     }
 
     fun getSearchAdapter(): ArrayAdapter<String>{
-        if (!this::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_item )
+        if (!this::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(mainActivity, android.R.layout.simple_spinner_item )
         return searchAdapter
     }
 
     fun updateCurIdx(idx: Int){
         curIdx = idx
     }
+
+    fun getCurIdx() = curIdx
 
     fun updateExIdx(idx: Int){
         exIdx = idx

@@ -60,6 +60,7 @@ class MainActivity : ExratesActivity() {
             searchBtn = findViewById(R.id.main_search_btn)
             autoCompleteTextView = findViewById(R.id.main_autoComplete)
             presenter = MainPresenter(app)
+            presenter.attachView(this)
 
             currencyName.adapter = presenter.getCurSpinnerAdapter()
             exchangeName.adapter =  presenter.getExSpinnerAdapter()
@@ -71,6 +72,7 @@ class MainActivity : ExratesActivity() {
                 adapter = presenter.getCurrencyAdapter()
                 layoutManager = viewManager
             }
+            print(System.currentTimeMillis())
 
             exchangeName.setSelection(0)
 
@@ -117,7 +119,7 @@ class MainActivity : ExratesActivity() {
 
     private fun startCurActivity(position: Int = Int.MAX_VALUE){
         if (position != Int.MAX_VALUE) {
-            if (currencyName.selectedItemPosition == position) return
+            if (presenter.getCurIdx() == position) return
             presenter.updateCurIdx(position)
         }
 
@@ -159,6 +161,7 @@ class MainActivity : ExratesActivity() {
     override fun startProgress(){
         super.startProgress()
         logTrace("Snack started..")
+        print(System.currentTimeMillis())
         Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
     }
 
@@ -168,8 +171,13 @@ class MainActivity : ExratesActivity() {
     override fun onResume() {
         super.onResume()
         //if (!this::presenter.isInitialized) presenter = MainPresenter(app)
-        presenter.attachView(this)
+
         presenter.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.pause()
     }
 
 
