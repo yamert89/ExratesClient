@@ -38,7 +38,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
         selectedExchange.id = storage.getValue(SAVED_EXID, 1)
         currentGraphInterval = storage.getValue(
             CURRENT_GRAPH_INTERVAL,
-            app.currentPairInfo!!.find { selectedExchange.id == it.exId }?.historyPeriods?.get(0) ?: "1h"
+            app.currentPairInfo?.find { selectedExchange.id == it.exId }?.historyPeriods?.get(0) ?: "1h"
         )
 
         restModel.getActualPair(currName1, currName2, currentGraphInterval,

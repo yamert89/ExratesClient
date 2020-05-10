@@ -64,9 +64,9 @@ class MainActivity : ExratesActivity() {
             }
             print(System.currentTimeMillis())
 
-            exchangeName.setSelection(0)
+            //exchangeName.setSelection(0)
 
-            currencyName.setSelection(0)
+            //currencyName.setSelection(0)
 
             currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = startCurActivity(position)
@@ -110,8 +110,9 @@ class MainActivity : ExratesActivity() {
     private fun startCurActivity(position: Int = Int.MAX_VALUE){
         if (position != Int.MAX_VALUE) {
             if (presenter.getCurIdx() == position) return
+            logD("start cur activity from spinner with position $position")
             presenter.updateCurIdx(position)
-        }
+        } else logD("start cur activity from go button")
 
         startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
             val preparedValues = presenter.prepareStartCurActivity()

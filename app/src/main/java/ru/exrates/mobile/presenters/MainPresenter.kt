@@ -78,11 +78,12 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val curs = parseSymbol(curAdapter.getItem(0) ?: "AGI/BTC")
+                    val mockPair = "AGI/BTC"
+                    val curs =  parseSymbol(if (!curAdapter.isEmpty) curAdapter.getItem(0) ?: mockPair else mockPair)
                     val cur1 = storage.getValue(CURRENT_CUR_1, curs.first)
                     val cur2 = storage.getValue(CURRENT_CUR_2, curs.second)
                     exId = storage.getValue(SAVED_EXID, 1)
-                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf("AGIBTC")) //todo hardcode
+                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair)) //todo hardcode
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
 
@@ -96,27 +97,21 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     restModel.getActualPair(cur1, cur2, "1h",
                         CURRENCY_HISTORIES_MAIN_NUMBER
                     )
-
-
                 }
-
             }
 
             runBlocking { listsReq.join() }
             if (!flag) {
                 activity?.toast("Не удалось подключиться к серверу. Проверте интернет подключение и перезапустите приложение")
-
                 return
             }else restModel.ping()
             //exchangeName.setSelection((exchangeName.adapter as ArrayAdapter<String>).getPosition(app.exchangeNamesList?.find { it.id == exId }?.name))
 
-
             GlobalScope.launch(Dispatchers.Main) {
-                if (app.exchangeNamesList == null || pairsAdapter.itemCount != 0) {
+                if (app.exchangeNamesList == null || pairsAdapter.itemCount == 0) {
                     logD("exchange names list is null or currency name adapter is empty")
                     return@launch
                 }
-
 
                 updateExchangesList(app.exchangeNamesList!!.map { it.name })
                 val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
@@ -124,10 +119,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                 if (!this@MainPresenter::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
                 searchAdapter.addAll(allPairs)
             }
-
             //mainActivity.updateCurrencyPrice(cur?.price?.toNumeric() ?: "0.0")
-
-
 
         }catch (e: Exception){e.printStackTrace()}
     }
@@ -245,7 +237,8 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         if(!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
         logD("curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
-        //currencyName.setSelection(curIdx)
+        mainActivity.selectPairItem(curIdx)
+
     }
 
     private fun getListWithAllPairs(exchangeNamesList: List<ExchangeNamesObject>): List<String>{
