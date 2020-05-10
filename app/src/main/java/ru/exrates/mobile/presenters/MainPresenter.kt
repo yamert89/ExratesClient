@@ -346,21 +346,29 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         return searchAdapter
     }
 
-    fun updateCurIdx(idx: Int){
-        curIdx = idx
-    }
-
     fun getCurIdx() = curIdx
 
     fun updateExIdx(idx: Int){
         exIdx = idx
     }
 
+    fun updateCurIdx(idx: Int){
+        curIdx = idx
+    }
+
+    /**
+     * @return
+     * - base currency name
+     * - quote currency name
+     * - exchange id
+     * */
+
     fun prepareStartCurActivity(): Triple<String, String, Int>{
         val symbol = curAdapter.getItem(curIdx).toString()
         val curs = parseSymbol(symbol)
         app.currentCur1 = curs.first
         app.currentCur2 = curs.second
+        save(CURRENT_CUR_1 to curs.first, CURRENT_CUR_2 to curs.second)
         val defExId = if (app.exchangeNamesList!![0].pairs.contains(symbol)) 1 else {
             app.exchangeNamesList!!.find { it.pairs.contains(symbol) }!!.id
         }

@@ -8,24 +8,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
 import lecho.lib.hellocharts.view.LineChartView
-import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.R
-import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.view.graph.GraphFactory
 import ru.exrates.mobile.view.listeners.ExchangeSpinnerItemSelectedListener
 import ru.exrates.mobile.view.listeners.SearchButtonClickListener
 import ru.exrates.mobile.logic.entities.CurrencyPair
-import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
-import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.presenters.MainPresenter
-import ru.exrates.mobile.presenters.Presenter
-import ru.exrates.mobile.view.viewAdapters.PairsAdapter
-import java.io.FileNotFoundException
-import java.io.InvalidClassException
 
 class MainActivity : ExratesActivity() {
 //fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
