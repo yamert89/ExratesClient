@@ -17,7 +17,6 @@ import java.io.FileNotFoundException
 import java.io.InvalidClassException
 
 class MainPresenter (app: MyApp) : BasePresenter(app){
-    private lateinit var pairsAdapter: PairsAdapter
     private lateinit var searchAdapter: ArrayAdapter<String>
     private lateinit var curAdapter: ArrayAdapter<String>
     private lateinit var exchAdapter: ArrayAdapter<String>
@@ -163,14 +162,6 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
             e.printStackTrace()
         }
 
-    }
-
-    override fun updateExchangeData(exchange: Exchange) {
-        app.currentExchange = exchange
-        logD("incoming pairs: ${exchange.pairs.joinToString { it.symbol }}")
-        pairsAdapter.dataPairs.clear()
-        pairsAdapter.dataPairs.addAll(exchange.pairs)
-        pairsAdapter.notifyDataSetChanged()
     }
 
     override fun updatePairData(list: MutableList<CurrencyPair>) {

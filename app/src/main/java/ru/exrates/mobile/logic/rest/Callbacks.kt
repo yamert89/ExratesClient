@@ -9,6 +9,7 @@ import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.logE
 import ru.exrates.mobile.presenters.CurrencyPresenter
+import ru.exrates.mobile.presenters.ExchangePresenter
 import ru.exrates.mobile.presenters.MainPresenter
 import ru.exrates.mobile.presenters.Presenter
 import ru.exrates.mobile.view.CurrencyActivity

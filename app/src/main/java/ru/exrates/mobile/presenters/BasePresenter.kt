@@ -1,5 +1,6 @@
 package ru.exrates.mobile.presenters
 
+import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.data.Storage
 import ru.exrates.mobile.logic.CURRENT_CUR_1
@@ -10,6 +11,7 @@ import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.logic.logTrace
 import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.view.ExratesActivity
+import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 import java.util.*
 
 abstract class BasePresenter(val app: MyApp) : Presenter{
@@ -18,13 +20,18 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
     val storage = Storage(app.baseContext, app.om)
     var timer: Timer = Timer()
     lateinit var restModel: RestModel
+    protected lateinit var pairsAdapter: PairsAdapter
 
     override fun task(){
         logTrace("Task started")
     }
 
     override fun updateExchangeData(exchange: Exchange) {
-        logD("Exchange data updated...")
+        app.currentExchange = exchange
+        logD("incoming pairs: ${exchange.pairs.joinToString { it.symbol }}")
+        pairsAdapter.dataPairs.clear()
+        pairsAdapter.dataPairs.addAll(exchange.pairs)
+        pairsAdapter.notifyDataSetChanged()
     }
 
     override fun updatePairData(list: MutableList<CurrencyPair>) {
