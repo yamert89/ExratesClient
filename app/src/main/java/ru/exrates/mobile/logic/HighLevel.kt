@@ -52,7 +52,7 @@ fun logE(message: String) = Log.e(EXRATES, message)
 
 fun logTrace(message: String) = Log.v(EXRATES, message)
 
-fun Double.toNumeric() = DecimalFormat("####.########################").format(this)
+fun Double.toNumeric() = DecimalFormat("####.##########").format(this)
 
 fun Timer.start(){
 
