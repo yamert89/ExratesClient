@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.exchange.*
 import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.CURRENT_INTERVAL
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
+import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ID
 import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.logic.SAVED_EXCHANGE_NAME_LIST
 import ru.exrates.mobile.logic.entities.CurrencyPair
@@ -42,6 +43,7 @@ class ExchangeActivity : ExratesActivity() {
             progressLayout = findViewById(R.id.progressLayout)
             presenter = ExchangePresenter(app)
             presenter.attachView(this)
+            presenter.start()
 
             viewManager = LinearLayoutManager(this)
 
@@ -56,7 +58,8 @@ class ExchangeActivity : ExratesActivity() {
 
             val icoId = intent.getIntExtra(EXTRA_EXCHANGE_ICO, 0)
             exIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, icoId, null ))
-            //val exId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
+
+
 
             //startProgress()
 

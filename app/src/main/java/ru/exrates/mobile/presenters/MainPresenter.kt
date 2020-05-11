@@ -344,10 +344,9 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
      * @return
      * - base currency name
      * - quote currency name
-     * - exchange id
      * */
 
-    fun prepareStartCurActivity(): Triple<String, String, Int>{
+    fun prepareStartCurActivity(): Pair<String, String>{
         val symbol = curAdapter.getItem(curIdx).toString()
         val curs = parseSymbol(symbol)
         app.currentCur1 = curs.first
@@ -359,7 +358,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         rebuildExAdapter(defExId)
 
         save(SAVED_EXID to defExId/*, SAVED_EX_IDX to pos*/)
-        return Triple(curs.first, curs.second, defExId)
+        return Pair(curs.first, curs.second)
 
     }
 

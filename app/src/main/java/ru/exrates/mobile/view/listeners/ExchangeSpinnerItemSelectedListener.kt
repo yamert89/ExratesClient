@@ -31,7 +31,7 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
 
         mainActivity.startActivity(Intent(mainActivity.applicationContext, ExchangeActivity::class.java).apply{
             putExtra(EXTRA_EXCHANGE_ICO, getIcoId(exId))
-            putExtra(EXTRA_EXCHANGE_ID, exId)
+            //putExtra(EXTRA_EXCHANGE_ID, exId)
         })
     }
 

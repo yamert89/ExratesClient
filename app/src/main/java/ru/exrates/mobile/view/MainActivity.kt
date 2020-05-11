@@ -124,7 +124,7 @@ class MainActivity : ExratesActivity() {
             var id = app.baseContext.resources.getIdentifier(preparedValues.first.toLowerCase(), "drawable", app.baseContext.packageName)
             if (id == 0) id = android.R.drawable.ic_menu_help
             putExtra(EXTRA_CUR_ICO, id)
-            putExtra(EXTRA_EXCHANGE_ID, preparedValues.third)
+            //putExtra(EXTRA_EXCHANGE_ID, preparedValues.third)
 
         })
     }
