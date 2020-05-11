@@ -17,10 +17,7 @@ class Storage(val context: Context, val om: ObjectMapper) {
            is String -> sp.getString(key, def) as T ?: def
            is Int -> sp.getInt(key, def) as T ?: def
            is Boolean -> sp.getBoolean(key, def) as T ?: def
-           else -> {
-               //loadObject(key, def) //todo clear?
-               loadObjectFromJson(key, def)
-           }
+           else -> loadObjectFromJson(key, def)
         }
     }
 
@@ -33,7 +30,6 @@ class Storage(val context: Context, val om: ObjectMapper) {
             is Long -> editor.putLong(key, value)
             else -> {
                 try {
-                    //saveObject(value, key) //todo clear?
                     saveObjectAsJson(value, key)
                 }catch (e: NotSerializableException){
                     saveObjectAsJson(value, key)
@@ -57,13 +53,12 @@ class Storage(val context: Context, val om: ObjectMapper) {
         Files.write(Paths.get("${context.filesDir}/$fileName"), om.writeValueAsBytes(obj))
     }
 
-    inline fun <reified T> loadObjectFromJson(fileName: String, def: T? = null): T{ //todo Pair adapter needs complex type
+    inline fun <reified T> loadObjectFromJson(fileName: String, def: T? = null): T{
         val file = File(context.filesDir, fileName)
         if (!file.exists()) {
             if(def != null) return def else throw FileNotFoundException("File < $fileName > not found in storage")
         }
         val ob: Any? = om.readValue(File(context.filesDir, fileName), object : TypeReference<T>(){})
-        //val ob: Any? = om.readValue(File(context.filesDir, fileName), T::class.java)
         return ob as T
     }
 
