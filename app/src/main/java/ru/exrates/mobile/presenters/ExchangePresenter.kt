@@ -11,10 +11,8 @@ import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 
 class ExchangePresenter(app: MyApp) : BasePresenter(app){
-    private var currentInterval = "1h"
+    private var currentInterval = ""
     private var exId = 1
-
-
 
     /*
      *************************************************************************
@@ -24,7 +22,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     override fun start() {
         exId = storage.getValue(SAVED_EXID, 1)
         if (currentNameListsIsNull()){
-            app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST) //todo ? delete
+            //app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST) // ? delete
             currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
         }
         if (currentNameListsIsNull()) throw NullPointerException("current data is null")
@@ -52,8 +50,6 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     * Basic methods
     *******************************************************************************/
 
-
-
     override fun task() {
         if (currentDataIsNull()) throw NullPointerException("current data in task is null")
         restModel.getActualExchange(
@@ -73,7 +69,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
      *******************************************************************************/
 
     fun getPairsAdapt() : PairsAdapter{
-        val pairsOfAdapter = if(currentDataIsNull()) mutableListOf<CurrencyPair>() else
+        val pairsOfAdapter = if(currentDataIsNull()) mutableListOf() else
             if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.filter{it.visible}.toMutableList() //todo base filtering on server
         pairsAdapter = PairsAdapter(
             pairsOfAdapter,

@@ -82,7 +82,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     val cur1 = storage.getValue(CURRENT_CUR_1, curs.first)
                     val cur2 = storage.getValue(CURRENT_CUR_2, curs.second)
                     exId = storage.getValue(SAVED_EXID, 1)
-                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair)) //todo hardcode
+                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair))
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
 
@@ -178,7 +178,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         var count = 0.0
         list.forEach { count += it.price }
         mainActivity.setCurrencyPrice((count / list.size).toNumeric())
-        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)}!! //todo right? app.currentExchange outdated. how to choose right pair?
+        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)}!!
         logTrace("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         logTrace("priceHistory:" + cur.priceHistory.joinToString())
@@ -283,7 +283,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
             SAVED_CUR_IDX to curIdx,
             SAVED_CURRENCIES_ADAPTER to adapterName,
             adapterName to pairsAdapter,
-            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("ETCBTC"))/*, //todo hardcode
+            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("AGI/BTC"))/*,
             SAVED_EXID to (app.currentExchange?.exId ?: 1)*/)
     }
 

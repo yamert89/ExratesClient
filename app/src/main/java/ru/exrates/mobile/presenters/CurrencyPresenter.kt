@@ -135,7 +135,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
 
         val pairSymbol = app.currentPairInfo!![0].symbol
         val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}$pairSymbol"
-       // currentGraphIntervalIdx = storage.getValue(key, 0) //todo sync with currentGraphInterval
+       // currentGraphIntervalIdx = storage.getValue(key, 0) // sync with currentGraphInterval
        // currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
         logD("Graph interval loaded with key $key and value $currentGraphIntervalIdx")
         //curActivity.setInterval(interval)
