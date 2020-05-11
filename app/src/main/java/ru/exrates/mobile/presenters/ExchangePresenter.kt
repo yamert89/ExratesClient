@@ -1,18 +1,17 @@
 package ru.exrates.mobile.presenters
 
-import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.CURRENT_INTERVAL
-import ru.exrates.mobile.logic.SAVED_EXCHANGE_NAME_LIST
 import ru.exrates.mobile.logic.SAVED_EXID
-import ru.exrates.mobile.logic.entities.CurrencyPair
-import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
+import ru.exrates.mobile.view.ExchangeActivity
+import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 
 class ExchangePresenter(app: MyApp) : BasePresenter(app){
-    private var currentInterval = ""
+    private var currentInterval = "ff"
     private var exId = 1
+    private lateinit var exchangeActivity: ExchangeActivity
 
     /*
      *************************************************************************
@@ -21,15 +20,12 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     override fun start() {
         exId = storage.getValue(SAVED_EXID, 1)
-        if (currentNameListsIsNull()){
-            //app.exchangeNamesList = storage.loadObjectFromJson(SAVED_EXCHANGE_NAME_LIST) // ? delete
-            currentInterval = storage.getValue(CURRENT_INTERVAL, "1h")
-        }
+        currentInterval = storage.getValue(CURRENT_INTERVAL, app.currentPairInfo?.find { it.exId == exId }?.historyPeriods?.get(0)
+            ?: "1h")
         if (currentNameListsIsNull()) throw NullPointerException("current data is null")
 
         restModel.getActualExchange(ExchangePayload(exId, currentInterval, arrayOf()))
-
-
+        exchangeActivity.setInterval(currentInterval)
     }
 
 
@@ -62,6 +58,16 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     }
 
+    override fun attachView(view: ExratesActivity) {
+        super.attachView(view)
+        exchangeActivity = activity as ExchangeActivity
+    }
+
+    override fun saveState() {
+        super.saveState()
+        save(CURRENT_INTERVAL to currentInterval)
+    }
+
 
     /*
      ******************************************************************************
@@ -82,11 +88,17 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     /**
      * @return text representation of interval for cur. interval view
      * */
-    fun changeInterval(oldValue: String): String{ //todo replace oldValue with backend value
-        pairsAdapter.currentInterval = oldValue
+    fun changeInterval(): String{
+        val periods = app.currentExchange!!.changePeriods
+        var idx = periods.indexOf(currentInterval) + 1
+        if (idx >= periods.size) idx = 0
+        val newInterval = periods[idx]
+        currentInterval = newInterval
+        pairsAdapter.currentInterval = newInterval
         pairsAdapter.notifyDataSetChanged()
-        return app.currentPairInfo!![0].priceChange
-            .higherKey(oldValue) ?: app.currentPairInfo!![0].priceChange.firstKey()
+        return newInterval
+        /*app.currentPairInfo!![0].priceChange
+            .higherKey(oldValue) ?: app.currentPairInfo!![0].priceChange.firstKey()*/
 
     }
 

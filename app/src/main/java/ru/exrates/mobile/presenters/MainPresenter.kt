@@ -11,6 +11,7 @@ import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
+import ru.exrates.mobile.view.listeners.ExchangeSpinnerItemSelectedListener
 import ru.exrates.mobile.view.viewAdapters.ExchangesAdapter
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 import java.io.FileNotFoundException
@@ -178,7 +179,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         var count = 0.0
         list.forEach { count += it.price }
         mainActivity.setCurrencyPrice((count / list.size).toNumeric())
-        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)}!!
+        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)}!! //fixme npe
         logTrace("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         logTrace("priceHistory:" + cur.priceHistory.joinToString())
@@ -360,6 +361,10 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         save(SAVED_EXID to defExId/*, SAVED_EX_IDX to pos*/)
         return Pair(curs.first, curs.second)
 
+    }
+
+    fun getExSpinnerItemSelectedListener(): ExchangeSpinnerItemSelectedListener{
+        return ExchangeSpinnerItemSelectedListener(mainActivity, app, this )
     }
 
 

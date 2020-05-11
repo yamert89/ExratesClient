@@ -85,7 +85,7 @@ class MainActivity : ExratesActivity() {
 
             autoCompleteTextView.setAdapter(presenter.getSearchAdapter())
 
-            exchangeName.onItemSelectedListener = ExchangeSpinnerItemSelectedListener(this, app, presenter )
+            exchangeName.onItemSelectedListener = presenter.getExSpinnerItemSelectedListener()
 
             logD("Main activity created")
 

@@ -162,7 +162,8 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
     override fun saveState() {
         super.saveState()
         //storage.storeValue(CURRENT_GRAPH_INTERVAL, currentGraphInterval)
-        save(CURRENT_GRAPH_INTERVAL_IDX to currentGraphIntervalIdx)
+        save(CURRENT_GRAPH_INTERVAL_IDX to currentGraphIntervalIdx,
+        CURRENT_INTERVAL to currentInterval)
 
     }
 

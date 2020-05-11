@@ -7,18 +7,9 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.exchange.*
 import ru.exrates.mobile.R
-import ru.exrates.mobile.logic.CURRENT_INTERVAL
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
-import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ID
-import ru.exrates.mobile.logic.rest.RestModel
-import ru.exrates.mobile.logic.SAVED_EXCHANGE_NAME_LIST
-import ru.exrates.mobile.logic.entities.CurrencyPair
-import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.presenters.ExchangePresenter
-import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 
 class ExchangeActivity : ExratesActivity() {
     private lateinit var exIco: ImageView
@@ -53,7 +44,7 @@ class ExchangeActivity : ExratesActivity() {
             }
 
             intervalBtn.setOnClickListener {
-                intervalValue.text = presenter.changeInterval(intervalValue.text.toString())
+                setInterval(presenter.changeInterval())
             }
 
             val icoId = intent.getIntExtra(EXTRA_EXCHANGE_ICO, 0)
@@ -69,6 +60,10 @@ class ExchangeActivity : ExratesActivity() {
         }
 
 
+    }
+
+    fun setInterval(value: String){
+        intervalValue.text = value
     }
 
 
