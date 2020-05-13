@@ -1,18 +1,13 @@
 package ru.exrates.mobile.view.listeners
 
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 
 
 class SearchButtonClickListener(private val autoCompleteTextView: AutoCompleteTextView,
                                 private val spinner: Spinner,
+                                private val goTo: ImageButton,
                                 private val context: Context): View.OnClickListener {
     var activated = false
 
@@ -42,6 +37,7 @@ class SearchButtonClickListener(private val autoCompleteTextView: AutoCompleteTe
     private fun showSearch(){
         autoCompleteTextView.visibility = View.VISIBLE
         spinner.visibility = View.INVISIBLE
+        goTo.isEnabled = false //todo animation or shadowing
         activated = true
     }
 
@@ -50,6 +46,7 @@ class SearchButtonClickListener(private val autoCompleteTextView: AutoCompleteTe
         autoCompleteTextView.visibility = View.INVISIBLE
         spinner.visibility = View.VISIBLE
         activated = false
+        goTo.isEnabled = true
 
         /*val activity = (context as ContextWrapper).baseContext as Activity
 

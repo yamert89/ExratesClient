@@ -23,6 +23,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
     private lateinit var goToCurBtn: ImageButton
+    private lateinit var goToExBtn: ImageButton
     private lateinit var currenciesRecyclerView: RecyclerView
     private lateinit var anyChartView: LineChartView
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -49,7 +50,9 @@ class MainActivity : ExratesActivity() {
             root = findViewById(R.id.root)
             searchBtn = findViewById(R.id.main_search_btn)
             autoCompleteTextView = findViewById(R.id.main_autoComplete)
+            goToExBtn = findViewById(R.id.main_go_to_ex)
             presenter = MainPresenter(app)
+            logD("onCreate")
             presenter.attachView(this)
 
             currencyName.adapter = presenter.getCurSpinnerAdapter()
@@ -75,10 +78,13 @@ class MainActivity : ExratesActivity() {
 
             goToCurBtn.setOnClickListener { startCurActivity() }
 
+            goToExBtn.setOnClickListener(presenter.getExSpinnerItemSelectedListener())
+
             searchBtn.setOnClickListener(
                 SearchButtonClickListener(
                     autoCompleteTextView,
                     currencyName,
+                    goToCurBtn,
                     this
                 )
             )
@@ -129,8 +135,6 @@ class MainActivity : ExratesActivity() {
         })
     }
 
-
-
     fun updateGraph(cur: CurrencyPair) {
         if (cur.priceHistory.isEmpty()) {
             root.removeView(anyChartView)
@@ -162,6 +166,7 @@ class MainActivity : ExratesActivity() {
     override fun onResume() {
         super.onResume()
         //if (!this::presenter.isInitialized) presenter = MainPresenter(app)
+        logD("onresume")
 
         presenter.resume()
     }

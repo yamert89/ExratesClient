@@ -14,7 +14,7 @@ import ru.exrates.mobile.view.MainActivity
 
 class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity,
                                           private val app: MyApp,
-                                          private val presenter: MainPresenter) : AdapterView.OnItemSelectedListener {
+                                          private val presenter: MainPresenter) : AdapterView.OnItemSelectedListener, View.OnClickListener {
     private var activated = false
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -27,12 +27,20 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
             return
         }
         if (app.exchangeNamesList == null || parent == null || parent.count < 2) return
-
         presenter.updateExIdx(position)
         val exchName = parent.getItemAtPosition(position)
         val exId = app.exchangeNamesList!!.find { it.name == exchName }?.id ?: throw IllegalArgumentException("ex id not found in exchangeNamesList with $exchName ex name")
         presenter.save(SAVED_EXID to exId)
+        startActivity(exId)
+    }
 
+    override fun onClick(v: View?) {
+        startActivity(app.currentExchange!!.exId)
+    }
+
+
+
+    private fun startActivity(exId: Int){
         mainActivity.startActivity(Intent(mainActivity.applicationContext, ExchangeActivity::class.java).apply{
             putExtra(EXTRA_EXCHANGE_ICO, getIcoId(exId))
             //putExtra(EXTRA_EXCHANGE_ID, exId)
@@ -44,4 +52,6 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
         2 -> R.drawable.p2pb2b
         else -> throw IllegalArgumentException("ex $exId icon id  not found")
     }
+
+
 }
