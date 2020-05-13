@@ -127,7 +127,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
      ******************************************************************************/
 
     private fun updateIntervals(){
-        app.currentPairInfo!!.forEach { //todo mb null?
+        app.currentPairInfo!!.forEach { //fixme npe with connection failed
             intervals.addAll(it.historyPeriods!!.subtract(intervals))
         }
         val interval = intervals.first()

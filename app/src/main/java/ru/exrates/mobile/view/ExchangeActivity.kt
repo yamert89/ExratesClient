@@ -27,7 +27,6 @@ class ExchangeActivity : ExratesActivity() {
             setContentView(R.layout.exchange)
             //storage = Storage(applicationContext)
 
-
             exIco = findViewById(R.id.exIco)
             intervalBtn = findViewById(R.id.cur_interval)
             intervalValue = findViewById(R.id.intervalValue)
@@ -50,16 +49,11 @@ class ExchangeActivity : ExratesActivity() {
             val icoId = intent.getIntExtra(EXTRA_EXCHANGE_ICO, 0)
             exIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, icoId, null ))
 
-
-
             //startProgress()
 
         }catch (e: Exception){
             e.printStackTrace()
-
         }
-
-
     }
 
     fun setInterval(value: String){
