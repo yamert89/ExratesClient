@@ -43,6 +43,7 @@ class CurrencyActivity : ExratesActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try{
+            logD("START CURRENCY ACTIVITY ")
             setContentView(R.layout.currency)
             app = this.application as MyApp
             //currencyExchange = findViewById(R.id.cur_exchange)

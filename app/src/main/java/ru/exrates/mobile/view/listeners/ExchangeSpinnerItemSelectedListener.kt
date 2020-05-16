@@ -8,6 +8,7 @@ import ru.exrates.mobile.data.Storage
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ID
 import ru.exrates.mobile.logic.SAVED_EXID
+import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.presenters.MainPresenter
 import ru.exrates.mobile.view.ExchangeActivity
 import ru.exrates.mobile.view.MainActivity
@@ -15,14 +16,16 @@ import ru.exrates.mobile.view.MainActivity
 class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity,
                                           private val app: MyApp,
                                           private val presenter: MainPresenter) : AdapterView.OnItemSelectedListener, View.OnClickListener {
-    private var activated = false
+   var activated = false
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
 
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        logD("EXCHANGE Item selected")
         if (!activated) {
+            logD("exchange listener not activated")
             activated = true
             return
         }
@@ -35,6 +38,7 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
     }
 
     override fun onClick(v: View?) {
+        logD("goToExchange btn clicked")
         startActivity(app.currentExchange!!.exId)
     }
 

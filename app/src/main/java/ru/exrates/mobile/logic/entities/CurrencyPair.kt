@@ -18,14 +18,13 @@ data class CurrencyPair(
     val updateTimes: Array<Long?>,
     val priceHistory: List<Double>,
     val historyPeriods: List<String>?,
-    val visible: Boolean = true, //todo delete
     var exchangeName: String,
     var exId : Int
 
 ) : java.io.Serializable{
 
     companion object{
-        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyArray(), emptyList(), emptyList(), false, "", 0)
+        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyArray(), emptyList(), emptyList(), "", 0)
     }
 
 

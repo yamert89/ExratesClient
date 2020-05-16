@@ -38,7 +38,7 @@ class MainActivity : ExratesActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         try {
-            logTrace("main oncreate")
+            logD("START MAIN ACTIVITY ")
             setContentView(R.layout.activity_main)
 
             currencyName = findViewById(R.id.main_currency_spinner)
@@ -52,7 +52,6 @@ class MainActivity : ExratesActivity() {
             autoCompleteTextView = findViewById(R.id.main_autoComplete)
             goToExBtn = findViewById(R.id.main_go_to_ex)
             presenter = MainPresenter(app)
-            logD("onCreate")
             presenter.attachView(this)
 
             currencyName.adapter = presenter.getCurSpinnerAdapter()
@@ -102,8 +101,14 @@ class MainActivity : ExratesActivity() {
     }
 
     fun selectExchangeItem(idx: Int){
+        /*val listener = exchangeName.onItemSelectedListener as ExchangeSpinnerItemSelectedListener
+        listener.activated = false
+        logD("Listener deactivated")*/
+        logD("Select exchange item from presenter with old idx: ${exchangeName.selectedItemPosition} and new idx: $idx")
         exchangeName.setSelection(idx)
     }
+
+    fun getSelectedExchangeIdx() = exchangeName.selectedItemPosition
 
     fun selectPairItem(idx: Int){
         currencyName.setSelection(idx)

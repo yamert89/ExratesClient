@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
+import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.presenters.ExchangePresenter
 
 class ExchangeActivity : ExratesActivity() {
@@ -24,6 +25,7 @@ class ExchangeActivity : ExratesActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
+            logD("START EXCHANGE ACTIVITY ")
             setContentView(R.layout.exchange)
             //storage = Storage(applicationContext)
 

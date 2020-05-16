@@ -52,7 +52,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
             ExchangePayload(
                 app.currentExchange!!.exId,
                 currentInterval,
-                app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray()
+                app.currentExchange!!.pairs.map { it.baseCurrency + it.quoteCurrency }.toTypedArray()
             )
         )
 
@@ -76,7 +76,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     fun getPairsAdapt() : PairsAdapter{
         val pairsOfAdapter = if(currentDataIsNull()) mutableListOf() else
-            if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.filter{it.visible}.toMutableList() //todo base filtering on server
+            if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.toMutableList() //todo base filtering on server
         pairsAdapter = PairsAdapter(
             pairsOfAdapter,
             currentInterval,

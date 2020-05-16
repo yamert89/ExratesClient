@@ -72,7 +72,6 @@ class ExampleInstrumentedTest {
                     arrayOf(0L),
                     emptyList(),
                     emptyList(),
-                    true,
                     "1",
                     1
                 )

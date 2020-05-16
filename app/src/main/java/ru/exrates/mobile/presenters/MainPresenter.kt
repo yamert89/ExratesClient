@@ -46,7 +46,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     }
 
     override fun resume() {
-        var exId = 0
+        var exId: Int
         try {
 
             var flag = true
@@ -77,7 +77,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                         logE(e.message.toString())
                     }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
-                    exIdx = storage.getValue(SAVED_EX_IDX, 0)
+                    //exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     val mockPair = "AGI/BTC"
                     val curs =  parseSymbol(if (!curAdapter.isEmpty) curAdapter.getItem(0) ?: mockPair else mockPair)
                     val cur1 = storage.getValue(CURRENT_CUR_1, curs.first)
@@ -179,7 +179,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         var count = 0.0
         list.forEach { count += it.price }
         mainActivity.setCurrencyPrice((count / list.size).toNumeric())
-        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)}!! //fixme npe
+        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)} ?: list[0] //fixme npe
         logTrace("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         logTrace("priceHistory:" + cur.priceHistory.joinToString())
@@ -215,8 +215,8 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     }
 
     private fun updateExchangesList(exchangeNames: List<String>?){
-        if (exchangeNames == null) return
         if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
+        if (exchangeNames == null || !exchAdapter.isEmpty) return
         logD("exchanges: $exchangeNames")
         with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
 
@@ -225,8 +225,8 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     }
 
     private fun updateCurrenciesList(curNames: List<String>?){
-        if (curNames == null) return
         if(!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
+        if (curNames == null || !curAdapter.isEmpty) return
         logD("curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
         mainActivity.selectPairItem(curIdx)
@@ -240,12 +240,15 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     }
 
     private fun rebuildExAdapter(exId : Int){
-        logD("rebuildExSpinner")
-        val pos = exchAdapter.getPosition(app.exchangeNamesList?.find { it.id == exId }?.name)
+        val name = app.exchangeNamesList?.find { it.id == exId }?.name
+        val pos = exchAdapter.getPosition(name)
         val ex = exchAdapter.getItem(pos)
         exchAdapter.remove(ex)
-        exchAdapter.insert(ex, 0)
-        mainActivity.selectExchangeItem(0)
+        val currentIdx = mainActivity.getSelectedExchangeIdx()
+        logD("RebuildExSpinner with $name and idx $currentIdx")
+        exchAdapter.insert(ex, if (currentIdx > -1) currentIdx else 0)
+        //exIdx = 0
+        //mainActivity.selectExchangeItem(0)
     }
 
     /*
@@ -258,12 +261,12 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
             logTrace("current data  is null")
             return
         }
-        logTrace("pairs: " + app.currentExchange!!.pairs.filter { it.visible }
+        logTrace("pairs: " + app.currentExchange!!.pairs
             .map { it.symbol }.toTypedArray().joinToString())
         restModel.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
-            app.currentExchange!!.pairs.filter{it.visible}.map { it.baseCurrency + it.quoteCurrency }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
+            app.currentExchange!!.pairs.map { it.baseCurrency + it.quoteCurrency }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
         ))
         restModel.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
             CURRENCY_HISTORIES_MAIN_NUMBER
@@ -280,7 +283,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
             adapterValues.add(curAdapter.getItem(i)!!)
         }*/
         save(
-            SAVED_EX_IDX to exIdx,
+            /*SAVED_EX_IDX to exIdx,*/
             SAVED_CUR_IDX to curIdx,
             SAVED_CURRENCIES_ADAPTER to adapterName,
             adapterName to pairsAdapter,
@@ -334,7 +337,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     fun getCurIdx() = curIdx
 
     fun updateExIdx(idx: Int){
-        exIdx = idx
+        //exIdx = idx
     }
 
     fun updateCurIdx(idx: Int){
@@ -356,6 +359,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         val defExId = if (app.exchangeNamesList!![0].pairs.contains(symbol)) 1 else {
             app.exchangeNamesList!!.find { it.pairs.contains(symbol) }!!.id
         }
+
         rebuildExAdapter(defExId)
 
         save(SAVED_EXID to defExId/*, SAVED_EX_IDX to pos*/)
