@@ -28,10 +28,6 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     private var curIdx = 0
     private var exIdx = 0
 
-
-
-
-
     /*
      *************************************************************************
      * Binded methods
@@ -79,10 +75,11 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     //exIdx = storage.getValue(SAVED_EX_IDX, 0)
                     val mockPair = "AGI/BTC"
-                    val curs =  parseSymbol(if (!curAdapter.isEmpty) curAdapter.getItem(0) ?: mockPair else mockPair)
+                    val pairName = if (!curAdapter.isEmpty) curAdapter.getItem(0) ?: mockPair else mockPair
+                    val curs =  parseSymbol(pairName)
                     val cur1 = storage.getValue(CURRENT_CUR_1, curs.first)
                     val cur2 = storage.getValue(CURRENT_CUR_2, curs.second)
-                    exId = storage.getValue(SAVED_EXID, 1)
+                    exId = storage.getValue(SAVED_EXID, app.exchangeNamesList?.find { it.pairs.contains(pairName) }?.id ?: 1)
                     val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair))
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
@@ -349,7 +346,6 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
      * - base currency name
      * - quote currency name
      * */
-
     fun prepareStartCurActivity(): Pair<String, String>{
         val symbol = curAdapter.getItem(curIdx).toString()
         val curs = parseSymbol(symbol)
@@ -371,15 +367,6 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         return ExchangeSpinnerItemSelectedListener(mainActivity, app, this )
     }
 
-
-
-
-
-
-
-
-
-
-
+    fun getSelectedExchangeItem() = exchAdapter.getItem(mainActivity.getSelectedExchangeIdx())
 
 }
