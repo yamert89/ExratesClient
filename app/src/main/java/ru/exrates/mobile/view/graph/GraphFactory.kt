@@ -79,7 +79,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
         var pattern = "HH:mm"
         var xLabel = ""
         val regExp = "(\\d{1,2})(\\D)".toRegex()
-        val groups = regExp.find(currentInterval)?.groups ?: throw NullPointerException("Regexp is null")
+        val groups = regExp.find(currentInterval)?.groups ?: throw NullPointerException("Regexp for <$currentInterval> not found")
         val numToken = groups[1]!!.value.toLong()
         var offsetTimeUnit = ChronoUnit.MINUTES
         var numberOfDateIntervals = 5 //empiric

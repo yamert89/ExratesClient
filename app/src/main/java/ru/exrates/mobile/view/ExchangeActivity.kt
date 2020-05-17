@@ -25,7 +25,8 @@ class ExchangeActivity : ExratesActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            logD("START EXCHANGE ACTIVITY ")
+            logD("START EXCHANGE ACTIVITY ") //todo add pair in gui
+            //fixme intervals not sorted
             setContentView(R.layout.exchange)
             //storage = Storage(applicationContext)
 

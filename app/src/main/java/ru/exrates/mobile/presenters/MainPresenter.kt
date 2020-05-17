@@ -179,7 +179,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         var count = 0.0
         list.forEach { count += it.price }
         mainActivity.setCurrencyPrice((count / list.size).toNumeric())
-        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)} ?: list[0] //fixme npe
+        val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)} ?: list[0]
         logTrace("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         logTrace("priceHistory:" + cur.priceHistory.joinToString())

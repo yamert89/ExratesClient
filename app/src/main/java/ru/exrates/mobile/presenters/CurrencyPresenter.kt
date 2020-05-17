@@ -41,20 +41,20 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
             CURRENT_GRAPH_INTERVAL,
             app.currentPairInfo?.find { selectedExchange.id == it.exId }?.historyPeriods?.get(0) ?: "1h"
         )*/
-        updateIntervals()
-        val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
-        currentGraphIntervalIdx = storage.getValue(key, 0)
+        //updateIntervals()
 
-        currentGraphInterval = if (this::historyAdapter.isInitialized) historyAdapter.getItem(currentGraphIntervalIdx)!! else currentInterval
 
-        restModel.getActualPair(currName1, currName2, currentGraphInterval,
-            CURRENCY_HISTORIES_CUR_NUMBER
-        )
-        logD(intervals.joinToString())
-        if(currentNameListsIsNull()){
-            currentInterval = storage.getValue(CURRENT_INTERVAL, intervals.first())
+
+        /*if(currentNameListsIsNull()){*/
+            currentInterval = storage.getValue(CURRENT_INTERVAL, "")
             logD("Loaded saved pair data from storage")
-        }
+       /* }*/
+
+
+        if (currentInterval == "") restModel.getActualPair(currName1, currName2, CURRENCY_HISTORIES_CUR_NUMBER)
+        else restModel.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
+
+
         if (currentNameListsIsNull()) throw NullPointerException("current data is null")
 
         selectedExchange.listener = {
@@ -89,8 +89,6 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
      * Callback methods
      ******************************************************************************/
 
-
-
      fun updateHistory(list: List<Double>){
          curActivity.updateGraph(list, currentGraphInterval)
      }
@@ -98,7 +96,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
     override fun updatePairData(list: MutableList<CurrencyPair>) {
         super.updatePairData(list)
         app.currentPairInfo = list
-       // updateIntervals()
+        updateIntervals()
         val adapter = exchangesAdapter as ExchangesAdapter
         adapter.interval = currentInterval
         adapter.pairsByExchanges.clear()
@@ -106,11 +104,11 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
         adapter.notifyDataSetChanged()
         //val pair = list.find { it.exId == selectedExchange.id }
         //updateGraph(pair?.priceHistory ?: throw NullPointerException("pair not found in exId: ${selectedExchange.id}, and pairData: ${list.joinToString()}"))
-        if (historyAdapter.isEmpty) {
+        if (historyAdapter.isEmpty && list[0].historyPeriods != null) {
             historyAdapter.clear()
             historyAdapter.addAll(
-                list[0].historyPeriods!! //fixme
-            )//todo not null?
+                list[0].historyPeriods!!
+            )
             historyAdapter.notifyDataSetChanged()
             curActivity.selectHistory(currentGraphIntervalIdx)
         }
@@ -127,17 +125,24 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
      ******************************************************************************/
 
     private fun updateIntervals(){
-        app.currentPairInfo!!.forEach { //fixme npe with connection failed and other
+        if (app.currentPairInfo == null) return
+        app.currentPairInfo!!.forEach {
             intervals.addAll(it.historyPeriods!!.subtract(intervals))
         }
         val interval = intervals.first()
         currentInterval = interval
 
+        curActivity.setInterval(interval.toString())
+
+        val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"
+        currentGraphIntervalIdx = storage.getValue(key, 0)
+        currentGraphInterval = if (this::historyAdapter.isInitialized && !historyAdapter.isEmpty) historyAdapter.getItem(currentGraphIntervalIdx)!! else currentInterval
+
         val pairSymbol = app.currentPairInfo!![0].symbol
-        val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}$pairSymbol"
+        val k = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}$pairSymbol"
        // currentGraphIntervalIdx = storage.getValue(key, 0) // sync with currentGraphInterval
        // currentGraphInterval = storage.getValue(CURRENT_GRAPH_INTERVAL, "1h")
-        logD("Graph interval loaded with key $key and value $currentGraphIntervalIdx")
+        logD("Graph interval loaded with key $k and value $currentGraphIntervalIdx")
         //curActivity.setInterval(interval)
 
     }

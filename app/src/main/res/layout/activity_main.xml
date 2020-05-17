@@ -76,12 +76,11 @@
         android:id="@+id/anyChartView"
         android:layout_width="0dp"
         android:layout_height="150dp"
-        android:layout_marginTop="12dp"
         android:tooltipText="last 10h"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/go_to_currency">
+        app:layout_constraintTop_toBottomOf="@+id/main_cur_price">
 
     </lecho.lib.hellocharts.view.LineChartView>
 

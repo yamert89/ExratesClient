@@ -15,13 +15,16 @@ import ru.exrates.mobile.presenters.Presenter
 import ru.exrates.mobile.view.CurrencyActivity
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
+import ru.exrates.mobile.view.dialogs.ConnectionFailed
 import java.net.SocketTimeoutException
 
 
 abstract class ExCallback<T>(private val activity: ExratesActivity, val presenter: Presenter): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
         logE("failed response")
-        if (t is SocketTimeoutException) activity.toast("Не удалось подключиться к серверу. Превышено время ожидания ответа")
+        if (t is SocketTimeoutException) {
+            ConnectionFailed(activity as MainActivity, presenter as MainPresenter).show(activity.supportFragmentManager, "connFailed")
+        }
         else {
             logE(t.message ?: "")
             activity.toast("Ошибка подключения ${t.message}")
