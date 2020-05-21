@@ -54,9 +54,7 @@ fun logTrace(message: String) = Log.v(EXRATES, message)
 
 fun Double.toNumeric(): String = DecimalFormat("####.##########").format(this)
 
-fun Timer.start(){
 
-}
 
 
 

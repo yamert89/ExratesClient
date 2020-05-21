@@ -8,10 +8,7 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.logE
-import ru.exrates.mobile.presenters.CurrencyPresenter
-import ru.exrates.mobile.presenters.ExchangePresenter
-import ru.exrates.mobile.presenters.MainPresenter
-import ru.exrates.mobile.presenters.Presenter
+import ru.exrates.mobile.presenters.*
 import ru.exrates.mobile.view.CurrencyActivity
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
@@ -23,7 +20,7 @@ abstract class ExCallback<T>(private val activity: ExratesActivity, val presente
     override fun onFailure(call: Call<T>, t: Throwable) {
         logE("failed response")
         if (t is SocketTimeoutException) {
-            ConnectionFailed(activity as MainActivity, presenter as MainPresenter).show(activity.supportFragmentManager, "connFailed")
+            ConnectionFailed(presenter as BasePresenter).show(activity.supportFragmentManager, "connFailed")
         }
         else {
             logE(t.message ?: "")

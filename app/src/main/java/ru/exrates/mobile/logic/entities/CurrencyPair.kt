@@ -26,6 +26,7 @@ data class CurrencyPair(
     companion object{
         fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyArray(), emptyList(), emptyList(), "", 0)
     }
+    fun symbolItem() = "$baseCurrency/$quoteCurrency"
 
 
 

@@ -1,9 +1,8 @@
 package ru.exrates.mobile.view
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.view.View
+import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,13 +10,14 @@ import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
 import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.presenters.ExchangePresenter
+import ru.exrates.mobile.view.listeners.CurNamesSpinnerItemSelectedListener
 
 class ExchangeActivity : ExratesActivity() {
     private lateinit var exIco: ImageView
     private lateinit var intervalBtn: Button
     private lateinit var intervalValue: TextView
     private lateinit var pairs: RecyclerView
-
+    private lateinit var addCurrency: Spinner
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var presenter: ExchangePresenter
 
@@ -26,7 +26,6 @@ class ExchangeActivity : ExratesActivity() {
         super.onCreate(savedInstanceState)
         try {
             logD("START EXCHANGE ACTIVITY ") //todo add pair in gui
-            //fixme intervals not sorted
             setContentView(R.layout.exchange)
             //storage = Storage(applicationContext)
 
@@ -34,11 +33,16 @@ class ExchangeActivity : ExratesActivity() {
             intervalBtn = findViewById(R.id.cur_interval)
             intervalValue = findViewById(R.id.intervalValue)
             progressLayout = findViewById(R.id.progressLayout)
+            addCurrency = findViewById(R.id.ex_pairs)
             presenter = ExchangePresenter(app)
             presenter.attachView(this)
             presenter.start()
 
             viewManager = LinearLayoutManager(this)
+
+            addCurrency.adapter = presenter.getCurNamesAdapter()
+           // addCurrency.setSelection(-1)
+            addCurrency.onItemSelectedListener = CurNamesSpinnerItemSelectedListener(presenter)
 
             pairs = findViewById<RecyclerView>(R.id.pairs).apply {
                 layoutManager = viewManager

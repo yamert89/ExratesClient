@@ -88,7 +88,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                         ExchangePayload(
                         exId,
                         app.currentInterval,
-                        app.currentExchange?.pairs?.map { it.baseCurrency + it.quoteCurrency }?.toTypedArray()?.plus(
+                        app.currentExchange?.pairs?.map { "${it.baseCurrency}${app.currentExchange!!.delimiter}${it.quoteCurrency}"  }?.toTypedArray()?.plus(
                             arrayOf(app.currentCur1 + app.currentCur2)) ?: pairs)
                     )
                     restModel.getActualPair(cur1, cur2, "1h",
@@ -263,7 +263,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         restModel.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
-            app.currentExchange!!.pairs.map { it.baseCurrency + it.quoteCurrency }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
+            app.currentExchange!!.pairs.map {"${it.baseCurrency}${app.currentExchange!!.delimiter}${it.quoteCurrency}" }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
         ))
         restModel.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
             CURRENCY_HISTORIES_MAIN_NUMBER

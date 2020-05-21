@@ -33,7 +33,7 @@ class MainActivity : ExratesActivity() {
 
     private lateinit var presenter: MainPresenter
 
-
+//fixme incorrect exname in spinner after second loading
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -89,6 +89,7 @@ class MainActivity : ExratesActivity() {
             )
 
             autoCompleteTextView.setAdapter(presenter.getSearchAdapter())
+
 
             exchangeName.onItemSelectedListener = presenter.getExSpinnerItemSelectedListener()
 
