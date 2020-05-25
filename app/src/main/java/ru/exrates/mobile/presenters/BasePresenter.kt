@@ -81,7 +81,7 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
             override fun run() {
                 task()
             }
-        }, 75000L, 40000L) //todo period
+        }, 75000L, 80000L) //todo period
     }
 
     override fun destroy() {

@@ -19,6 +19,14 @@ class RestModel(private val app: MyApp,
         app.restService.getExchange(payload).enqueue(callback)
     }
 
+    fun getPriceChange(exchange: Exchange){
+        val pairs = exchange.pairs.map { it.symbol }.toTypedArray()
+        exchange.changePeriods.forEach {
+            logD("REQUEST: price change: exId=${exchange.exId}, $it, ${pairs.joinToString()}")
+            app.restService.getPriceChangeBySingleInterval(ExchangePayload(exchange.exId, it, pairs)).enqueue(CursPeriodCallback(activity, presenter))
+        }
+    }
+
     fun getActualPair(c1: String, c2: String, historyinterval: String, limit: Int){
         logD("REQUEST: actual pair: $c1, $c2, interval=$historyinterval, limit=$limit")
         app.restService.getPair(c1, c2, historyinterval, limit).enqueue(PairCallback(activity, presenter))
@@ -28,8 +36,6 @@ class RestModel(private val app: MyApp,
         logD("REQUEST: actual pair: $c1, $c2, limit=$limit")
         app.restService.getPair(c1, c2, truncateLimit(limit)).enqueue(PairCallback(activity, presenter))
     }
-
-
 
     fun getLists(){
         logD("REQUEST: lists")

@@ -4,7 +4,9 @@ import android.widget.ArrayAdapter
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.CURRENT_INTERVAL
 import ru.exrates.mobile.logic.SAVED_EXID
+import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.CursPeriod
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.view.ExchangeActivity
@@ -31,6 +33,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         restModel.getActualExchange(ExchangePayload(exId, currentInterval, arrayOf()))
         exchangeActivity.setInterval(currentInterval)
 
+
     }
 
 
@@ -38,6 +41,14 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
      *******************************************************************************
      * Callback methods
      *******************************************************************************/
+
+
+    fun updateChangePeriod(cursPeriod: CursPeriod){
+        cursPeriod.values.forEach {
+            app.currentExchange!!.pairs.find { p -> p.symbol == it.key }!!.priceChange[cursPeriod.interval] = it.value
+        }
+        updateExchangeData(app.currentExchange!!)
+    }
 
     /*override fun updateExchangeData(exchange: Exchange) {
         super.updateExchangeData(exchange)
@@ -67,6 +78,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     override fun updateExchangeData(exchange: Exchange) {
         super.updateExchangeData(exchange)
         if (cursAdapter.isEmpty) updateCurNames(exchange.exId)
+        restModel.getPriceChange(exchange)
     }
 
     override fun task() {

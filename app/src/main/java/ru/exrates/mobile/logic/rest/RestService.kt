@@ -7,6 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.CursPeriod
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 
@@ -36,4 +37,7 @@ interface RestService {
     @GET("rest/pair/history")
     fun getPriceHistory(@Query("c1") c1: String, @Query("c2") c2: String, @Query("exId") exId: Int,
                         @Query("historyinterval") historyInterval: String, @Query("limit") limit: Int): Call<List<Double>>
+
+    @POST("rest/dynamics")
+    fun getPriceChangeBySingleInterval(@Body curs: ExchangePayload) : Call<CursPeriod>
 }

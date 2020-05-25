@@ -6,6 +6,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.CursPeriod
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.logE
 import ru.exrates.mobile.presenters.*
@@ -90,5 +91,11 @@ class HistoryCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
         if (response.code() == 404) mainFunc(listOf(), presenter::updateHistory)
         mainFunc(response.body(), presenter::updateHistory)
     }
-
+}
+class CursPeriodCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<CursPeriod>(activity, presenter){
+    override fun onResponse(call: Call<CursPeriod>, response: Response<CursPeriod>) {
+        super.onResponse(call, response)
+        presenter as ExchangePresenter
+        mainFunc(response.body(), presenter::updateChangePeriod)
+    }
 }
