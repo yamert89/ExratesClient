@@ -78,7 +78,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     override fun updateExchangeData(exchange: Exchange) {
         super.updateExchangeData(exchange)
         if (cursAdapter.isEmpty) updateCurNames(exchange.exId)
-        restModel.getPriceChange(exchange)
+        restModel.getPriceChange(exchange) //fixme loop
     }
 
     override fun task() {
@@ -152,8 +152,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         val curs = parseSymbol(cursAdapter.getItem(position)!!)
         val newCur = "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
         if (!pairNames.contains(newCur)) pairNames.add(newCur)
-        restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, pairNames.toTypedArray())) //todo add special rest method on server
-        //fixme very long query, timeout exc
+        restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, pairNames.toTypedArray()))
 
     }
 

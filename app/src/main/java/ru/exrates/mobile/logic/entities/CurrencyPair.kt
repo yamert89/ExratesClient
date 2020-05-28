@@ -15,7 +15,6 @@ data class CurrencyPair(
     val price: Double,
     @JsonDeserialize(using = UpdateTimesDeserializer::class)
     val priceChange: TreeMap<String, Double>,
-    val updateTimes: Array<Long?>,
     val priceHistory: List<Double>,
     val historyPeriods: List<String>?,
     var exchangeName: String,
@@ -24,7 +23,7 @@ data class CurrencyPair(
 ) : java.io.Serializable{
 
     companion object{
-        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyArray(), emptyList(), emptyList(), "", 0)
+        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyList(), emptyList(), "", 0)
     }
     fun symbolItem() = "$baseCurrency/$quoteCurrency"
 

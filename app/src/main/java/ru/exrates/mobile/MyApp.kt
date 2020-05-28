@@ -25,9 +25,9 @@ class MyApp(): Application(){
     var currentInterval: String = ""
     lateinit var restService: RestService
     val om = ObjectMapper()
-    val ip = "192.168.0.103"
+    //val ip = "192.168.0.103"
     // val ip = "192.168.43.114"
-    //val ip = "192.168.1.72"
+    val ip = "192.168.1.72"
 
 
     override fun onCreate() {
