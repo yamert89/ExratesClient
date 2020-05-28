@@ -44,6 +44,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
 
     fun updateChangePeriod(cursPeriod: CursPeriod){
+        if (cursPeriod.values.isEmpty()) return
         cursPeriod.values.forEach {
             app.currentExchange!!.pairs.find { p -> p.symbol == it.key }!!.priceChange[cursPeriod.interval] = it.value
         }
@@ -69,6 +70,18 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         cursAdapter.notifyDataSetChanged()
     }
 
+    fun initPairsAdapt(exchange: Exchange){
+        restModel.getPriceChange(exchange)
+        val pairsOfAdapter = if(currentDataIsNull()) mutableListOf() else
+            if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.toMutableList() //todo base filtering on server
+        pairsAdapter = PairsAdapter(
+            pairsOfAdapter,
+            currentInterval,
+            app
+        )
+        exchangeActivity.setPairsAdapter(pairsAdapter)
+    }
+
 
     /*
     *******************************************************************************
@@ -76,9 +89,9 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     *******************************************************************************/
 
     override fun updateExchangeData(exchange: Exchange) {
+        if (!super.pairsAdapterIsInitialized()) initPairsAdapt(exchange)
         super.updateExchangeData(exchange)
         if (cursAdapter.isEmpty) updateCurNames(exchange.exId)
-        restModel.getPriceChange(exchange) //fixme loop
     }
 
     override fun task() {
@@ -109,16 +122,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
      * Public methods for activity
      *******************************************************************************/
 
-    fun getPairsAdapt() : PairsAdapter{
-        val pairsOfAdapter = if(currentDataIsNull()) mutableListOf() else
-            if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.toMutableList() //todo base filtering on server
-        pairsAdapter = PairsAdapter(
-            pairsOfAdapter,
-            currentInterval,
-            app
-        )
-        return pairsAdapter
-    }
+
 
     /**
      * @return text representation of interval for cur. interval view

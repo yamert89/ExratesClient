@@ -11,6 +11,7 @@ import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
 import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.presenters.ExchangePresenter
 import ru.exrates.mobile.view.listeners.CurNamesSpinnerItemSelectedListener
+import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 
 class ExchangeActivity : ExratesActivity() {
     private lateinit var exIco: ImageView
@@ -44,10 +45,7 @@ class ExchangeActivity : ExratesActivity() {
            // addCurrency.setSelection(-1)
             addCurrency.onItemSelectedListener = CurNamesSpinnerItemSelectedListener(presenter)
 
-            pairs = findViewById<RecyclerView>(R.id.pairs).apply {
-                layoutManager = viewManager
-                adapter = presenter.getPairsAdapt()
-            }
+
 
             intervalBtn.setOnClickListener {
                 setInterval(presenter.changeInterval())
@@ -65,6 +63,13 @@ class ExchangeActivity : ExratesActivity() {
 
     fun setInterval(value: String){
         intervalValue.text = value
+    }
+
+    fun setPairsAdapter(pairsAdapter: PairsAdapter){
+        pairs = findViewById<RecyclerView>(R.id.pairs).apply {
+            layoutManager = viewManager
+            adapter = pairsAdapter
+        }
     }
 
 

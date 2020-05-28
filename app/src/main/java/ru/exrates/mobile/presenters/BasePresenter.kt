@@ -22,6 +22,8 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
     lateinit var restModel: RestModel
     protected lateinit var pairsAdapter: PairsAdapter
 
+    fun pairsAdapterIsInitialized() = this::pairsAdapter.isInitialized
+
     override fun task(){
         logTrace("Task started")
     }
