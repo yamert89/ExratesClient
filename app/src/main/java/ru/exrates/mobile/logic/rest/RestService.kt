@@ -23,7 +23,7 @@ interface RestService {
     fun getExchanges(@Body payload: String) : Call<Map<String, Exchange>>
 
     @POST("rest/exchange")
-    fun getExchange(@Body payload: ExchangePayload) : Call<Exchange> //todo получить быстрый ответ. если пары нет, запрос очень долгий
+    fun getExchange(@Body payload: ExchangePayload) : Call<Exchange>
 
     @POST("rest/exchange")
     fun getExchange(@Body payload: String) : Call<Exchange>

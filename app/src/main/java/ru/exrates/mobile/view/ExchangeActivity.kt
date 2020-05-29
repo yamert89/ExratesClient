@@ -26,7 +26,7 @@ class ExchangeActivity : ExratesActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            logD("START EXCHANGE ACTIVITY ") //todo add pair in gui
+            logD("START EXCHANGE ACTIVITY ")
             setContentView(R.layout.exchange)
             //storage = Storage(applicationContext)
 

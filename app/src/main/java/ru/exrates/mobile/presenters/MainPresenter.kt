@@ -80,7 +80,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     val cur1 = storage.getValue(CURRENT_CUR_1, curs.first)
                     val cur2 = storage.getValue(CURRENT_CUR_2, curs.second)
                     exId = storage.getValue(SAVED_EXID, app.exchangeNamesList?.find { it.pairs.contains(pairName) }?.id ?: 1)
-                    val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair))
+                   /* val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair))*/
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
 
@@ -89,7 +89,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                         exId,
                         app.currentInterval,
                         app.currentExchange?.pairs?.map { "${it.baseCurrency}${app.currentExchange!!.delimiter}${it.quoteCurrency}"  }?.toTypedArray()?.plus(
-                            arrayOf(app.currentCur1 + app.currentCur2)) ?: pairs)
+                            arrayOf(app.currentCur1 + app.currentCur2)) ?: arrayOf())
                     )
                     restModel.getActualPair(cur1, cur2, "1h",
                         CURRENCY_HISTORIES_MAIN_NUMBER
@@ -189,6 +189,11 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         mainActivity.updateGraph(cur)
     }
 
+    override fun updateExchangeData(exchange: Exchange) {
+        super.updateExchangeData(exchange)
+        rebuildExAdapter(exchange.exId)
+    }
+
     /*
      *******************************************************************************
      * Private methods
@@ -212,17 +217,19 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     }
 
     private fun updateExchangesList(exchangeNames: List<String>?){
-        if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
+        if (!this::exchAdapter.isInitialized) exchAdapter = ArrayAdapter<String>(mainActivity, android.R.layout.simple_spinner_dropdown_item)
         if (exchangeNames == null || !exchAdapter.isEmpty) return
         logD("exchanges: $exchangeNames")
+        //exIdx = storage.getValue(SAVED_EX_IDX, 777)
         with(exchAdapter){clear(); addAll(exchangeNames); notifyDataSetChanged()}
+        //mainActivity.selectExchangeItem(exIdx)
 
         //exchangeName.setSelection(storage.getValue(SAVED_EX_IDX, 0))
 
     }
 
     private fun updateCurrenciesList(curNames: List<String>?){
-        if(!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_spinner_dropdown_item)
+        if(!this::curAdapter.isInitialized) curAdapter = ArrayAdapter<String>(mainActivity, android.R.layout.simple_spinner_dropdown_item)
         if (curNames == null || !curAdapter.isEmpty) return
         logD("curNames : $curNames")
         with(curAdapter){clear(); addAll(curNames); notifyDataSetChanged()}
@@ -280,11 +287,11 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
             adapterValues.add(curAdapter.getItem(i)!!)
         }*/
         save(
-            /*SAVED_EX_IDX to exIdx,*/
+            /*SAVED_EX_IDX to mainActivity.getSelectedExchangeIdx(),*/
             SAVED_CUR_IDX to curIdx,
             SAVED_CURRENCIES_ADAPTER to adapterName,
-            adapterName to pairsAdapter,
-            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("AGI/BTC"))/*,
+            adapterName to pairsAdapter/*,
+            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("AGI/BTC"))*//*,
             SAVED_EXID to (app.currentExchange?.exId ?: 1)*/)
     }
 
