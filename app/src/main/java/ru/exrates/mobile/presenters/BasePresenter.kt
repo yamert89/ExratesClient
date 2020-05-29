@@ -70,7 +70,7 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
 
     override fun stop(){
         saveState()
-        timer.cancel()
+        stopTimer()
     }
 
     override fun pause() {
@@ -98,6 +98,8 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
     override fun detachView() {
         activity = null
     }
+
+    fun stopTimer() = timer.cancel()
 
 
 

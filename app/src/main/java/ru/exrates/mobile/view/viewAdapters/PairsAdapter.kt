@@ -42,6 +42,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
 
     override fun onBindViewHolder(holder: PairsViewHolder, position: Int) {
         val pair = dataPairs[position]
+        var change: String
         try{
             var res = app.baseContext.resources.getIdentifier(pair.baseCurrency.toLowerCase(), "drawable", app.baseContext.packageName)
             if (res == 0) res = android.R.drawable.ic_menu_help
@@ -53,7 +54,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = "${pair.baseCurrency} / ${pair.quoteCurrency}"
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
             logD(pair.priceChange.toString())
-            var change = BigDecimal(pair.priceChange[currentInterval]!! , MathContext(2)).toDouble().toString() //fixme npe
+            change = BigDecimal(pair.priceChange[currentInterval]!! , MathContext(2)).toDouble().toString() //fixme npe
             if (change.length > 5) change = "0.0"
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = "$change%"
             val cross = holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_delete)
@@ -65,7 +66,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             }
         }catch (e: Exception){
             e.printStackTrace()
-            logE("pair: $pair")
+            logE("pair: $pair , priceChange: ${pair.priceChange.map { "${it.key} : ${it.value}" }.joinToString()}")
         }
 
 
