@@ -146,7 +146,8 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     }
 
 
-    fun selectCurItem(position: Int){ //todo progress
+    fun selectCurItem(position: Int){
+        exchangeActivity.startProgress()
         /*val pairNames = app.exchangeNamesList!!.find { it.id == app.currentExchange!!.exId }!!.pairs.map {
             val curs = parseSymbol(it)
             "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
