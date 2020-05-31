@@ -11,16 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.R
-import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.view.graph.GraphFactory
-import ru.exrates.mobile.logic.entities.CurrencyPair
-import ru.exrates.mobile.logic.entities.SelectedExchange
-import ru.exrates.mobile.logic.structures.IntervalComparator
 import ru.exrates.mobile.presenters.CurrencyPresenter
-import ru.exrates.mobile.presenters.Presenter
-import ru.exrates.mobile.view.viewAdapters.ExchangesAdapter
-import java.util.*
 
 class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyName: TextView
@@ -50,7 +43,7 @@ class CurrencyActivity : ExratesActivity() {
             currencyName = findViewById(R.id.cur_name)
             currencyInterval = findViewById(R.id.cur_interval)
             currencyIntervalValue = findViewById(R.id.cur_intervalValue)
-            progressLayout = findViewById(R.id.progressLayout)
+            progressLayout = findViewById(R.id.progress)
             historyPeriodSpinner = findViewById(R.id.cur_history_period)
             anyChartView = findViewById(R.id.anyChartView_cur)
             curIco = findViewById(R.id.cur_ico)

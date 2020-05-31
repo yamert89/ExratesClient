@@ -94,7 +94,7 @@
         app:layout_constraintTop_toBottomOf="@+id/cur_exchanges" />
 
     <include
-        android:id="@+id/progressLayout"
+        android:id="@+id/progress"
         layout="@layout/progress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

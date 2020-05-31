@@ -84,6 +84,16 @@
 
     </lecho.lib.hellocharts.view.LineChartView>
 
+    <include
+        android:id="@+id/main_chart_progress"
+        layout="@layout/small_progress"
+        android:layout_width="409dp"
+        android:layout_height="141dp"
+        app:layout_constraintBottom_toBottomOf="@+id/anyChartView"
+        app:layout_constraintEnd_toEndOf="@+id/progress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_autoComplete" />
+
     <Spinner
         android:id="@+id/main_exch_spinner"
         android:layout_width="match_parent"
@@ -116,7 +126,6 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <include
-        android:id="@+id/progressLayout"
         layout="@layout/progress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -12,7 +12,6 @@ import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.view.graph.GraphFactory
-import ru.exrates.mobile.view.listeners.ExchangeSpinnerItemSelectedListener
 import ru.exrates.mobile.view.listeners.SearchButtonClickListener
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.presenters.MainPresenter
@@ -30,6 +29,7 @@ class MainActivity : ExratesActivity() {
     private lateinit var root: ConstraintLayout
     private lateinit var searchBtn: ImageView
     private lateinit var autoCompleteTextView: AutoCompleteTextView
+    private lateinit var chartProgress: ConstraintLayout
 
     private lateinit var presenter: MainPresenter
 
@@ -42,13 +42,14 @@ class MainActivity : ExratesActivity() {
             currencyName = findViewById(R.id.main_currency_spinner)
             currencyPrice = findViewById(R.id.main_cur_price)
             exchangeName = findViewById(R.id.main_exch_spinner)
-            progressLayout = findViewById(R.id.progressLayout)
+            progressLayout = findViewById(R.id.progress)
             anyChartView = findViewById(R.id.anyChartView)
             goToCurBtn = findViewById(R.id.go_to_currency)
             root = findViewById(R.id.root)
             searchBtn = findViewById(R.id.main_search_btn)
             autoCompleteTextView = findViewById(R.id.main_autoComplete)
             goToExBtn = findViewById(R.id.main_go_to_ex)
+            chartProgress = findViewById(R.id.main_chart_progress)
             presenter = MainPresenter(app)
             presenter.attachView(this)
 
@@ -149,6 +150,7 @@ class MainActivity : ExratesActivity() {
             root.addView(notice, 4)
         } else GraphFactory(anyChartView, "1h")
             .createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1))
+        chartProgress.visibility = View.INVISIBLE
     }
 
 

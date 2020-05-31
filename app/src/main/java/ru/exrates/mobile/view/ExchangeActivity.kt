@@ -1,7 +1,6 @@
 package ru.exrates.mobile.view
 
 import android.os.Bundle
-import android.view.View
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,7 +32,7 @@ class ExchangeActivity : ExratesActivity() {
             exIco = findViewById(R.id.exIco)
             intervalBtn = findViewById(R.id.cur_interval)
             intervalValue = findViewById(R.id.intervalValue)
-            progressLayout = findViewById(R.id.progressLayout)
+            progressLayout = findViewById(R.id.progress)
             addCurrency = findViewById(R.id.ex_pairs)
             presenter = ExchangePresenter(app)
             presenter.attachView(this)
