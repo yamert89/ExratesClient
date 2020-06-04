@@ -51,6 +51,19 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         updateExchangeData(app.currentExchange!!)
     }
 
+    fun addPair(pair: CurrencyPair){
+        app.currentExchange!!.pairs.add(pair)
+        pairsAdapter.dataPairs.add(pair)
+        pairsAdapter.notifyDataSetChanged()
+    }
+
+    override fun updateExchangeData(exchange: Exchange) {
+        if (!super.pairsAdapterIsInitialized()) initPairsAdapt(exchange)
+        super.updateExchangeData(exchange)
+        if (cursAdapter.isEmpty) updateCurNames(exchange.exId)
+    }
+
+
     /*override fun updateExchangeData(exchange: Exchange) {
         super.updateExchangeData(exchange)
         cursAdapter.clear()
@@ -88,11 +101,6 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     * Basic methods
     *******************************************************************************/
 
-    override fun updateExchangeData(exchange: Exchange) {
-        if (!super.pairsAdapterIsInitialized()) initPairsAdapt(exchange)
-        super.updateExchangeData(exchange)
-        if (cursAdapter.isEmpty) updateCurNames(exchange.exId)
-    }
 
     override fun task() {
         if (currentDataIsNull()) throw NullPointerException("current data in task is null")
@@ -157,7 +165,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         val curs = parseSymbol(cursAdapter.getItem(position)!!)
         val newCur = "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
         if (!pairNames.contains(newCur)) pairNames.add(newCur)
-        restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, pairNames.toTypedArray()))
+        restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, pairNames.toTypedArray())) //todo replace with one pair req
 
     }
 

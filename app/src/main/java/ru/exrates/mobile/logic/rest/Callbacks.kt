@@ -19,7 +19,7 @@ import java.net.SocketTimeoutException
 
 abstract class ExCallback<T>(private val activity: ExratesActivity, val presenter: Presenter): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
-        logE("failed response")
+        logE("failed basic response")
         if (t is SocketTimeoutException) {
             ConnectionFailed(presenter as BasePresenter).show(activity.supportFragmentManager, "connFailed")
         }
@@ -71,7 +71,17 @@ class PairCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback
     }
 }
 
+class OnePairCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<CurrencyPair>(activity, presenter){
+    override fun onResponse(call: Call<CurrencyPair>, response: Response<CurrencyPair>) {
+        super.onResponse(call, response)
+        presenter as ExchangePresenter
+        mainFunc(response.body(), presenter::addPair)
+    }
+
+}
+
 class ListsCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<List<ExchangeNamesObject>>(activity, presenter) {
+    private var alreadyFailed = false
     override fun onResponse(
         call: Call<List<ExchangeNamesObject>>,
         response: Response<List<ExchangeNamesObject>>
@@ -80,6 +90,13 @@ class ListsCallback(activity: ExratesActivity, presenter: Presenter) : ExCallbac
         //activity as MainActivity
         presenter as MainPresenter
         mainFunc(response.body(), presenter::initData)
+    }
+
+    override fun onFailure(call: Call<List<ExchangeNamesObject>>, t: Throwable) {
+        if (!alreadyFailed) {
+            presenter.resume()
+            alreadyFailed = true
+        } else super.onFailure(call, t)
     }
 }
 
@@ -91,11 +108,20 @@ class HistoryCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
         if (response.code() == 404) mainFunc(listOf(), presenter::updateHistory)
         mainFunc(response.body(), presenter::updateHistory)
     }
+
+    override fun onFailure(call: Call<List<Double>>, t: Throwable) {
+        logE("FAILED history request")
+    }
 }
+
 class CursPeriodCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<CursPeriod>(activity, presenter){
     override fun onResponse(call: Call<CursPeriod>, response: Response<CursPeriod>) {
         super.onResponse(call, response)
         presenter as ExchangePresenter
         mainFunc(response.body(), presenter::updateChangePeriod)
+    }
+
+    override fun onFailure(call: Call<CursPeriod>, t: Throwable) {
+        logE("FAILED curs period request")
     }
 }

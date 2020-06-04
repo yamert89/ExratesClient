@@ -34,7 +34,8 @@ class MyApp(): Application(){
         super.onCreate()
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
-            .callTimeout(Duration.ofMinutes(3))
+            .callTimeout(Duration.ofMinutes(1))
+            .connectTimeout(Duration.ofSeconds(10))
             /*.addInterceptor(logging)*/.build()
         om.registerKotlinModule()
         val retrofit = Retrofit.Builder()
