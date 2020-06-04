@@ -161,11 +161,12 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
             "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
         }.toMutableList()*/
         logD("Selecting cur item")
-        val pairNames = app.currentExchange!!.pairs.map { it.symbol }.toMutableList()
+        //val pairNames = app.currentExchange!!.pairs.map { it.symbol }.toMutableList()
         val curs = parseSymbol(cursAdapter.getItem(position)!!)
-        val newCur = "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
-        if (!pairNames.contains(newCur)) pairNames.add(newCur)
-        restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, pairNames.toTypedArray())) //todo replace with one pair req
+        //val newCur = "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
+        //if (!pairNames.contains(newCur)) pairNames.add(newCur)
+        restModel.addOnePair(curs.first, curs.second, app.currentExchange!!.exId)
+        //restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, pairNames.toTypedArray())) //todo replace with one pair req
 
     }
 
