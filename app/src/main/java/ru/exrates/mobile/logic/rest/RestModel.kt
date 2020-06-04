@@ -37,9 +37,9 @@ class RestModel(private val app: MyApp,
         app.restService.getPair(c1, c2, truncateLimit(limit)).enqueue(PairCallback(activity, presenter))
     }
 
-    fun addOnePair(c1: String, c2: String, exId: Int){
+    fun addOnePair(c1: String, c2: String, exId: Int, currentInterval: String){
         logD("REQUEST: add one pair: $c1, $c2, ex $exId")
-        app.restService.addOnePair(c1, c2, exId).enqueue(OnePairCallback(activity, presenter))
+        app.restService.addOnePair(c1, c2, exId, currentInterval).enqueue(OnePairCallback(activity, presenter))
     }
 
     fun getLists(){

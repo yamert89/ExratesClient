@@ -165,7 +165,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         val curs = parseSymbol(cursAdapter.getItem(position)!!)
         //val newCur = "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
         //if (!pairNames.contains(newCur)) pairNames.add(newCur)
-        restModel.addOnePair(curs.first, curs.second, app.currentExchange!!.exId)
+        restModel.addOnePair(curs.first, curs.second, app.currentExchange!!.exId, currentInterval)
         //restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, pairNames.toTypedArray())) //todo replace with one pair req
 
     }
