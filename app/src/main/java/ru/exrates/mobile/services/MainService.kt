@@ -3,11 +3,12 @@ package ru.exrates.mobile.services
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import ru.exrates.mobile.ExRates
 
 class MainService: Service() {
+    private val exRates = ExRates()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         return START_STICKY
     }
 

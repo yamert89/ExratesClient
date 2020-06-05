@@ -14,28 +14,37 @@ import ru.exrates.mobile.logic.rest.RestService
 import ru.exrates.mobile.presenters.BasePresenter
 import java.time.Duration
 
-class MyApp(): Application(){
+class MyApp : Application(){
     private val exRates = ExRates()
     var currentExchange: Exchange?
         get() = exRates.currentExchange
         set(value){exRates.currentExchange = value }
+
     var currentPairInfo: MutableList<CurrencyPair>?
         get() = exRates.currentPairInfo
         set(value) {exRates.currentPairInfo = value}
+
     var currentCur1: String
         get() = exRates.currentCur1
         set(value) {exRates.currentCur1 = value}
+
     var currentCur2: String
         get() = exRates.currentCur2
         set(value){exRates.currentCur2 = value}
+
     var exchangeNamesList: List<ExchangeNamesObject>?
         get() = exRates.exchangeNamesList
         set(value) {exRates.exchangeNamesList = value}
+
     var currentInterval: String
         get() = exRates.currentInterval
         set(value) {exRates.currentInterval = value}
+
     var restService: RestService = exRates.restService
+        private set
+
     val om = exRates.om
+
 
     /*override fun onCreate() {
         super.onCreate()
@@ -54,7 +63,7 @@ class MyApp(): Application(){
     }*/
 }
 
-class ExRates(){
+class ExRates{
     var currentExchange: Exchange? = null
     var currentPairInfo: MutableList<CurrencyPair>? = null
     var currentCur1: String = "ETC"
@@ -80,6 +89,4 @@ class ExRates(){
             .build()
         restService = retrofit.create(RestService::class.java)
     }
-
-
 }
