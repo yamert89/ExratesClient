@@ -55,11 +55,10 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
             logD(pair.priceChange.toString())
             val value = pair.priceChange[currentInterval]!!
-            change = if (value == Double.MAX_VALUE) "?"
-            else BigDecimal( value, MathContext(2)).toDouble().toString() //fixme npe
+            change = BigDecimal( value, MathContext(2)).toDouble().toString() //fixme npe
             if (change.length > 5) change = "0.0"
 
-            holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = "$change%"
+            holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = if (value == Double.MAX_VALUE) "?" else "$change%"
             val cross = holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_delete)
             cross.setOnClickListener {
                 dataPairs.removeIf {it2 -> it2.symbol == pair.symbol }
