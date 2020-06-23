@@ -1,4 +1,4 @@
-plugins{
+plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
@@ -37,8 +37,10 @@ dependencies() {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
     implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.core:core-ktx:1.2.0")
+    implementation("androidx.core:core-ktx:1.3.0")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
+    implementation("androidx.core:core")
+    implementation("androidx.preference:preference:1.1.1")
     testImplementation("junit:junit:4.12")
     androidTestImplementation("androidx.test.ext:junit:1.1.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
@@ -58,13 +60,8 @@ dependencies() {
     implementation("com.google.android.material:material:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
     //implementation("com.github.AnyChart:AnyChart-Android:1.1.2")
-    compile("com.github.lecho:hellocharts-library:1.5.8@aar")
+    implementation("com.github.lecho:hellocharts-library:1.5.8@aar")
     //compile("com.github.lecho:hellocharts-android:v1.5.8")
 
 
 }
-
-
-
-
-

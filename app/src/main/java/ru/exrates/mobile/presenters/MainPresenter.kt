@@ -1,5 +1,7 @@
 package ru.exrates.mobile.presenters
 
+import android.app.Notification
+import android.content.Intent
 import android.widget.ArrayAdapter
 import kotlinx.coroutines.*
 import ru.exrates.mobile.MyApp
@@ -9,6 +11,7 @@ import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.logic.rest.RestModel
+import ru.exrates.mobile.services.MainService
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
 import ru.exrates.mobile.view.listeners.ExchangeSpinnerItemSelectedListener
@@ -103,6 +106,17 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                 return
             }else restModel.ping()
             //exchangeName.setSelection((exchangeName.adapter as ArrayAdapter<String>).getPosition(app.exchangeNamesList?.find { it.id == exId }?.name))
+            val intent = Intent(mainActivity, MainService::class.java).apply {
+                putExtra(EXTRA_CURRENCY_NAME_1, "AGI")
+                putExtra(EXTRA_CURRENCY_NAME_2, "BTC")
+                putExtra(EXTRA_MAX_LIMIT, 0.0)
+                putExtra(EXTRA_MIN_LIMIT, 0.0)
+                putExtra(EXTRA_PERIOD, 40000L)
+                addFlags( Intent.FLAG_ACTIVITY_NEW_TASK )
+            }
+
+            mainActivity.startService(intent)
+            //mainActivity.startForegroundService(intent)
 
             GlobalScope.launch(Dispatchers.Main) {
                 if (app.exchangeNamesList == null || pairsAdapter.itemCount == 0) {

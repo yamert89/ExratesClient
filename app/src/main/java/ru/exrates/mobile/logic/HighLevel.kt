@@ -40,9 +40,13 @@ const val EXTRA_CURRENCY_NAME_2 = "excrn2"
 const val EXTRA_EXCHANGE_ICO = "exEXico"
 const val EXTRA_EXCHANGE_ID = "exEXID"
 const val EXTRA_PERIOD = "exper"
+const val EXTRA_MAX_LIMIT = "e34GD"
+const val EXTRA_MIN_LIMIT = "eS34GGr"
+const val EXTRA_EX_ID = "nyt45fdg"
 const val EXTRA_CUR_ICO = "ECI"
 const val STORAGE_EXCHANGES = "exchanges"
 const val SAVED_CURRENCY = "savedcurrency"
+const val NOTIFICATION_CHANNEL = "435235fdg"
 
 const val IS_FIRST_LOAD = "firstload"
 const val CURRENCY_HISTORIES_MAIN_NUMBER = 10

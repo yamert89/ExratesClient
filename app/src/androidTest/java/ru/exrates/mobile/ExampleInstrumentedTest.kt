@@ -69,8 +69,7 @@ class ExampleInstrumentedTest {
                     "btc_ltc",
                     0.345,
                     treeMap,
-                    arrayOf(0L),
-                    emptyList(),
+                    listOf(0.0),
                     emptyList(),
                     "1",
                     1
