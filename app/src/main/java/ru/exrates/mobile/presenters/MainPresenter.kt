@@ -111,12 +111,12 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                 putExtra(EXTRA_CURRENCY_NAME_2, "BTC")
                 putExtra(EXTRA_MAX_LIMIT, 0.0)
                 putExtra(EXTRA_MIN_LIMIT, 0.0)
-                putExtra(EXTRA_PERIOD, 40000L)
+                putExtra(EXTRA_PERIOD, 15000L)
                 addFlags( Intent.FLAG_ACTIVITY_NEW_TASK )
             }
 
-            mainActivity.startService(intent)
-            //mainActivity.startForegroundService(intent)
+            //mainActivity.startService(intent)
+            mainActivity.startForegroundService(intent)
 
             GlobalScope.launch(Dispatchers.Main) {
                 if (app.exchangeNamesList == null || pairsAdapter.itemCount == 0) {
