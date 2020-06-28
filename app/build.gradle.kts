@@ -61,6 +61,8 @@ dependencies() {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
     //implementation("com.github.AnyChart:AnyChart-Android:1.1.2")
     implementation("com.github.lecho:hellocharts-library:1.5.8@aar")
+    implementation("com.github.magno-ramos:currency-seekbar:1.0.0")
+    implementation("org.florescu.android.rangeseekbar:rangeseekbar-library:0.4.0")
     //compile("com.github.lecho:hellocharts-android:v1.5.8")
 
 
