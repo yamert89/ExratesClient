@@ -6,6 +6,8 @@
         <SwitchPreferenceCompat
             app:key="main_service"
             app:title="Активировать сервис" />
+        <ru.exrates.mobile.view.prefs.NotificationPreference
+            />
 
         
 

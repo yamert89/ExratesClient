@@ -2,6 +2,8 @@ package ru.exrates.mobile.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -15,6 +17,7 @@ import ru.exrates.mobile.view.graph.GraphFactory
 import ru.exrates.mobile.view.listeners.SearchButtonClickListener
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.presenters.MainPresenter
+import ru.exrates.mobile.view.prefs.SettingsActivity
 
 class MainActivity : ExratesActivity() {
 //fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
@@ -180,6 +183,24 @@ class MainActivity : ExratesActivity() {
     override fun onPause() {
         super.onPause()
         presenter.pause()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.settings -> {
+                startActivity(Intent(applicationContext, SettingsActivity::class.java))
+                return true
+            }
+            else -> {
+                throw IllegalArgumentException("menu item not found")
+            }
+        }
+
     }
 
 
