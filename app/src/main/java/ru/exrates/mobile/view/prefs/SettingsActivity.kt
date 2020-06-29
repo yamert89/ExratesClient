@@ -2,10 +2,12 @@ package ru.exrates.mobile.view.prefs
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import ru.exrates.mobile.R
+import ru.exrates.mobile.view.ExratesActivity
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : ExratesActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,5 +26,12 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
+
+        override fun onDisplayPreferenceDialog(preference: Preference?) {
+            val dialogFragment = NotificationPreferenceDialogFragment()
+            dialogFragment.show(parentFragmentManager, "settings" )
+        }
     }
+
+
 }
