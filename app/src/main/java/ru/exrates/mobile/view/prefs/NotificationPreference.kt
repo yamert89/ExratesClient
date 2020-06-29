@@ -10,7 +10,11 @@ import androidx.preference.DialogPreference
 import androidx.preference.PreferenceDialogFragmentCompat
 import kotlinx.android.synthetic.main.notification_preference.view.*
 import org.florescu.android.rangeseekbar.RangeSeekBar
+import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.R
+import ru.exrates.mobile.data.Storage
+import ru.exrates.mobile.logic.entities.Exchange
+import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 
 class NotificationPreference(context: Context): DialogPreference(context) {
     var min = 0.0f
@@ -34,15 +38,23 @@ class NotificationPreference(context: Context): DialogPreference(context) {
             persistString(value)
         }
 
+    override fun onSetInitialValue(defaultValue: Any?) {
+        min = getPersistedFloat(0.0f)
+        max = getPersistedFloat(100f)
+        exId = getPersistedInt(0)
+        symbol = getPersistedString("")
+    }
+
     override fun getDialogLayoutResource(): Int {
         return R.layout.notification_preference
     }
 }
 
-class NotificationPreferenceDialogFragment: PreferenceDialogFragmentCompat(){
-    lateinit var prefSeekBar: RangeSeekBar<Float>
-    lateinit var exchName: Spinner
-    lateinit var curSymbol: Spinner
+class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDialogFragmentCompat(){
+    private lateinit var prefSeekBar: RangeSeekBar<Float>
+    private lateinit var exchName: Spinner
+    private lateinit var curSymbol: Spinner
+    private val notifPreference = preference as NotificationPreference
 
     override fun onBindDialogView(view: View) {
         super.onBindDialogView(view)
@@ -50,21 +62,34 @@ class NotificationPreferenceDialogFragment: PreferenceDialogFragmentCompat(){
         exchName = view.findViewById(R.id.pref_exch)
         curSymbol = view.findViewById(R.id.pref_cur)
 
-        val exAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item)
-        val curAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item)
 
 
-
-        val notifPreference = preference as NotificationPreference
         prefSeekBar.setRangeValues(notifPreference.min, notifPreference.max)
-        //curSymbol.text = notifPreference.symbol
 
+        exchName.adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item).apply {
+            addAll(app.exchangeNamesList!!.map(ExchangeNamesObject::name))
+        }
+        var exOb: ExchangeNamesObject
+        curSymbol.adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item).apply {
+            exOb = app.exchangeNamesList!!.find { it.id == notifPreference.exId }!!
+            addAll(exOb.pairs)
+        }
 
+        var ad = exchName.adapter as ArrayAdapter<String>
+        exchName.setSelection(ad.getPosition(exOb.name))
+        ad = curSymbol.adapter as ArrayAdapter<String>
+        curSymbol.setSelection(ad.getPosition(notifPreference.symbol))
 
     }
 
     override fun onDialogClosed(positiveResult: Boolean) {
-        TODO("Not yet implemented")
+        if (!positiveResult) return
+        with(notifPreference){
+            min = prefSeekBar.selectedMinValue
+            max = prefSeekBar.selectedMaxValue
+            symbol = curSymbol.selectedItem as String
+            exId = app.exchangeNamesList!!.find { it.name == exchName.selectedItem as String }!!.id
+        }
     }
 
 

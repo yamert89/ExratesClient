@@ -22,13 +22,13 @@ class SettingsActivity : ExratesActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    class SettingsFragment : PreferenceFragmentCompat() {
+    inner class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
 
         override fun onDisplayPreferenceDialog(preference: Preference?) {
-            val dialogFragment = NotificationPreferenceDialogFragment()
+            val dialogFragment = NotificationPreferenceDialogFragment(app)
             dialogFragment.show(parentFragmentManager, "settings" )
         }
     }
