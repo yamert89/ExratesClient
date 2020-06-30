@@ -1,6 +1,7 @@
 package ru.exrates.mobile.view.prefs
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.TypedArray
 import android.view.View
 import android.widget.ArrayAdapter
@@ -13,8 +14,10 @@ import org.florescu.android.rangeseekbar.RangeSeekBar
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.R
 import ru.exrates.mobile.data.Storage
+import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
+import ru.exrates.mobile.services.MainService
 
 class NotificationPreference(context: Context): DialogPreference(context) {
     var min = 0.0f
@@ -90,6 +93,15 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
             symbol = curSymbol.selectedItem as String
             exId = app.exchangeNamesList!!.find { it.name == exchName.selectedItem as String }!!.id
         }
+        app.stopService(Intent(app.applicationContext, MainService::class.java))
+        app.startForegroundService(Intent(app.applicationContext, MainService::class.java).apply {
+            putExtra(EXTRA_CURRENCY_NAME_1, "AGI")
+            putExtra(EXTRA_CURRENCY_NAME_2, "BTC")
+            putExtra(EXTRA_MAX_LIMIT, 0.0)
+            putExtra(EXTRA_MIN_LIMIT, 0.0)
+            putExtra(EXTRA_PERIOD, 15000L)
+            addFlags( Intent.FLAG_ACTIVITY_NEW_TASK )
+        })
     }
 
 

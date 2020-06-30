@@ -106,17 +106,6 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                 return
             }else restModel.ping()
             //exchangeName.setSelection((exchangeName.adapter as ArrayAdapter<String>).getPosition(app.exchangeNamesList?.find { it.id == exId }?.name))
-            val intent = Intent(mainActivity, MainService::class.java).apply {
-                putExtra(EXTRA_CURRENCY_NAME_1, "AGI")
-                putExtra(EXTRA_CURRENCY_NAME_2, "BTC")
-                putExtra(EXTRA_MAX_LIMIT, 0.0)
-                putExtra(EXTRA_MIN_LIMIT, 0.0)
-                putExtra(EXTRA_PERIOD, 15000L)
-                addFlags( Intent.FLAG_ACTIVITY_NEW_TASK )
-            }
-
-            //mainActivity.startService(intent)
-            mainActivity.startForegroundService(intent)
 
             GlobalScope.launch(Dispatchers.Main) {
                 if (app.exchangeNamesList == null || pairsAdapter.itemCount == 0) {
