@@ -89,16 +89,19 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
 
     override fun onDialogClosed(positiveResult: Boolean) {
         if (!positiveResult) return
+        val exObject: ExchangeNamesObject
         with(notifPreference){
             min = prefSeekBar.selectedMinValue
             max = prefSeekBar.selectedMaxValue
             symbol = curSymbol.selectedItem as String
-            exId = app.exchangeNamesList!!.values.find { it.name == exchName.selectedItem as String }!!.id
+            exObject = app.exchangeNamesList!!.values.find { it.name == exchName.selectedItem as String }!!
+            exId = exObject.id
         }
         app.stopService(Intent(app.applicationContext, MainService::class.java))
+        val curNames = exObject.getSplitedCurNames(notifPreference.symbol)
         app.startForegroundService(Intent(app.applicationContext, MainService::class.java).apply {
-            putExtra(EXTRA_CURRENCY_NAME_1, "AGI")
-            putExtra(EXTRA_CURRENCY_NAME_2, "BTC")
+            putExtra(EXTRA_CURRENCY_NAME_1, curNames.first)
+            putExtra(EXTRA_CURRENCY_NAME_2, curNames.second)
             putExtra(EXTRA_MAX_LIMIT, notifPreference.max)
             putExtra(EXTRA_MIN_LIMIT, notifPreference.min)
             putExtra(EXTRA_PERIOD, 15000L)

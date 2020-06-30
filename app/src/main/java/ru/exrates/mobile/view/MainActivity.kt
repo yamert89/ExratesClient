@@ -21,6 +21,7 @@ import ru.exrates.mobile.view.prefs.SettingsActivity
 
 class MainActivity : ExratesActivity() {
 //fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
+    //TODO check api version
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
