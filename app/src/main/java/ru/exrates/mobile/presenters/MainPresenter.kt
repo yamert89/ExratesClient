@@ -87,13 +87,13 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
 
-                    val delimiter = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!.delimiter
+                    val exOb = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!
 
                     restModel.getActualExchange(
                         ExchangePayload(
                         exId,
                         app.currentInterval,
-                        app.currentExchange?.pairs?.map { "${it.baseCurrency}${delimiter}${it.quoteCurrency}"  }?.toTypedArray()?.plus(
+                        app.currentExchange?.pairs?.map {exOb.getSymbol(it.baseCurrency, it.quoteCurrency) }?.toTypedArray()?.plus(
                             arrayOf(app.currentCur1 + app.currentCur2)) ?: arrayOf())
                     )
                     restModel.getActualPair(cur1, cur2, "1h",

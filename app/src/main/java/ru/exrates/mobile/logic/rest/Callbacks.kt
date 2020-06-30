@@ -94,7 +94,7 @@ class ListsCallback(activity: ExratesActivity, presenter: Presenter) : ExCallbac
 
     override fun onFailure(call: Call<Map<Int, ExchangeNamesObject>>, t: Throwable) {
         if (!alreadyFailed) {
-            presenter.resume()
+            //presenter.resume()
             alreadyFailed = true
         } else super.onFailure(call, t)
     }
