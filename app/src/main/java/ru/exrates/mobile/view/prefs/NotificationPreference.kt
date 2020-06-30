@@ -83,6 +83,8 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
         ad = curSymbol.adapter as ArrayAdapter<String>
         curSymbol.setSelection(ad.getPosition(notifPreference.symbol))
 
+        TODO("min and max value")
+
     }
 
     override fun onDialogClosed(positiveResult: Boolean) {
@@ -97,14 +99,10 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
         app.startForegroundService(Intent(app.applicationContext, MainService::class.java).apply {
             putExtra(EXTRA_CURRENCY_NAME_1, "AGI")
             putExtra(EXTRA_CURRENCY_NAME_2, "BTC")
-            putExtra(EXTRA_MAX_LIMIT, 0.0)
-            putExtra(EXTRA_MIN_LIMIT, 0.0)
+            putExtra(EXTRA_MAX_LIMIT, notifPreference.max)
+            putExtra(EXTRA_MIN_LIMIT, notifPreference.min)
             putExtra(EXTRA_PERIOD, 15000L)
             addFlags( Intent.FLAG_ACTIVITY_NEW_TASK )
         })
     }
-
-
-
-
 }
