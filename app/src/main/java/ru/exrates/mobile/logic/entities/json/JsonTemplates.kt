@@ -6,6 +6,13 @@ class ExchangePayload(val exId: Int, val interval: String, val pairs: Array<Stri
     }
 }
 
-class ExchangeNamesObject(val id: Int, val name: String, val pairs: List<String>)
+class ExchangeNamesObject(val id: Int, val name: String, val delimiter: String = "", val pairs: List<String>){
+    fun getSplitedCurNames(symbol: String): Pair<String, String> {
+        val arr = symbol.split(delimiter)
+        return arr[0] to arr[1]
+    }
+
+    fun getSymbol(c1: String, c2: String) = "$c1$delimiter$c2"
+}
 
 class CursPeriod(val interval: String, val values: Map<String, Double>)

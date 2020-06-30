@@ -17,7 +17,7 @@ interface RestService {
     fun ping(): Call<String>
 
     @GET("rest/lists")
-    fun lists(): Call<List<ExchangeNamesObject>>
+    fun lists(): Call<Map<Int, ExchangeNamesObject>>
 
     @POST("rest/exchange")
     fun getExchanges(@Body payload: String) : Call<Map<String, Exchange>>

@@ -70,11 +70,11 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
         prefSeekBar.setRangeValues(notifPreference.min, notifPreference.max)
 
         exchName.adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item).apply {
-            addAll(app.exchangeNamesList!!.map(ExchangeNamesObject::name))
+            addAll(app.exchangeNamesList!!.values.map(ExchangeNamesObject::name))
         }
         var exOb: ExchangeNamesObject
         curSymbol.adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item).apply {
-            exOb = app.exchangeNamesList!!.find { it.id == notifPreference.exId }!!
+            exOb = app.exchangeNamesList!!.values.find { it.id == notifPreference.exId }!!
             addAll(exOb.pairs)
         }
 
@@ -93,7 +93,7 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
             min = prefSeekBar.selectedMinValue
             max = prefSeekBar.selectedMaxValue
             symbol = curSymbol.selectedItem as String
-            exId = app.exchangeNamesList!!.find { it.name == exchName.selectedItem as String }!!.id
+            exId = app.exchangeNamesList!!.values.find { it.name == exchName.selectedItem as String }!!.id
         }
         app.stopService(Intent(app.applicationContext, MainService::class.java))
         app.startForegroundService(Intent(app.applicationContext, MainService::class.java).apply {

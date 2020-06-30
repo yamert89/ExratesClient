@@ -32,14 +32,14 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
         if (app.exchangeNamesList == null || parent == null || parent.count < 2) return
         presenter.updateExIdx(position)
         val exchName = parent.getItemAtPosition(position)
-        val exId = app.exchangeNamesList!!.find { it.name == exchName }?.id ?: throw IllegalArgumentException("ex id not found in exchangeNamesList with $exchName ex name")
+        val exId = app.exchangeNamesList!!.values.find { it.name == exchName }?.id ?: throw IllegalArgumentException("ex id not found in exchangeNamesList with $exchName ex name")
         startActivity(exId)
     }
 
     override fun onClick(v: View?) {
         logD("goToExchange btn clicked")
         val exName = presenter.getSelectedExchangeItem()
-        val exId = app.exchangeNamesList!!.find { it.name == exName }!!.id
+        val exId = app.exchangeNamesList!!.values.find { it.name == exName }!!.id
         startActivity(exId)
     }
 

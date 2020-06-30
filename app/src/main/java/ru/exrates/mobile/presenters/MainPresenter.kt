@@ -62,7 +62,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     logTrace("Saved lists loaded")
                     try{
                         if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(
-                            SAVED_EXCHANGE_NAME_LIST, ArrayList<ExchangeNamesObject>())
+                            SAVED_EXCHANGE_NAME_LIST, HashMap<Int, ExchangeNamesObject>())
 
                     }catch (e: FileNotFoundException){
                         flag = false
@@ -82,16 +82,18 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     val curs =  parseSymbol(pairName)
                     val cur1 = storage.getValue(CURRENT_CUR_1, curs.first)
                     val cur2 = storage.getValue(CURRENT_CUR_2, curs.second)
-                    exId = storage.getValue(SAVED_EXID, app.exchangeNamesList?.find { it.pairs.contains(pairName) }?.id ?: 1)
+                    exId = storage.getValue(SAVED_EXID, app.exchangeNamesList?.values!!.find { it.pairs.contains(pairName) }?.id ?: 1)
                    /* val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair))*/
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
+
+                    val delimiter = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!.delimiter
 
                     restModel.getActualExchange(
                         ExchangePayload(
                         exId,
                         app.currentInterval,
-                        app.currentExchange?.pairs?.map { "${it.baseCurrency}${app.currentExchange!!.delimiter}${it.quoteCurrency}"  }?.toTypedArray()?.plus(
+                        app.currentExchange?.pairs?.map { "${it.baseCurrency}${delimiter}${it.quoteCurrency}"  }?.toTypedArray()?.plus(
                             arrayOf(app.currentCur1 + app.currentCur2)) ?: arrayOf())
                     )
                     restModel.getActualPair(cur1, cur2, "1h",
@@ -113,7 +115,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     return@launch
                 }
 
-                updateExchangesList(app.exchangeNamesList!!.map { it.name })
+                updateExchangesList(app.exchangeNamesList!!.values.map { it.name })
                 val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
                 updateCurrenciesList(allPairs)
                 if (!this@MainPresenter::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
@@ -129,7 +131,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
      * Callback methods
      *******************************************************************************/
 
-    fun initData(exchangeNamesList: List<ExchangeNamesObject>){
+    fun initData(exchangeNamesList: Map<Int, ExchangeNamesObject>){
         logTrace("init data")
         try {
             app.exchangeNamesList = exchangeNamesList
@@ -142,14 +144,14 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
 
 
             val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
-            val defExId = exchangeNamesList.find { it.pairs.contains(allPairs[0]) }!!.id
+            val defExId = exchangeNamesList.values.find { it.pairs.contains(allPairs[0]) }!!.id
             restModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
             val curs = parseSymbol(allPairs[0])
             restModel.getActualPair(
                 curs.first, curs.second,
                 CURRENCY_HISTORIES_MAIN_NUMBER
             )
-            updateExchangesList(exchangeNamesList.map { it.name })
+            updateExchangesList(exchangeNamesList.values.map { it.name })
 
             updateCurrenciesList(allPairs)
 
@@ -240,14 +242,14 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
 
     }
 
-    private fun getListWithAllPairs(exchangeNamesList: List<ExchangeNamesObject>): List<String>{
+    private fun getListWithAllPairs(exchangeNamesList: Map<Int, ExchangeNamesObject>): List<String>{
         val allPairs = ArrayList<String>(2000)
-        exchangeNamesList.forEach { allPairs.addAll(it.pairs.subtract(allPairs)) }
+        exchangeNamesList.forEach { allPairs.addAll(it.value.pairs.subtract(allPairs)) }
         return allPairs.sorted()
     }
 
     private fun rebuildExAdapter(exId : Int){
-        val name = app.exchangeNamesList?.find { it.id == exId }?.name
+        val name = app.exchangeNamesList?.get(exId)?.name
         val pos = exchAdapter.getPosition(name)
         val ex = exchAdapter.getItem(pos)
         exchAdapter.remove(ex)
@@ -270,10 +272,11 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         }
         logTrace("pairs: " + app.currentExchange!!.pairs
             .map { it.symbol }.toTypedArray().joinToString())
+        val namesObject : ExchangeNamesObject = app.exchangeNamesList?.get(app.currentExchange!!.exId)!!
         restModel.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
-            app.currentExchange!!.pairs.map {"${it.baseCurrency}${app.currentExchange!!.delimiter}${it.quoteCurrency}" }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
+            app.currentExchange!!.pairs.map {namesObject.getSymbol(it.baseCurrency, it.quoteCurrency) }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
         ))
         restModel.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
             CURRENCY_HISTORIES_MAIN_NUMBER
@@ -362,8 +365,8 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         app.currentCur1 = curs.first
         app.currentCur2 = curs.second
         save(CURRENT_CUR_1 to curs.first, CURRENT_CUR_2 to curs.second)
-        val defExId = if (app.exchangeNamesList!![0].pairs.contains(symbol)) 1 else {
-            app.exchangeNamesList!!.find { it.pairs.contains(symbol) }!!.id
+        val defExId = if (app.exchangeNamesList!![0]!!.pairs.contains(symbol)) 1 else {
+            app.exchangeNamesList!!.values.find { it.pairs.contains(symbol) }!!.id
         }
 
         rebuildExAdapter(defExId)

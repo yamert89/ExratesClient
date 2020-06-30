@@ -79,7 +79,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     private fun updateCurNames(exId: Int){
         cursAdapter.clear()
-        cursAdapter.addAll(app.exchangeNamesList!!.find { it.id == exId }!!.pairs)
+        cursAdapter.addAll(app.exchangeNamesList!!.get(exId)!!.pairs)
         cursAdapter.notifyDataSetChanged()
     }
 
@@ -104,11 +104,12 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     override fun task() {
         if (currentDataIsNull()) throw NullPointerException("current data in task is null")
+        val delimiter = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!.delimiter
         restModel.getActualExchange(
             ExchangePayload(
                 app.currentExchange!!.exId,
                 currentInterval,
-                app.currentExchange!!.pairs.map { "${it.baseCurrency}${app.currentExchange!!.delimiter}${it.quoteCurrency}" }.toTypedArray()
+                app.currentExchange!!.pairs.map { "${it.baseCurrency}${delimiter}${it.quoteCurrency}" }.toTypedArray()
             )
         )
 
@@ -156,7 +157,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     fun selectCurItem(position: Int){
         exchangeActivity.startProgress()
-        /*val pairNames = app.exchangeNamesList!!.find { it.id == app.currentExchange!!.exId }!!.pairs.map {
+        /*val pairNames = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!.pairs.map {
             val curs = parseSymbol(it)
             "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
         }.toMutableList()*/

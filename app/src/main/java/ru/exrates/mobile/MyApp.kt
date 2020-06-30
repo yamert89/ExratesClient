@@ -32,7 +32,7 @@ class MyApp : Application(){
         get() = exRates.currentCur2
         set(value){exRates.currentCur2 = value}
 
-    var exchangeNamesList: List<ExchangeNamesObject>?
+    var exchangeNamesList: Map<Int, ExchangeNamesObject>?
         get() = exRates.exchangeNamesList
         set(value) {exRates.exchangeNamesList = value}
 
@@ -68,7 +68,7 @@ class ExRates{
     var currentPairInfo: MutableList<CurrencyPair>? = null
     var currentCur1: String = "ETC"
     var currentCur2: String = "BTC"
-    var exchangeNamesList: List<ExchangeNamesObject>? = null
+    var exchangeNamesList: Map<Int, ExchangeNamesObject>? = null
     var currentInterval: String = ""
     lateinit var restService: RestService
     val om = ObjectMapper()

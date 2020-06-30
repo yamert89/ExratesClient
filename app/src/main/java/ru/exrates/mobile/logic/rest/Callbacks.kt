@@ -80,11 +80,11 @@ class OnePairCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
 
 }
 
-class ListsCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<List<ExchangeNamesObject>>(activity, presenter) {
+class ListsCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<Map<Int, ExchangeNamesObject>>(activity, presenter) {
     private var alreadyFailed = false
     override fun onResponse(
-        call: Call<List<ExchangeNamesObject>>,
-        response: Response<List<ExchangeNamesObject>>
+        call: Call<Map<Int, ExchangeNamesObject>>,
+        response: Response<Map<Int, ExchangeNamesObject>>
     ) {
         super.onResponse(call, response)
         //activity as MainActivity
@@ -92,7 +92,7 @@ class ListsCallback(activity: ExratesActivity, presenter: Presenter) : ExCallbac
         mainFunc(response.body(), presenter::initData)
     }
 
-    override fun onFailure(call: Call<List<ExchangeNamesObject>>, t: Throwable) {
+    override fun onFailure(call: Call<Map<Int, ExchangeNamesObject>>, t: Throwable) {
         if (!alreadyFailed) {
             presenter.resume()
             alreadyFailed = true
