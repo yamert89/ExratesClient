@@ -163,7 +163,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         }.toMutableList()*/
         logD("Selecting cur item")
         //val pairNames = app.currentExchange!!.pairs.map { it.symbol }.toMutableList()
-        val curs = parseSymbol(cursAdapter.getItem(position)!!)
+        val curs = app.exchangeNamesList.iterator().next().value.getSplitedCurNames(cursAdapter.getItem(position)!!)
         //val newCur = "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
         //if (!pairNames.contains(newCur)) pairNames.add(newCur)
         restModel.addOnePair(curs.first, curs.second, app.currentExchange!!.exId, currentInterval)

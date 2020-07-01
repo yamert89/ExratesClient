@@ -61,7 +61,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                 else {
                     logTrace("Saved lists loaded")
                     try{
-                        if (app.exchangeNamesList == null) app.exchangeNamesList = storage.loadObjectFromJson(
+                        if (app.exchangeNamesList.isEmpty()) app.exchangeNamesList = storage.loadObjectFromJson(
                             SAVED_EXCHANGE_NAME_LIST, HashMap<Int, ExchangeNamesObject>())
 
                     }catch (e: FileNotFoundException){
@@ -77,24 +77,25 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     }
                     curIdx = storage.getValue(SAVED_CUR_IDX, 0)
                     //exIdx = storage.getValue(SAVED_EX_IDX, 0)
-                    val mockPair = "AGI/BTC"
-                    val pairName = if (!curAdapter.isEmpty) curAdapter.getItem(0) ?: mockPair else mockPair
-                    val curs =  parseSymbol(pairName)
-                    val cur1 = storage.getValue(CURRENT_CUR_1, curs.first)
-                    val cur2 = storage.getValue(CURRENT_CUR_2, curs.second)
-                    exId = storage.getValue(SAVED_EXID, app.exchangeNamesList?.values!!.find { it.pairs.contains(pairName) }?.id ?: 1)
+
+                   // val pairName = if (!curAdapter.isEmpty) curAdapter.getItem(0) ?: mockPair else mockPair
+                    val cur1 = storage.getValue(CURRENT_CUR_1, "AGI")
+                    val cur2 = storage.getValue(CURRENT_CUR_2, "BTC")
+                    exId = storage.getValue(SAVED_EXID, 1)
                    /* val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair))*/
                     app.currentCur1 = cur1
                     app.currentCur2 = cur2
 
-                    val exOb = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!
+                    var exNames =  arrayOf(app.currentCur1 + app.currentCur2)
+                    if (app.currentExchange != null) {
+                        exNames = exNames.plus(app.currentExchange!!.pairs.map { app.exchangeNamesList.iterator().next().value.getSymbol(it.baseCurrency, it.quoteCurrency) })
+                    }
 
                     restModel.getActualExchange(
                         ExchangePayload(
                         exId,
                         app.currentInterval,
-                        app.currentExchange?.pairs?.map {exOb.getSymbol(it.baseCurrency, it.quoteCurrency) }?.toTypedArray()?.plus(
-                            arrayOf(app.currentCur1 + app.currentCur2)) ?: arrayOf())
+                        exNames)
                     )
                     restModel.getActualPair(cur1, cur2, "1h",
                         CURRENCY_HISTORIES_MAIN_NUMBER
@@ -110,13 +111,13 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
             //exchangeName.setSelection((exchangeName.adapter as ArrayAdapter<String>).getPosition(app.exchangeNamesList?.find { it.id == exId }?.name))
 
             GlobalScope.launch(Dispatchers.Main) {
-                if (app.exchangeNamesList == null || pairsAdapter.itemCount == 0) {
+                if (app.exchangeNamesList.isEmpty() || pairsAdapter.itemCount == 0) {
                     logD("exchange names list is null or currency name adapter is empty")
                     return@launch
                 }
 
-                updateExchangesList(app.exchangeNamesList!!.values.map { it.name })
-                val allPairs = getListWithAllPairs(app.exchangeNamesList!!)
+                updateExchangesList(app.exchangeNamesList.values.map { it.name })
+                val allPairs = getListWithAllPairs(app.exchangeNamesList)
                 updateCurrenciesList(allPairs)
                 if (!this@MainPresenter::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
                 searchAdapter.addAll(allPairs)
@@ -131,7 +132,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
      * Callback methods
      *******************************************************************************/
 
-    fun initData(exchangeNamesList: Map<Int, ExchangeNamesObject>){
+    fun initData(exchangeNamesList: MutableMap<Int, ExchangeNamesObject>){
         logTrace("init data")
         try {
             app.exchangeNamesList = exchangeNamesList
@@ -144,9 +145,10 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
 
 
             val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
-            val defExId = exchangeNamesList.values.find { it.pairs.contains(allPairs[0]) }!!.id
+            val defExNOb = exchangeNamesList.values.find { it.pairs.contains(allPairs[0]) }!!
+            val defExId = defExNOb.id
             restModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
-            val curs = parseSymbol(allPairs[0])
+            val curs = defExNOb.getSplitedCurNames(allPairs[0])
             restModel.getActualPair(
                 curs.first, curs.second,
                 CURRENCY_HISTORIES_MAIN_NUMBER
@@ -361,12 +363,12 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
      * */
     fun prepareStartCurActivity(): Pair<String, String>{
         val symbol = curAdapter.getItem(curIdx).toString()
-        val curs = parseSymbol(symbol)
+        val curs = app.exchangeNamesList.iterator().next().value.getSplitedCurNames(symbol)
         app.currentCur1 = curs.first
         app.currentCur2 = curs.second
         save(CURRENT_CUR_1 to curs.first, CURRENT_CUR_2 to curs.second)
-        val defExId = if (app.exchangeNamesList!![0]!!.pairs.contains(symbol)) 1 else {
-            app.exchangeNamesList!!.values.find { it.pairs.contains(symbol) }!!.id
+        val defExId = if (app.exchangeNamesList[1]!!.pairs.contains(symbol)) 1 else {
+            app.exchangeNamesList.values.find { it.pairs.contains(symbol) }!!.id
         }
 
         rebuildExAdapter(defExId)

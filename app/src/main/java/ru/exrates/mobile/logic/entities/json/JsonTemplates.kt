@@ -6,9 +6,9 @@ class ExchangePayload(val exId: Int, val interval: String, val pairs: Array<Stri
     }
 }
 
-class ExchangeNamesObject(val id: Int, val name: String, val delimiter: String = "", val pairs: List<String>){
+class ExchangeNamesObject(val id: Int, val name: String, val delimiter: String = "", val pairs: List<String>){ //todo delimiter will removed?
     fun getSplitedCurNames(symbol: String): Pair<String, String> {
-        val arr = symbol.split(delimiter)
+        val arr = symbol.split(" / ")
         return arr[0] to arr[1]
     }
 

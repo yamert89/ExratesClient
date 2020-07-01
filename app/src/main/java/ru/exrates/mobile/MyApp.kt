@@ -32,7 +32,7 @@ class MyApp : Application(){
         get() = exRates.currentCur2
         set(value){exRates.currentCur2 = value}
 
-    var exchangeNamesList: Map<Int, ExchangeNamesObject>?
+    var exchangeNamesList: MutableMap<Int, ExchangeNamesObject>
         get() = exRates.exchangeNamesList
         set(value) {exRates.exchangeNamesList = value}
 
@@ -68,13 +68,13 @@ class ExRates{
     var currentPairInfo: MutableList<CurrencyPair>? = null
     var currentCur1: String = "ETC"
     var currentCur2: String = "BTC"
-    var exchangeNamesList: Map<Int, ExchangeNamesObject>? = null
+    var exchangeNamesList: MutableMap<Int, ExchangeNamesObject> = mutableMapOf()
     var currentInterval: String = ""
     lateinit var restService: RestService
     val om = ObjectMapper()
-    //val ip = "192.168.0.103"
+    val ip = "192.168.0.103"
     // val ip = "192.168.43.114"
-    val ip = "192.168.1.72"
+    //val ip = "192.168.1.72"
     init {
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()

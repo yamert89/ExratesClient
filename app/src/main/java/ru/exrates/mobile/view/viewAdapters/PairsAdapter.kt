@@ -51,7 +51,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
                 res,
                 null)
             )
-            holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = "${pair.baseCurrency} / ${pair.quoteCurrency}"
+            holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = pair.symbolItem()
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
             logD(pair.priceChange.toString())
             val value = pair.priceChange[currentInterval]!!
