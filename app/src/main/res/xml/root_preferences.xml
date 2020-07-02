@@ -7,7 +7,13 @@
             app:key="main_service"
             app:title="Активировать сервис" />
         <ru.exrates.mobile.view.prefs.NotificationPreference
-            />
+
+            android:key="settings"
+            android:title="prefs"
+            android:defaultValue="100">
+
+        </ru.exrates.mobile.view.prefs.NotificationPreference>
+
 
         
 

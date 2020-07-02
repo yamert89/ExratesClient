@@ -47,6 +47,10 @@ const val EXTRA_CUR_ICO = "ECI"
 const val STORAGE_EXCHANGES = "exchanges"
 const val SAVED_CURRENCY = "savedcurrency"
 const val NOTIFICATION_CHANNEL = "435235fdg"
+const val PREF_NOTIFICATION_MIN = "pnm"
+const val PREF_NOTIFICATION_MAX = "pnmax"
+const val PREF_NOTIFICATION_CUR = "pnc"
+const val PREF_NOTIFICATION_EX = "pne"
 
 const val IS_FIRST_LOAD = "firstload"
 const val CURRENCY_HISTORIES_MAIN_NUMBER = 10
