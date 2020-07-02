@@ -15,4 +15,4 @@ class ExchangeNamesObject(val id: Int, val name: String, val delimiter: String =
     fun getSymbol(c1: String, c2: String) = "$c1$delimiter$c2"
 }
 
-class CursPeriod(val interval: String, val values: Map<String, Double>)
+class CursPeriod(val interval: String, val values: Map<String, Double>, val status: Int)

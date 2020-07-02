@@ -17,13 +17,14 @@ data class CurrencyPair(
     val priceChange: TreeMap<String, Double>,
     val priceHistory: List<Double>,
     val historyPeriods: List<String>?,
-    var exchangeName: String,
-    var exId : Int
+    val exchangeName: String,
+    val exId : Int,
+    val status:Int
 
 ) : java.io.Serializable{
 
     companion object{
-        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyList(), emptyList(), "", 0)
+        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyList(), emptyList(), "", 0, 0)
     }
     fun symbolItem() = "$baseCurrency / $quoteCurrency"
 

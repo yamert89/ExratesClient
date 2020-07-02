@@ -17,7 +17,7 @@ import ru.exrates.mobile.view.dialogs.ConnectionFailed
 import java.net.SocketTimeoutException
 
 
-abstract class ExCallback<T>(private val activity: ExratesActivity, val presenter: Presenter): Callback<T> {
+abstract class ExCallback<T>(protected val activity: ExratesActivity, val presenter: Presenter): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
         logE("failed basic response")
         if (t is SocketTimeoutException) {
@@ -40,8 +40,8 @@ abstract class ExCallback<T>(private val activity: ExratesActivity, val presente
         if (response.body() == null) throw IllegalStateException("Response is null : $response ${response.message()} \n ${response.errorBody().toString()}")
     }
 
-    fun <T> mainFunc(ob: T?, func: (ob: T) -> Unit){
-        func(ob ?: throw IllegalStateException("Response is null"))
+    fun <T> mainFunc(ob: T, func: (ob: T) -> Unit){
+        func(ob)
         activity.progressLayout.visibility = View.INVISIBLE
     }
 }
@@ -56,7 +56,12 @@ abstract class ExCallback<T>(private val activity: ExratesActivity, val presente
 class OneExchangeCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<Exchange>(activity, presenter){
     override fun onResponse(call: Call<Exchange>, response: Response<Exchange>) {
         super.onResponse(call, response)
-        mainFunc(response.body(), presenter::updateExchangeData)
+        val ex = response.body()!!
+        when(ex.status){
+            ClientCodes.SUCCESS -> mainFunc(ex, presenter::updateExchangeData)
+            ClientCodes.EXCHANGE_NOT_ACCESSIBLE -> activity.toast("Server of ${ex.name} is not responding")
+            else -> logE("unknown resp status ${ex.status}")
+        }
     }
 
 }
@@ -67,7 +72,7 @@ class PairCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback
         response: Response<MutableList<CurrencyPair>>
     ) {
         super.onResponse(call, response)
-        mainFunc(response.body(), presenter::updatePairData)
+        mainFunc(response.body()!!, presenter::updatePairData)
     }
 }
 
@@ -75,7 +80,13 @@ class OnePairCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
     override fun onResponse(call: Call<CurrencyPair>, response: Response<CurrencyPair>) {
         super.onResponse(call, response)
         presenter as ExchangePresenter
-        mainFunc(response.body(), presenter::addPair)
+        val pair = response.body()!!
+        when(pair.status){
+            ClientCodes.SUCCESS -> mainFunc(pair, presenter::addPair)
+            ClientCodes.EXCHANGE_NOT_ACCESSIBLE -> activity.toast("Server of ${pair.exchangeName} is not responding")
+            else -> logE("unknown resp status ${pair.status}")
+        }
+
     }
 
 }
@@ -89,12 +100,12 @@ class ListsCallback(activity: ExratesActivity, presenter: Presenter) : ExCallbac
         super.onResponse(call, response)
         //activity as MainActivity
         presenter as MainPresenter
-        mainFunc(response.body(), presenter::initData)
+        mainFunc(response.body()!!, presenter::initData)
     }
 
     override fun onFailure(call: Call<MutableMap<Int, ExchangeNamesObject>>, t: Throwable) {
         if (!alreadyFailed) {
-            //presenter.resume()
+            //presenter.resume() //todo
             alreadyFailed = true
         } else super.onFailure(call, t)
     }
@@ -106,7 +117,8 @@ class HistoryCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
         //activity as CurrencyActivity
         presenter as CurrencyPresenter
         if (response.code() == 404) mainFunc(listOf(), presenter::updateHistory)
-        mainFunc(response.body(), presenter::updateHistory)
+        if (response.body()?.size == 2 && response.body()!![0] == ClientCodes.EXCHANGE_NOT_ACCESSIBLE.toDouble()) activity.toast("Server of ${activity.app.exchangeNamesList[response.body()!![1].toInt()]} is not responding")
+        else mainFunc(response.body()!!, presenter::updateHistory)
     }
 
     override fun onFailure(call: Call<List<Double>>, t: Throwable) {
@@ -118,7 +130,8 @@ class CursPeriodCallback(activity: ExratesActivity, presenter: Presenter) : ExCa
     override fun onResponse(call: Call<CursPeriod>, response: Response<CursPeriod>) {
         super.onResponse(call, response)
         presenter as ExchangePresenter
-        mainFunc(response.body(), presenter::updateChangePeriod)
+        if (response.body()!!.status != ClientCodes.SUCCESS) logE("unsuccessful code in cursPeriod response")
+        else mainFunc(response.body()!!, presenter::updateChangePeriod)
     }
 
     override fun onFailure(call: Call<CursPeriod>, t: Throwable) {

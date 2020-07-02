@@ -44,23 +44,6 @@ class MyApp : Application(){
         private set
 
     val om = exRates.om
-
-
-    /*override fun onCreate() {
-        super.onCreate()
-        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-        val client = OkHttpClient.Builder()
-            .callTimeout(Duration.ofMinutes(1))
-            .connectTimeout(Duration.ofSeconds(10))
-            *//*.addInterceptor(logging)*//*.build()
-        om.registerKotlinModule()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://$ip:8080/")
-            .addConverterFactory(JacksonConverterFactory.create(om))
-            .client(client)
-            .build()
-        restService = retrofit.create(RestService::class.java)
-    }*/
 }
 
 class ExRates{

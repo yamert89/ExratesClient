@@ -18,7 +18,7 @@ import ru.exrates.mobile.presenters.Presenter
 import java.util.*
 
 abstract class ExratesActivity : AppCompatActivity() {
-    protected lateinit var app: MyApp
+    lateinit var app: MyApp
     //private lateinit var presenter: Presenter
     lateinit var progressLayout: ConstraintLayout
 
