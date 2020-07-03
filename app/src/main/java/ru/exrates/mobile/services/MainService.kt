@@ -12,9 +12,10 @@ import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.rest.ServiceModel
+import ru.exrates.mobile.view.prefs.ServiceCallbackReceiver
 import java.util.*
 
-class MainService: Service() {
+class MainService: Service(), ServiceCallbackReceiver {
     private val exRates = ExRates()
     private val serviceModel = ServiceModel(exRates.restService, this)
     val timer = Timer()

@@ -6,9 +6,11 @@ import retrofit2.Response
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.logE
 import ru.exrates.mobile.services.MainService
+import ru.exrates.mobile.view.prefs.NotificationPreferenceDialogFragment
+import ru.exrates.mobile.view.prefs.ServiceCallbackReceiver
 
 
-abstract class ServiceCallback<T>(val service: MainService): Callback<T> {
+abstract class ServiceCallback<T>(val receiver: ServiceCallbackReceiver): Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
         logE("failed service callback")
     }
@@ -18,7 +20,7 @@ abstract class ServiceCallback<T>(val service: MainService): Callback<T> {
     }
 }
 
-class ServicePairCallback(service: MainService): ServiceCallback<MutableList<CurrencyPair>>(service){
+class ServicePairCallback(private val service: MainService): ServiceCallback<MutableList<CurrencyPair>>(service){
     override fun onResponse(
         call: Call<MutableList<CurrencyPair>>,
         response: Response<MutableList<CurrencyPair>>
@@ -26,6 +28,11 @@ class ServicePairCallback(service: MainService): ServiceCallback<MutableList<Cur
         super.onResponse(call, response)
         service.updatePair(response.body()!!)
     }
-
+}
+class NotificationPairPriceCallback(private val notificationPreferenceDialogFragment: NotificationPreferenceDialogFragment): ServiceCallback<CurrencyPair>(notificationPreferenceDialogFragment){
+    override fun onResponse(call: Call<CurrencyPair>, response: Response<CurrencyPair>) {
+        super.onResponse(call, response)
+        notificationPreferenceDialogFragment.updateRange(response.body()!!)
+    }
 }
 

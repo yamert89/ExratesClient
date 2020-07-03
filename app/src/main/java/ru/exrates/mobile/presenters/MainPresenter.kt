@@ -187,12 +187,12 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         logTrace("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
         logTrace("priceHistory:" + cur.priceHistory.joinToString())
-        logTrace(
+        /*logTrace(
             "priceHistory truncated:" + cur.priceHistory.subList(
                 cur.priceHistory.size - 10,
                 cur.priceHistory.lastIndex + 1
             ).joinToString()
-        )
+        )*/
         mainActivity.updateGraph(cur)
     }
 
