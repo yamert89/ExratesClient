@@ -80,6 +80,7 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
     private lateinit var maxValueT: TextView
     private lateinit var notifPreference: NotificationPreference
     private val restModel = ServiceModel(app.restService, this)
+    private var activateListeners = true
 
     companion object A{
         fun newInstance(app: MyApp, key: String): NotificationPreferenceDialogFragment{
@@ -91,6 +92,7 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindDialogView(view: View) {
         super.onBindDialogView(view)
         prefSeekBar = view.findViewById(R.id.pref_seekBar)
@@ -120,31 +122,81 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
             notifPreference.symbol = curSymbol.selectedItem as String
         } else curSymbol.setSelection(ad.getPosition(notifPreference.symbol))
 
-
-        curSymbol.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        exchName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
 
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val exObj = getActualExchangeNamesObject()
+                notifPreference.exId = exObj.id
+                val curAdapter = curSymbol.adapter as ArrayAdapter<String>
+               curAdapter.clear()
+                curAdapter.addAll(exObj.pairs)
+                curAdapter.notifyDataSetChanged()
+                curSymbol.setSelection(if(curSymbol.selectedItemPosition == 0) 1 else 0)
+                logD("ex name item selected")
+            }
+
+        }
+
+        curSymbol.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                logD("nothing selected")
+            }
+
             override fun onItemSelected(parent: AdapterView<*>?, view: View?,  position: Int, id: Long) {
                 notifPreference.symbol = (view as TextView).text.toString()
-                val curs = exOb.getSplitedCurNames(notifPreference.symbol)
+                val curs = getActualExchangeNamesObject().getSplitedCurNames(notifPreference.symbol)
                 restModel.onePair(curs.first, curs.second, notifPreference.exId)
+                logD("cur name item selected")
             }
         }
 
         prefSeekBar.setOnRangeSeekBarChangeListener { bar, minValue, maxValue ->
             logD("on range listener minvalue: $minValue, max: $maxValue, ${bar.selectedMinValue}, ${bar.selectedMaxValue}")
-            minValueT.text = minValue.toDouble().toNumeric()
-            maxValueT.text = maxValue.toDouble().toNumeric()
+            minValueT.text = minValue.toNumeric()
+            maxValueT.text = maxValue.toNumeric()
         }
 
         minValueT.addTextChangedListener {
-            text: Editable? -> prefSeekBar.selectedMinValue = text.toString().toFloat()
+            text: Editable? ->
+            run {
+                if (!activateListeners) return@run
+                val maxText = maxValueT.text.toString()
+                if (maxText.isEmpty()) return@run
+                val value = text.toString().toSafetyFloat()
+                val max = maxText.toSafetyFloat()
+                when{
+                    value > max || value > prefSeekBar.absoluteMaxValue -> {
+                        prefSeekBar.selectedMinValue = max
+                        minValueT.text = max.toNumeric()
+                    }
+                    value < prefSeekBar.absoluteMinValue -> minValueT.text = prefSeekBar.absoluteMinValue.toNumeric()
+                    else -> prefSeekBar.selectedMinValue = value
+                }
+
+            }
 
         }
         maxValueT.addTextChangedListener {
-                text: Editable? -> prefSeekBar.selectedMaxValue = text.toString().toFloat()
+                text: Editable? ->
+            run {
+                if (!activateListeners) return@run
+                val minText = minValueT.text.toString()
+                if( minText.isEmpty()) return@run
+                val value = text.toString().toSafetyFloat()
+                val min = minText.toSafetyFloat()
+                when{
+                    value < min || value < prefSeekBar.absoluteMinValue -> {
+                        prefSeekBar.selectedMaxValue = min
+                        maxValueT.text = min.toNumeric()
+                    }
+                    value > prefSeekBar.absoluteMaxValue -> maxValueT.text = prefSeekBar.absoluteMaxValue.toNumeric()
+                    else -> prefSeekBar.selectedMaxValue = value
+                }
+
+            }
         }
 
     }
@@ -172,18 +224,29 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
         })
     }
 
+    /**
+     * Callback method for update price range
+     * */
     fun updateRange(pair: CurrencyPair){
-        logD("update range with pair price: ${pair.price}, min: ${pair.price * 0.2}, max: ${pair.price * 20}")
-        val min = BigDecimal(pair.price * 0.01)
-        val max = BigDecimal(pair.price * 100)
-        minValueT.text = min.toDouble().toNumeric()
-        maxValueT.text = max.toDouble().toNumeric()
-        val step = BigDecimal(max.toDouble()/100)
-        prefSeekBar.setRangeValues(min.toFloat(), max.toFloat(), step.toFloat())
+        val min = BigDecimal(pair.price * 0.01).toFloat()
+        val max = BigDecimal(pair.price * 100).toFloat()
+        val step = BigDecimal(max.toDouble()/100).toFloat()
+        prefSeekBar.setRangeValues(min, max, step)
+        prefSeekBar.selectedMaxValue = max
+        prefSeekBar.selectedMinValue = min
+        activateListeners = false
+        minValueT.text = min.toNumeric()
+        maxValueT.text = max.toNumeric()
+        activateListeners = true
+        logD("update range with pair price: ${pair.price}, min: ${min}, max: ${max}")
     }
 
 
     override fun <T : Preference?> findPreference(key: CharSequence): T? {
         return null
+    }
+
+    private fun getActualExchangeNamesObject(): ExchangeNamesObject{
+        return app.exchangeNamesList.values.find { it.name == exchName.selectedItem as String }!!
     }
 }

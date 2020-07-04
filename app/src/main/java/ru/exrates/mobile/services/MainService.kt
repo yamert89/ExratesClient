@@ -21,8 +21,8 @@ class MainService: Service(), ServiceCallbackReceiver {
     val timer = Timer()
     private lateinit var c1: String
     private lateinit var c2: String
-    private var maxLimit: Double = 0.0
-    private var minLimit: Double = 0.0
+    private var maxLimit: Float = 0f
+    private var minLimit: Float = 0f
     private var exId = 0
 
 
@@ -30,8 +30,8 @@ class MainService: Service(), ServiceCallbackReceiver {
         if (intent == null) throw IllegalArgumentException("intent is null")
         c1 = intent.getStringExtra(EXTRA_CURRENCY_NAME_1) ?: throw NullPointerException("string extra cur1 not found")
         c2 = intent.getStringExtra(EXTRA_CURRENCY_NAME_2) ?: throw NullPointerException("string extra cur2 not found")
-        maxLimit = intent.getDoubleExtra(EXTRA_MAX_LIMIT, 0.0)
-        minLimit = intent.getDoubleExtra(EXTRA_MIN_LIMIT, 0.0)
+        maxLimit = intent.getFloatExtra(EXTRA_MAX_LIMIT, 0f)
+        minLimit = intent.getFloatExtra(EXTRA_MIN_LIMIT, 0f)
         exId = intent.getIntExtra(EXTRA_EXCHANGE_ID, 1)
         timer.schedule(object : TimerTask(){
             override fun run() {

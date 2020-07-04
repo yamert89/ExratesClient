@@ -1,6 +1,7 @@
 package ru.exrates.mobile.logic
 
 import android.util.Log
+import java.lang.NumberFormatException
 import java.text.DecimalFormat
 import java.util.*
 
@@ -62,7 +63,19 @@ fun logE(message: String) = Log.e(EXRATES, message)
 
 fun logTrace(message: String) = Log.v(EXRATES, message)
 
-fun Double.toNumeric(): String = DecimalFormat("####.##########").format(this)
+fun Double.toNumeric(): String = DecimalFormat("####.##########").format(this).replace(",", ".")
+
+fun Float.toNumeric(): String = this.toDouble().toNumeric()
+
+fun String.toSafetyFloat(): Float{
+    val str = this.replace(",", ".")
+    logD("string $str converting to safety float")
+    return try {
+        str.toDouble().toNumeric().toFloat()
+    }catch (e: NumberFormatException){
+        str.substring(0, this.length - 1).toSafetyFloat()
+    }
+}
 
 
 
