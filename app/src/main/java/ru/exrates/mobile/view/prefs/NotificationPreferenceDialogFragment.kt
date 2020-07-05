@@ -191,7 +191,7 @@ class NotificationPreferenceDialogFragment(private val app: MyApp): PreferenceDi
             putExtra(EXTRA_CURRENCY_NAME_2, curNames.second)
             putExtra(EXTRA_MAX_LIMIT, notifPreference.max)
             putExtra(EXTRA_MIN_LIMIT, notifPreference.min)
-            putExtra(EXTRA_PERIOD, 15000L)
+            putExtra(EXTRA_PERIOD, 60000L)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
     }

@@ -37,7 +37,7 @@ class MainService: Service(), ServiceCallbackReceiver {
             override fun run() {
                 task()
             }
-        }, 7000L, intent.getLongExtra(EXTRA_PERIOD, 15000L))
+        }, 7000L, intent.getLongExtra(EXTRA_PERIOD, 60000L))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create the NotificationChannel
 
@@ -78,8 +78,8 @@ class MainService: Service(), ServiceCallbackReceiver {
 
     fun updatePair(pairs: MutableList<CurrencyPair>){
         logD("service callback running")
-        /*val price = pairs.find { it.exId == exId }?.price ?: throw NullPointerException("Service update pair: ex not found")
-        if (price > minLimit && price < maxLimit) return*/
+        val price = pairs.find { it.exId == exId }?.price ?: throw NullPointerException("Service update pair: ex not found")
+        if (price > minLimit && price < maxLimit) return
         val requestId = System.currentTimeMillis().toInt()
         val flags1 = Intent.FLAG_ACTIVITY_NEW_TASK
         val intent = Intent(applicationContext, StopReceiver::class.java).apply {
