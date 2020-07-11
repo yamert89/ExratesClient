@@ -157,7 +157,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
 
     fun selectCurItem(position: Int){
-        exchangeActivity.startProgress()
+
         /*val pairNames = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!.pairs.map {
             val curs = parseSymbol(it)
             "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
@@ -165,6 +165,8 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         logD("Selecting cur item")
         //val pairNames = app.currentExchange!!.pairs.map { it.symbol }.toMutableList()
         val curs = app.exchangeNamesList.iterator().next().value.getSplitedCurNames(cursAdapter.getItem(position)!!)
+        if(pairsAdapter.dataPairs.any { it.baseCurrency == curs.first && it.quoteCurrency == curs.second }) return
+        exchangeActivity.startProgress()
         //val newCur = "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
         //if (!pairNames.contains(newCur)) pairNames.add(newCur)
         restModel.addOnePair(curs.first, curs.second, app.currentExchange!!.exId, currentInterval)

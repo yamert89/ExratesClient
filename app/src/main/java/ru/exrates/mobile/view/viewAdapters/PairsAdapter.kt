@@ -43,10 +43,10 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
 
     override fun onBindViewHolder(holder: PairsViewHolder, position: Int) {
         val pair = dataPairs[position]
-        if (pair.priceChange.isEmpty()) {
+        /*if (pair.priceChange.isEmpty()) {
             logW("Empty price change in pairs adapter of pair: $pair")
             return
-        }
+        }*/
         var change: String
         try{
             var res = app.baseContext.resources.getIdentifier(pair.baseCurrency.toLowerCase(), "drawable", app.baseContext.packageName)
@@ -59,11 +59,14 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_name).text = pair.symbolItem()
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
             logD(pair.priceChange.toString())
-            val value = pair.priceChange[currentInterval]!!
-            change = BigDecimal( value, MathContext(2)).toDouble().toString()
-            if (change.length > 5) change = "0.0"
+            val value: Double
+            if (pair.priceChange.isNotEmpty()){
+                value = pair.priceChange[currentInterval]!!
+                change = BigDecimal( value, MathContext(2)).toDouble().toString()
+                if (change.length > 5) change = "0.0"
+                holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = if (value == Double.MAX_VALUE) "?" else "$change%"
+            } else holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = "?"
 
-            holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = if (value == Double.MAX_VALUE) "?" else "$change%"
             val cross = holder.linearLayout.findViewById<ImageView>(R.id.rec_cur_delete)
             cross.setOnClickListener {
                 dataPairs.removeIf {it2 -> it2.symbol == pair.symbol }
