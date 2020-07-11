@@ -3,7 +3,7 @@ package ru.exrates.mobile.view.graph
 import android.graphics.Color
 import lecho.lib.hellocharts.model.*
 import lecho.lib.hellocharts.view.LineChartView
-import ru.exrates.mobile.logic.logTrace
+import ru.exrates.mobile.logic.logT
 import java.text.DecimalFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -40,7 +40,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
 
     private fun createGraph(valueDataList: ValueDataList, line: Line){
 
-        logTrace(valueDataList.values.joinToString { "x: ${it.x} y: ${it.y}" })
+        logT(valueDataList.values.joinToString { "x: ${it.x} y: ${it.y}" })
 
         val lineChartData = LineChartData(mutableListOf(line))
         with(lineChartData){
@@ -74,7 +74,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
     }
 
     private fun createChartValueDataList(priceHistory: List<Double>): ValueDataList {
-        logTrace("current interval = $currentInterval")
+        logT("current interval = $currentInterval")
         var dateInterval = Duration.ZERO
         var pattern = "HH:mm"
         var xLabel = ""
@@ -142,7 +142,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             labelValueList.add(start.toEpochSecond(ZoneOffset.UTC).toFloat())
 
         }
-        logTrace("price history values: ${if (priceHistory.isEmpty()) "0" else priceHistory.joinToString()}")
+        logT("price history values: ${if (priceHistory.isEmpty()) "0" else priceHistory.joinToString()}")
 
         var yLabels: List<String>? = null
         var yAxisLabelValues: List<Float>? = null
@@ -182,11 +182,11 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             }
         }
 
-        logTrace("labels size: ${labelList.size}  l. values size: ${labelValueList.size}")
-        logTrace("labels X: ${labelList.joinToString()}")
-        logTrace("label values X: ${labelValueList.joinToString()}")
-        logTrace("labels Y: ${yLabels?.joinToString()}")
-        logTrace("label values Y ${yAxisLabelValues?.joinToString()}")
+        logT("labels size: ${labelList.size}  l. values size: ${labelValueList.size}")
+        logT("labels X: ${labelList.joinToString()}")
+        logT("label values X: ${labelValueList.joinToString()}")
+        logT("labels Y: ${yLabels?.joinToString()}")
+        logT("label values Y ${yAxisLabelValues?.joinToString()}")
 
         return ValueDataList(
             dataList,

@@ -52,6 +52,7 @@ const val PREF_NOTIFICATION_MIN = "pnm"
 const val PREF_NOTIFICATION_MAX = "pnmax"
 const val PREF_NOTIFICATION_CUR = "pnc"
 const val PREF_NOTIFICATION_EX = "pne"
+const val EMPTY_CUR_ITEM = "<...>"
 
 const val IS_FIRST_LOAD = "firstload"
 const val CURRENCY_HISTORIES_MAIN_NUMBER = 10
@@ -61,7 +62,9 @@ fun logD(message: String) = Log.d(EXRATES, message)
 
 fun logE(message: String) = Log.e(EXRATES, message)
 
-fun logTrace(message: String) = Log.v(EXRATES, message)
+fun logT(message: String) = Log.v(EXRATES, message)
+
+fun logW(message: String) = Log.w(EXRATES, message)
 
 fun Double.toNumeric(): String = DecimalFormat("####.##########").format(this).replace(",", ".")
 

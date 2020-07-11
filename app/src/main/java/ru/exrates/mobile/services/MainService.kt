@@ -50,7 +50,7 @@ class MainService: Service(), ServiceCallbackReceiver {
             // or other notification behaviors after this
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(mChannel)
-            logTrace("Notification channel created")
+            logT("Notification channel created")
         }
         startForeground(1, Notification.Builder(applicationContext, NOTIFICATION_CHANNEL).setSmallIcon(R.drawable.abt)
             .setContentTitle("Title").setContentText("text").build())

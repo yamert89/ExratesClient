@@ -2,6 +2,8 @@ package ru.exrates.mobile.view.listeners
 
 import android.view.View
 import android.widget.AdapterView
+import android.widget.TextView
+import ru.exrates.mobile.logic.EMPTY_CUR_ITEM
 import ru.exrates.mobile.presenters.ExchangePresenter
 
 class CurNamesSpinnerItemSelectedListener(private val presenter: ExchangePresenter) : AdapterView.OnItemSelectedListener{
@@ -15,6 +17,7 @@ class CurNamesSpinnerItemSelectedListener(private val presenter: ExchangePresent
             activated = true
             return
         }
+        if ((view as TextView).text == EMPTY_CUR_ITEM) return
         presenter.selectCurItem(position)
     }
 }

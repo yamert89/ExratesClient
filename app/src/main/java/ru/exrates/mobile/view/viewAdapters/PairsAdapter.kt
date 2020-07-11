@@ -12,6 +12,7 @@ import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.logic.logE
+import ru.exrates.mobile.logic.logW
 import ru.exrates.mobile.logic.toNumeric
 import java.math.BigDecimal
 import java.math.MathContext
@@ -42,6 +43,10 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
 
     override fun onBindViewHolder(holder: PairsViewHolder, position: Int) {
         val pair = dataPairs[position]
+        if (pair.priceChange.isEmpty()) {
+            logW("Empty price change in pairs adapter of pair: $pair")
+            return
+        }
         var change: String
         try{
             var res = app.baseContext.resources.getIdentifier(pair.baseCurrency.toLowerCase(), "drawable", app.baseContext.packageName)
@@ -55,7 +60,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
             logD(pair.priceChange.toString())
             val value = pair.priceChange[currentInterval]!!
-            change = BigDecimal( value, MathContext(2)).toDouble().toString() //fixme npe
+            change = BigDecimal( value, MathContext(2)).toDouble().toString()
             if (change.length > 5) change = "0.0"
 
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = if (value == Double.MAX_VALUE) "?" else "$change%"
@@ -68,7 +73,7 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             }
         }catch (e: Exception){
             e.printStackTrace()
-            logE("pair: $pair , priceChange: ${pair.priceChange.map { "${it.key} : ${it.value}" }.joinToString()}")
+            logE("pair: $pair , current Interval: $currentInterval")
         }
 
 

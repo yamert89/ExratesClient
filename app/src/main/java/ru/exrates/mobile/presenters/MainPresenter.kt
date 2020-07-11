@@ -1,7 +1,5 @@
 package ru.exrates.mobile.presenters
 
-import android.app.Notification
-import android.content.Intent
 import android.widget.ArrayAdapter
 import kotlinx.coroutines.*
 import ru.exrates.mobile.MyApp
@@ -10,12 +8,9 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
-import ru.exrates.mobile.logic.rest.RestModel
-import ru.exrates.mobile.services.MainService
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.MainActivity
 import ru.exrates.mobile.view.listeners.ExchangeSpinnerItemSelectedListener
-import ru.exrates.mobile.view.viewAdapters.ExchangesAdapter
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 import java.io.FileNotFoundException
 import java.io.InvalidClassException
@@ -49,17 +44,17 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         try {
 
             var flag = true
-            logTrace("main onresume")
+            logT("main onresume")
             val listsReq = GlobalScope.launch(Dispatchers.IO) {
-                logTrace("start coroutine")
+                logT("start coroutine")
                 if (storage.getValue(IS_FIRST_LOAD, true)) {
-                    logTrace("before first load")
+                    logT("before first load")
                     flag = firstLoad()
-                    logTrace("flaq is $flag")
+                    logT("flaq is $flag")
                 }
 
                 else {
-                    logTrace("Saved lists loaded")
+                    logT("Saved lists loaded")
                     try{
                         if (app.exchangeNamesList.isEmpty()) app.exchangeNamesList = storage.loadObjectFromJson(
                             SAVED_EXCHANGE_NAME_LIST, HashMap<Int, ExchangeNamesObject>())
@@ -133,15 +128,15 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
      *******************************************************************************/
 
     fun initData(exchangeNamesList: MutableMap<Int, ExchangeNamesObject>){
-        logTrace("init data")
+        logT("init data")
         try {
             app.exchangeNamesList = exchangeNamesList
             GlobalScope.launch {
                save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
-                logTrace("list saved")
+                logT("list saved")
 
             }
-            logTrace("get exchange")
+            logT("get exchange")
 
 
             val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
@@ -184,9 +179,9 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         list.forEach { count += it.price }
         mainActivity.setCurrencyPrice((count / list.size).toNumeric())
         val cur = list.find { it.exId == storage.getValue(SAVED_EXID, list[0].exId)} ?: list[0]
-        logTrace("current currency in graph: $cur")
+        logT("current currency in graph: $cur")
         //val(xLabel, dataList) = createChartValueDataList(cur.priceHistory)
-        logTrace("priceHistory:" + cur.priceHistory.joinToString())
+        logT("priceHistory:" + cur.priceHistory.joinToString())
         /*logTrace(
             "priceHistory truncated:" + cur.priceHistory.subList(
                 cur.priceHistory.size - 10,
@@ -210,7 +205,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         mainActivity.startProgress()
         coroutineScope {
             try {
-                logTrace("before request")
+                logT("before request")
                 restModel.getLists()
             }catch (e: Exception){
                 logE("exception")
@@ -269,10 +264,10 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
 
     override fun task() {
         if (currentDataIsNull()){
-            logTrace("current data  is null")
+            logT("current data  is null")
             return
         }
-        logTrace("pairs: " + app.currentExchange!!.pairs
+        logT("pairs: " + app.currentExchange!!.pairs
             .map { it.symbol }.toTypedArray().joinToString())
         val namesObject : ExchangeNamesObject = app.exchangeNamesList?.get(app.currentExchange!!.exId)!!
         restModel.getActualExchange(ExchangePayload(

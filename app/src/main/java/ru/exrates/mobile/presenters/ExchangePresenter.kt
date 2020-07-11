@@ -3,6 +3,7 @@ package ru.exrates.mobile.presenters
 import android.widget.ArrayAdapter
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.CURRENT_INTERVAL
+import ru.exrates.mobile.logic.EMPTY_CUR_ITEM
 import ru.exrates.mobile.logic.SAVED_EXID
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
@@ -79,7 +80,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     private fun updateCurNames(exId: Int){
         cursAdapter.clear()
-        cursAdapter.addAll(app.exchangeNamesList!!.get(exId)!!.pairs)
+        cursAdapter.addAll(listOf(EMPTY_CUR_ITEM).plus(app.exchangeNamesList!!.get(exId)!!.pairs))
         cursAdapter.notifyDataSetChanged()
     }
 

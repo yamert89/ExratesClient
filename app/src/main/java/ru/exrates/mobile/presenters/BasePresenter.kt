@@ -1,6 +1,5 @@
 package ru.exrates.mobile.presenters
 
-import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.data.Storage
 import ru.exrates.mobile.logic.CURRENT_CUR_1
@@ -8,7 +7,7 @@ import ru.exrates.mobile.logic.CURRENT_CUR_2
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.logD
-import ru.exrates.mobile.logic.logTrace
+import ru.exrates.mobile.logic.logT
 import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
@@ -25,7 +24,7 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
     fun pairsAdapterIsInitialized() = this::pairsAdapter.isInitialized
 
     override fun task(){
-        logTrace("Task started")
+        logT("Task started")
     }
 
     override fun updateExchangeData(exchange: Exchange) {

@@ -130,7 +130,7 @@ class CursPeriodCallback(activity: ExratesActivity, presenter: Presenter) : ExCa
     override fun onResponse(call: Call<CursPeriod>, response: Response<CursPeriod>) {
         super.onResponse(call, response)
         presenter as ExchangePresenter
-        if (response.body()!!.status != ClientCodes.SUCCESS) logE("unsuccessful code in cursPeriod response")
+        if (response.body()!!.status != ClientCodes.SUCCESS) logE("unsuccessful code in cursPeriod response: ${response.body()}")
         else mainFunc(response.body()!!, presenter::updateChangePeriod)
     }
 
