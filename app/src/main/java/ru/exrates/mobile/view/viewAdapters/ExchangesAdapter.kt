@@ -43,11 +43,11 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
 
     override fun onBindViewHolder(holder: ExchangeViewHolder, position: Int) {
         val pair = pairsByExchanges[position]
+        logD("Exchange adapter: updated pair - $pair")
         if (pair.exId == selectedExchange.id) holder.linearLayout.setBackgroundColor(selectedColor)
-        //holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_name).text = ""
-        holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_price).text = pair.price.toNumeric().toString()
+        holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_price).text = pair.price.toNumeric()
         holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_change).text =
-            if (pair.priceChange[interval] == null) "--------" else pair.priceChange[interval].toString() + "%"
+            if (pair.priceChange[interval] == null) "no data" else pair.priceChange[interval].toString() + "%"
         if (pair.exId == selectedExchange.id) selectedRow = holder.linearLayout
         val res = when(pair.exId){
             1 -> R.drawable.binance
