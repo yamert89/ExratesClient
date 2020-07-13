@@ -191,7 +191,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
              app.currentPairInfo ?: mutableListOf(),
              restModel,
              app,
-             app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!!,
+             app.currentPairInfo?.get(0)?.historyPeriods?.get(0) ?: "1h",
              selectedExchange
          )
          return exchangesAdapter as ExchangesAdapter
