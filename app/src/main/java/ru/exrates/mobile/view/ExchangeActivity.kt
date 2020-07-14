@@ -14,7 +14,7 @@ import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 
 class ExchangeActivity : ExratesActivity() {
     private lateinit var exIco: ImageView
-    private lateinit var intervalBtn: Button
+    private lateinit var seekBar: SeekBar
     private lateinit var intervalValue: TextView
     private lateinit var pairs: RecyclerView
     private lateinit var addCurrency: Spinner
@@ -30,7 +30,7 @@ class ExchangeActivity : ExratesActivity() {
             //storage = Storage(applicationContext)
 
             exIco = findViewById(R.id.exIco)
-            intervalBtn = findViewById(R.id.cur_interval)
+            seekBar = findViewById(R.id.ex_seekBar)
             intervalValue = findViewById(R.id.intervalValue)
             progressLayout = findViewById(R.id.progress)
             addCurrency = findViewById(R.id.ex_pairs)
@@ -44,14 +44,24 @@ class ExchangeActivity : ExratesActivity() {
            // addCurrency.setSelection(-1)
             addCurrency.onItemSelectedListener = CurNamesSpinnerItemSelectedListener(presenter)
 
-
-
-            intervalBtn.setOnClickListener {
-                setInterval(presenter.changeInterval())
-            }
-
             val icoId = intent.getIntExtra(EXTRA_EXCHANGE_ICO, 0)
             exIco.setImageDrawable(ResourcesCompat.getDrawable(app.resources, icoId, null ))
+
+
+            seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    setInterval(presenter.changeInterval(progress))
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+                }
+
+            })
 
             //startProgress()
 
@@ -59,6 +69,8 @@ class ExchangeActivity : ExratesActivity() {
             e.printStackTrace()
         }
     }
+
+    fun setSeekBarRange(numberOfPeriods: Int) = with(seekBar){max = numberOfPeriods}
 
     fun setInterval(value: String){
         intervalValue.text = value

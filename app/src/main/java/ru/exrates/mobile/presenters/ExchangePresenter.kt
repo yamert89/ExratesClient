@@ -62,6 +62,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         if (!super.pairsAdapterIsInitialized()) initPairsAdapt(exchange)
         super.updateExchangeData(exchange)
         if (cursAdapter.isEmpty) updateCurNames(exchange.exId)
+        exchangeActivity.setSeekBarRange(exchange.changePeriods.size - 1)
     }
 
 
@@ -137,11 +138,8 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     /**
      * @return text representation of interval for cur. interval view
      * */
-    fun changeInterval(): String{
-        val periods = app.currentExchange!!.changePeriods
-        var idx = periods.indexOf(currentInterval) + 1
-        if (idx >= periods.size) idx = 0
-        val newInterval = periods[idx]
+    fun changeInterval(intervalPosition: Int): String{
+        val newInterval = app.currentExchange!!.changePeriods[intervalPosition]
         currentInterval = newInterval
         pairsAdapter.currentInterval = newInterval
         pairsAdapter.notifyDataSetChanged()
