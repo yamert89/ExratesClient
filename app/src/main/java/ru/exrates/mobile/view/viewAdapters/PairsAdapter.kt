@@ -16,6 +16,7 @@ import ru.exrates.mobile.logic.logW
 import ru.exrates.mobile.logic.toNumeric
 import java.math.BigDecimal
 import java.math.MathContext
+import kotlin.math.abs
 
 @JsonIgnoreProperties("itemCount", "app")
 open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>() {
@@ -62,8 +63,8 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             val value: Double
             if (pair.priceChange.isNotEmpty()){
                 value = pair.priceChange[currentInterval]!!
-                change = BigDecimal( value, MathContext(2)).toDouble().toString()
-                if (change.length > 5) change = "0.0"
+                change = value.toNumeric(2)
+                if (abs(change.toDouble()) < 0.01) change = "0.0"
                 holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = if (value == Double.MAX_VALUE) "?" else "$change%"
             } else holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = "?"
 

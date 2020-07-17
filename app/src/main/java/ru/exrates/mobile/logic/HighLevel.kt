@@ -66,7 +66,7 @@ fun logT(message: String) = Log.v(EXRATES, message)
 
 fun logW(message: String) = Log.w(EXRATES, message)
 
-fun Double.toNumeric(): String = DecimalFormat("####.##########").format(this).replace(",", ".")
+fun Double.toNumeric(precision: Int = 10 ): String = DecimalFormat("####.${"#".repeat(precision)}").format(this).replace(",", ".")
 
 fun Float.toNumeric(): String = this.toDouble().toNumeric()
 
