@@ -9,6 +9,7 @@ import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.CursPeriod
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.logE
+import ru.exrates.mobile.logic.logT
 import ru.exrates.mobile.presenters.*
 import ru.exrates.mobile.view.CurrencyActivity
 import ru.exrates.mobile.view.ExratesActivity
@@ -38,6 +39,7 @@ abstract class ExCallback<T>(protected val activity: ExratesActivity, val presen
             else -> log_trace("resp success")
         }*/
         if (response.body() == null) throw IllegalStateException("Response is null : $response ${response.message()} \n ${response.errorBody().toString()}")
+        logT("Response of ${call.request().url}\n${response.body()}")
     }
 
     fun <T> mainFunc(ob: T, func: (ob: T) -> Unit){

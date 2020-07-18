@@ -193,7 +193,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
 
     override fun updateExchangeData(exchange: Exchange) {
         super.updateExchangeData(exchange)
-        rebuildExAdapter(exchange.exId)
+        //rebuildExAdapter(exchange.exId)
     }
 
     /*
