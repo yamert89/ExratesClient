@@ -39,85 +39,92 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         saveState()
     }
 
-    override fun resume() {
+    override fun resume() { //fixme freeze
         var exId: Int
         try {
 
             var flag = true
             logT("main onresume")
-            val listsReq = GlobalScope.launch(Dispatchers.IO) {
-                logT("start coroutine")
-                if (storage.getValue(IS_FIRST_LOAD, true)) {
-                    logT("before first load")
-                    flag = firstLoad()
-                    logT("flaq is $flag")
-                }
-
-                else {
-                    logT("Saved lists loaded")
-                    try{
-                        if (app.exchangeNamesList.isEmpty()) app.exchangeNamesList = storage.loadObjectFromJson(
-                            SAVED_EXCHANGE_NAME_LIST, HashMap<Int, ExchangeNamesObject>())
-
-                    }catch (e: FileNotFoundException){
-                        flag = false
-                        activity?.stopProgress()
-                        storage.storeValue(IS_FIRST_LOAD, true)
-                        return@launch
-                    }catch (e: InvalidClassException){
-                        logE("Class model of ex names list deprecated")
+            GlobalScope.launch {
+                val listsReq = launch(Dispatchers.Main) {
+                    logT("start coroutine")
+                    if (storage.getValue(IS_FIRST_LOAD, true)) {
+                        logT("before first load")
                         flag = firstLoad()
-                    }catch (e: Exception){
-                        logE(e.message.toString())
-                    }
-                    curIdx = storage.getValue(SAVED_CUR_IDX, 0)
-                    //exIdx = storage.getValue(SAVED_EX_IDX, 0)
-
-                   // val pairName = if (!curAdapter.isEmpty) curAdapter.getItem(0) ?: mockPair else mockPair
-                    val cur1 = storage.getValue(CURRENT_CUR_1, "AGI")
-                    val cur2 = storage.getValue(CURRENT_CUR_2, "BTC")
-                    exId = storage.getValue(SAVED_EXID, 1)
-                   /* val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair))*/
-                    app.currentCur1 = cur1
-                    app.currentCur2 = cur2
-
-                    var exNames =  arrayOf(app.currentCur1 + app.currentCur2)
-                    if (app.currentExchange != null) {
-                        exNames = exNames.plus(app.currentExchange!!.pairs.map { app.exchangeNamesList.iterator().next().value.getSymbol(it.baseCurrency, it.quoteCurrency) })
+                        logT("flaq is $flag")
                     }
 
-                    restModel.getActualExchange(
-                        ExchangePayload(
-                        exId,
-                        app.currentInterval,
-                        exNames)
-                    )
-                    restModel.getActualPair(cur1, cur2, "1h",
-                        CURRENCY_HISTORIES_MAIN_NUMBER
-                    )
+                    else {
+                        logT("Saved lists loaded")
+                        try{
+                            if (app.exchangeNamesList.isEmpty()) app.exchangeNamesList = storage.loadObjectFromJson(
+                                SAVED_EXCHANGE_NAME_LIST, HashMap<Int, ExchangeNamesObject>())
+
+                        }catch (e: FileNotFoundException){
+                            flag = false
+                            activity?.stopProgress()
+                            storage.storeValue(IS_FIRST_LOAD, true)
+                            return@launch
+                        }catch (e: InvalidClassException){
+                            logE("Class model of ex names list deprecated")
+                            flag = firstLoad()
+                        }catch (e: Exception){
+                            logE(e.message.toString())
+                        }
+                        curIdx = storage.getValue(SAVED_CUR_IDX, 0)
+                        //exIdx = storage.getValue(SAVED_EX_IDX, 0)
+
+                        // val pairName = if (!curAdapter.isEmpty) curAdapter.getItem(0) ?: mockPair else mockPair
+                        val cur1 = storage.getValue(CURRENT_CUR_1, "AGI")
+                        val cur2 = storage.getValue(CURRENT_CUR_2, "BTC")
+                        exId = storage.getValue(SAVED_EXID, 1)
+                        /* val pairs = storage.getValue(SAVED_CURRENCIES_NAMES, arrayOf(mockPair))*/
+                        app.currentCur1 = cur1
+                        app.currentCur2 = cur2
+
+                        var exNames =  arrayOf(app.currentCur1 + app.currentCur2)
+                        if (app.currentExchange != null) {
+                            exNames = exNames.plus(app.currentExchange!!.pairs.map { app.exchangeNamesList.iterator().next().value.getSymbol(it.baseCurrency, it.quoteCurrency) })
+                        }
+
+                        restModel.getActualExchange(
+                            ExchangePayload(
+                                exId,
+                                app.currentInterval,
+                                exNames)
+                        )
+                        restModel.getActualPair(cur1, cur2, "1h",
+                            CURRENCY_HISTORIES_MAIN_NUMBER
+                        )
+                    }
                 }
-            }
-
-            runBlocking { listsReq.join() }
-            if (!flag) {
-                activity?.toast("Не удалось подключиться к серверу. Проверте интернет подключение и перезапустите приложение")
-                return
-            }else restModel.ping()
-            //exchangeName.setSelection((exchangeName.adapter as ArrayAdapter<String>).getPosition(app.exchangeNamesList?.find { it.id == exId }?.name))
-
-            GlobalScope.launch(Dispatchers.Main) {
-                if (app.exchangeNamesList.isEmpty() || pairsAdapter.itemCount == 0) {
-                    logD("exchange names list is null or currency name adapter is empty")
-                    return@launch
+                launch(Dispatchers.Main) {
+                    val sleep = launch { for (i in 0..100){
+                        if (app.exchangeNamesList.isNotEmpty()) cancel("cancell job")
+                        delay(20)
+                    }}
+                    sleep.join()
+                    if (app.exchangeNamesList.isEmpty() || pairsAdapter.itemCount == 0) {
+                        logD("exchange names list is null or currency name adapter is empty")
+                        return@launch
+                    }else{
+                        updateExchangesList(app.exchangeNamesList.values.map { it.name })
+                        val allPairs = getListWithAllPairs(app.exchangeNamesList)
+                        updateCurrenciesList(allPairs)
+                        if (!this@MainPresenter::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
+                        searchAdapter.addAll(allPairs)
+                    }
                 }
+                listsReq.join()
+                if (!flag) {
+                    activity?.toast("Не удалось подключиться к серверу. Проверте интернет подключение и перезапустите приложение")
+                }else restModel.ping()
 
-                updateExchangesList(app.exchangeNamesList.values.map { it.name })
-                val allPairs = getListWithAllPairs(app.exchangeNamesList)
-                updateCurrenciesList(allPairs)
-                if (!this@MainPresenter::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
-                searchAdapter.addAll(allPairs)
+
+
             }
-            //mainActivity.updateCurrencyPrice(cur?.price?.toNumeric() ?: "0.0")
+            activity!!.startProgress()
+
 
         }catch (e: Exception){e.printStackTrace()}
     }
