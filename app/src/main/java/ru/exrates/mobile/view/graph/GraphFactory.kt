@@ -123,7 +123,7 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
         val dataList = ArrayList<PointValue>()
         val labelList = ArrayList<String>()
         val labelValueList = ArrayList<Float>()
-        for (i in priceHistory.lastIndex downTo 0){
+        for (i in 0 .. priceHistory.lastIndex){
             now = now.minus(dateInterval)
             val x = now.toEpochSecond(ZoneOffset.UTC).toFloat()
             dataList.add(0, PointValue(x, priceHistory[i].toFloat()))
@@ -172,12 +172,12 @@ class GraphFactory(private val anyChartView: LineChartView, val currentInterval:
             val step = (maxYL - minYL) / 8
             yLabels = ArrayList<String>(8)
             yAxisLabelValues = ArrayList<Float>(8)
-            var value = minYL - step
+            var value = minYL/* + step*/
             while (value <= maxYL){
                 var lValue = f.format(value)
                 while (lValue.length < 10) lValue += "0"
-                yLabels.add(lValue)
-                yAxisLabelValues.add(value)
+                yLabels.add(0, lValue)
+                yAxisLabelValues.add(0, value)
                 value += step
             }
         }
