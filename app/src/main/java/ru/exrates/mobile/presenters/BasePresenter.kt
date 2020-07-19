@@ -2,12 +2,9 @@ package ru.exrates.mobile.presenters
 
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.data.Storage
-import ru.exrates.mobile.logic.CURRENT_CUR_1
-import ru.exrates.mobile.logic.CURRENT_CUR_2
+import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.logic.logD
-import ru.exrates.mobile.logic.logT
 import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
@@ -42,6 +39,16 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
     fun currentNameListsIsNull(): Boolean = app.exchangeNamesList == null
 
     fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
+
+    protected fun savePairsAdapter(){
+        val adapterName = when(app.currentExchange?.exId){
+            1 -> SAVED_CURRENCIES_ADAPTER_BINANCE
+            else -> SAVED_CURRENCIES_ADAPTER_P2PB2B
+        }
+        save(
+            SAVED_CURRENCIES_ADAPTER to adapterName,
+            adapterName to pairsAdapter)
+    }
 
     override fun saveState(){
         logD("saving state....")

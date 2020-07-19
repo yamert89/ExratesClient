@@ -124,7 +124,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     override fun saveState() {
         super.saveState()
-        save(CURRENT_INTERVAL to currentInterval)
+        savePairsAdapter()
     }
 
 

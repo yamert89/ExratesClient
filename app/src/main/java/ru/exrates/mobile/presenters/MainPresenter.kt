@@ -281,21 +281,8 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     }
 
     override fun saveState() {
-        val adapterName = when(app.currentExchange?.exId){
-            1 -> SAVED_CURRENCIES_ADAPTER_BINANCE
-            else -> SAVED_CURRENCIES_ADAPTER_P2PB2B
-        }
-        /*val adapterValues = mutableListOf<String>()
-        for (i: Int in 0 until curAdapter.count){
-            adapterValues.add(curAdapter.getItem(i)!!)
-        }*/
-        save(
-            /*SAVED_EX_IDX to mainActivity.getSelectedExchangeIdx(),*/
-            SAVED_CUR_IDX to curIdx,
-            SAVED_CURRENCIES_ADAPTER to adapterName,
-            adapterName to pairsAdapter/*,
-            SAVED_CURRENCIES_NAMES to (app.currentExchange?.pairs?.map { it.symbol }?.toTypedArray() ?: arrayOf("AGI/BTC"))*//*,
-            SAVED_EXID to (app.currentExchange?.exId ?: 1)*/)
+       save(SAVED_CUR_IDX to curIdx)
+       savePairsAdapter()
     }
 
     override fun attachView(view: ExratesActivity) {
