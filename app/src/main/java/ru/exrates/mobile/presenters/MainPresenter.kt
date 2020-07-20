@@ -138,33 +138,73 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     fun initData(exchangeNamesList: MutableMap<Int, ExchangeNamesObject>){
         logT("init data")
         try {
-            app.exchangeNamesList = exchangeNamesList
-            GlobalScope.launch {
-               save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
-                logT("list saved")
 
-            }
-            logT("get exchange")
+                GlobalScope.launch(Dispatchers.Main) {
+                    try {
+                        withContext(Dispatchers.IO){
+                            try {
+                                save(SAVED_EXCHANGE_NAME_LIST to exchangeNamesList)
+                                app.exchangeNamesList = exchangeNamesList
+                                logT("list saved")
+                            }catch (e: Exception){e.printStackTrace()}
 
+                        }
+                        var allPairs: List<String> = listOf()
+                        var defExId = 0
+                        var defExNOb: ExchangeNamesObject? = null
 
-            val allPairs = getListWithAllPairs(exchangeNamesList).sorted()
-            val defExNOb = exchangeNamesList.values.find { it.pairs.contains(allPairs[0]) }!!
-            val defExId = defExNOb.id
-            restModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
-            val curs = defExNOb.getSplitedCurNames(allPairs[0])
-            restModel.getActualPair(
-                curs.first, curs.second,
-                CURRENCY_HISTORIES_MAIN_NUMBER
-            )
-            updateExchangesList(exchangeNamesList.values.map { it.name })
+                        val job = launch {
+                            logD("job started")
+                            try{
+                                allPairs = getListWithAllPairs(exchangeNamesList).sorted()
+                                defExNOb = exchangeNamesList.values.find { it.pairs.contains(allPairs[0]) }!!
+                                defExId = defExNOb!!.id
+                                logD("after init")
+                            }catch (e: Exception){e.printStackTrace()}
 
-            updateCurrenciesList(allPairs)
+                        }
+                        job.join()
+                        withContext(Dispatchers.IO){
+                            try {
+                                logD("rest start")
+                                restModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
+                                val curs = defExNOb!!.getSplitedCurNames(allPairs[0])
+                                restModel.getActualPair(
+                                    curs.first, curs.second,
+                                    CURRENCY_HISTORIES_MAIN_NUMBER
+                                )
+                            }catch (e: Exception){e.printStackTrace()}
 
-            if (!this::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
+                        }
+                        launch {
+                            try {
+                                logD("main task 1")
+                                updateExchangesList(exchangeNamesList.values.map { it.name })
+                            }catch (e: Exception){e.printStackTrace()}
 
-            searchAdapter.addAll(allPairs)
-            rebuildExAdapter(defExId)
+                        }
+                        launch {
+                            try {
+                                logD("main task 2")
+                                updateCurrenciesList(allPairs)
+                            }catch (e: Exception){e.printStackTrace()}
 
+                        }
+                        launch{
+                            try {
+                                logD("def task")
+                                rebuildExAdapter(defExId)
+                            }catch (e: Exception){e.printStackTrace()}
+
+                        }
+                        logD("after")
+
+                        searchAdapter = ArrayAdapter<String>(app.baseContext, android.R.layout.simple_dropdown_item_1line )
+                        searchAdapter.addAll(allPairs)
+                    }catch (e: Exception){
+                        e.printStackTrace()
+                    }
+                }
         }catch (e: Exception){
             logE("exception in init method")
             e.printStackTrace()
@@ -209,20 +249,21 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
      * Private methods
      *******************************************************************************/
     private suspend fun firstLoad(): Boolean{
-        var res = false
+        var res = true
         mainActivity.startProgress()
-        coroutineScope {
+        val job = GlobalScope.launch(Dispatchers.IO){
             try {
                 logT("before request")
                 restModel.getLists()
             }catch (e: Exception){
                 logE("exception")
-                return@coroutineScope
+                res = false
             }
-            res = true
-
         }
-        if (res) storage.storeValue(IS_FIRST_LOAD, false)
+        job.join()
+        if (res) {
+           GlobalScope.launch { storage.storeValue(IS_FIRST_LOAD, false) }
+        }
         return res
     }
 
@@ -259,7 +300,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         val ex = exchAdapter.getItem(pos)
         exchAdapter.remove(ex)
         val currentIdx = mainActivity.getSelectedExchangeIdx()
-        logD("RebuildExSpinner with $name and idx $currentIdx") //fixme 41 frames skipped after this line
+        logD("RebuildExSpinner with $name and idx $currentIdx")
         exchAdapter.insert(ex, if (currentIdx > -1) currentIdx else 0)
         //exIdx = 0
         //mainActivity.selectExchangeItem(0)
