@@ -51,7 +51,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     if (storage.getValue(IS_FIRST_LOAD, true)) {
                         logT("before first load")
                         flag = firstLoad()
-                        logT("flaq is $flag")
+                        logT("flaq is $flag") //fixme 34 frames skipped after this line
                     }
 
                     else {
@@ -124,6 +124,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
 
             }
             activity!!.startProgress()
+            logD("end presenter resume")
 
 
         }catch (e: Exception){e.printStackTrace()}
@@ -258,7 +259,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         val ex = exchAdapter.getItem(pos)
         exchAdapter.remove(ex)
         val currentIdx = mainActivity.getSelectedExchangeIdx()
-        logD("RebuildExSpinner with $name and idx $currentIdx")
+        logD("RebuildExSpinner with $name and idx $currentIdx") //fixme 41 frames skipped after this line
         exchAdapter.insert(ex, if (currentIdx > -1) currentIdx else 0)
         //exIdx = 0
         //mainActivity.selectExchangeItem(0)
