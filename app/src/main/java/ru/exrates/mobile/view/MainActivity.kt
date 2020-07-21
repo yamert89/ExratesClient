@@ -23,7 +23,6 @@ import ru.exrates.mobile.presenters.MainPresenter
 import ru.exrates.mobile.view.prefs.SettingsActivity
 
 class MainActivity : ExratesActivity() {
-//fixme Skipped 39 frames!  The application may be doing too much work on its main thread.
     //TODO check api version
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
@@ -131,16 +130,11 @@ class MainActivity : ExratesActivity() {
 
         startActivity(Intent(applicationContext, CurrencyActivity::class.java).apply {
             val preparedValues = presenter.prepareStartCurActivity()
-
             putExtra(EXTRA_CURRENCY_NAME_1, preparedValues.first )
             putExtra(EXTRA_CURRENCY_NAME_2, preparedValues.second )
-            // putExtra(EXTRA_EXCHANGE_NAME, exName)
-            // putExtra(EXTRA_EXCHANGE_ID, app.exchangeNamesList!!.find { it.name == exName }!!.id)
             var id = app.baseContext.resources.getIdentifier(preparedValues.first.toLowerCase(), "drawable", app.baseContext.packageName)
             if (id == 0) id = android.R.drawable.ic_menu_help
             putExtra(EXTRA_CUR_ICO, id)
-            //putExtra(EXTRA_EXCHANGE_ID, preparedValues.third)
-
         })
     }
 
@@ -157,12 +151,6 @@ class MainActivity : ExratesActivity() {
         chartProgress.visibility = View.INVISIBLE
     }
 
-
-
-
-
-
-
     override fun startProgress(){
         super.startProgress()
         logT("Snack started..")
@@ -170,14 +158,9 @@ class MainActivity : ExratesActivity() {
         Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
     }
 
-
-
-
     override fun onResume() {
         super.onResume()
-        //if (!this::presenter.isInitialized) presenter = MainPresenter(app)
         logD("onresume")
-
         presenter.resume()
     }
 
@@ -203,8 +186,5 @@ class MainActivity : ExratesActivity() {
         }
 
     }
-
-
-
 
 }
