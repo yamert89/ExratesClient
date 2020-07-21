@@ -39,7 +39,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         saveState()
     }
 
-    override fun resume() { //fixme freeze
+    override fun resume() {
         var exId: Int
         try {
 
@@ -51,7 +51,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                     if (storage.getValue(IS_FIRST_LOAD, true)) {
                         logT("before first load")
                         flag = firstLoad()
-                        logT("flaq is $flag") //fixme 34 frames skipped after this line
+                        logT("flaq is $flag")
                     }
 
                     else {

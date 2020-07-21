@@ -10,6 +10,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import lecho.lib.hellocharts.view.LineChartView
 import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.*
@@ -61,40 +64,37 @@ class MainActivity : ExratesActivity() {
             exchangeName.adapter =  presenter.getExSpinnerAdapter()
 
             viewManager = LinearLayoutManager(this)
+            currenciesRecyclerView = findViewById<RecyclerView>(R.id.main_cur_list)
+            GlobalScope.launch(Dispatchers.Main){
+                currenciesRecyclerView.adapter = presenter.getCurrencyAdapter()
+                currenciesRecyclerView.layoutManager = viewManager
+                currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = startCurActivity(position)
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
 
+                goToCurBtn.setOnClickListener { startCurActivity() }
 
-            currenciesRecyclerView = findViewById<RecyclerView>(R.id.main_cur_list).apply {
-                adapter = presenter.getCurrencyAdapter()
-                layoutManager = viewManager
-            }
-            print(System.currentTimeMillis())
+                goToExBtn.setOnClickListener(presenter.getExSpinnerItemSelectedListener())
 
-            //exchangeName.setSelection(0)
-
-            //currencyName.setSelection(0)
-
-            currencyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = startCurActivity(position)
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
-
-            goToCurBtn.setOnClickListener { startCurActivity() }
-
-            goToExBtn.setOnClickListener(presenter.getExSpinnerItemSelectedListener())
-
-            searchBtn.setOnClickListener(
-                SearchButtonClickListener(
-                    autoCompleteTextView,
-                    currencyName,
-                    goToCurBtn,
-                    this
+                searchBtn.setOnClickListener(
+                    SearchButtonClickListener(
+                        autoCompleteTextView,
+                        currencyName,
+                        goToCurBtn,
+                        this@MainActivity
+                    )
                 )
-            )
 
-            autoCompleteTextView.setAdapter(presenter.getSearchAdapter())
+                autoCompleteTextView.setAdapter(presenter.getSearchAdapter())
 
 
-            exchangeName.onItemSelectedListener = presenter.getExSpinnerItemSelectedListener()
+                exchangeName.onItemSelectedListener = presenter.getExSpinnerItemSelectedListener()
+                logD("init main activity coroutine done")
+            }
+
+
+
 
             logD("Main activity created")
 
