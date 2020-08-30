@@ -374,7 +374,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         app.currentCur1 = curs.first
         app.currentCur2 = curs.second
         save(CURRENT_CUR_1 to curs.first, CURRENT_CUR_2 to curs.second)
-        val defExId = if (app.exchangeNamesList[1]!!.pairs.contains(symbol)) 1 else {
+        val defExId = if (app.exchangeNamesList[1]?.pairs?.contains(symbol) == true) 1 else {
             app.exchangeNamesList.values.find { it.pairs.contains(symbol) }!!.id
         }
 

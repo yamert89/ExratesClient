@@ -54,7 +54,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
             2 -> R.drawable.p2pb2b
             else -> 1
         }
-        holder.linearLayout.findViewById<ImageView>(R.id.cur_exchanges_logo).setImageDrawable(ResourcesCompat.getDrawable(
+        holder.linearLayout.findViewById<ImageView>(R.id.cur_exchanges_logo).setImageDrawable(ResourcesCompat.getDrawable( //fixme add coinbase
             app.resources,
             res,
             null

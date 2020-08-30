@@ -19,12 +19,13 @@ data class CurrencyPair(
     val historyPeriods: List<String>?,
     val exchangeName: String,
     val exId : Int,
-    val status:Int
+    val status:Int,
+    val unavailable: Boolean
 
 ) : java.io.Serializable{
 
     companion object{
-        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyList(), emptyList(), "", 0, 0)
+        fun createEmptyInstance() = CurrencyPair("", "", "", 0.0, TreeMap(), emptyList(), emptyList(), "", 0, 0, false)
     }
     fun symbolItem() = "$baseCurrency / $quoteCurrency"
 
