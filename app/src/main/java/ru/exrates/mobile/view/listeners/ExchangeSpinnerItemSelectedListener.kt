@@ -56,6 +56,7 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
     private fun getIcoId(exId: Int) = when(exId){
         1 -> R.drawable.binance
         2 -> R.drawable.p2pb2b
+        3 -> R.drawable.coinbase
         else -> throw IllegalArgumentException("ex $exId icon id  not found")
     }
 

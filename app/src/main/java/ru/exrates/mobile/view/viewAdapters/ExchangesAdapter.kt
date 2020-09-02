@@ -52,6 +52,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
         val res = when(pair.exId){
             1 -> R.drawable.binance
             2 -> R.drawable.p2pb2b
+            3 -> R.drawable.coinbase
             else -> 1
         }
         holder.linearLayout.findViewById<ImageView>(R.id.cur_exchanges_logo).setImageDrawable(ResourcesCompat.getDrawable( //fixme add coinbase
