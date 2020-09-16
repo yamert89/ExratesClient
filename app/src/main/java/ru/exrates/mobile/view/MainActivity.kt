@@ -1,5 +1,6 @@
 package ru.exrates.mobile.view
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -7,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -142,10 +144,19 @@ class MainActivity : ExratesActivity() {
         if (cur.priceHistory.isEmpty()) {
             root.removeView(anyChartView)
             logE("Graph removed")
+            val id = View.generateViewId()
             val notice = TextView(app.baseContext).apply {
-                text = "Data not available"
+                text = "Graphic data not available"
+                this.id = id
             }
-            root.addView(notice, 4)
+            root.addView(notice, 6)
+            ConstraintSet().run {
+                clone(root)
+                connect(id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 200)
+                connect(id, ConstraintSet.TOP, R.id.main_cur_price, ConstraintSet.BOTTOM, 200)
+                applyTo(root)
+            }
+
         } else GraphFactory(anyChartView, "1h")
             .createSmallGraph(cur.priceHistory.subList(cur.priceHistory.size - 10, cur.priceHistory.lastIndex + 1))
         chartProgress.visibility = View.INVISIBLE

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -109,10 +110,21 @@ class CurrencyActivity : ExratesActivity() {
         //val data = mutableListOf<ValueDataEntry>()
         if (list.isEmpty()) {
             root.removeView(anyChartView)
+            val id = View.generateViewId()
             val notice = TextView(app.baseContext).apply {
-                text = "Data not available"
+                text = "Graphic data not available"
+                this.id = id
             }
-            root.addView(notice, 2)
+            root.addView(notice, 4)
+
+            ConstraintSet().run {
+                clone(root)
+                connect(id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 200)
+                connect(id, ConstraintSet.TOP, R.id.divider2, ConstraintSet.BOTTOM, 200)
+                applyTo(root)
+            }
+
+
         } else {
             GraphFactory(
                 anyChartView,
