@@ -220,6 +220,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
     }
 
     fun clickOnInterval(): String{
+        if (app.currentPairInfo == null) return ""
         val interval = if(currentDataIsNull()) app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!! else
             intervals.higher(currentInterval)
                 ?: app.currentPairInfo!![0].priceChange.firstKey()

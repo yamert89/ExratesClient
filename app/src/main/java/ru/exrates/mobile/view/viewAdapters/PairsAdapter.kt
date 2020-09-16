@@ -61,8 +61,8 @@ open class PairsAdapter() : RecyclerView.Adapter<PairsAdapter.PairsViewHolder>()
             holder.linearLayout.findViewById<TextView>(R.id.rec_cur_price).text = pair.price.toNumeric().toString()
             logD(pair.priceChange.toString())
             val value: Double
-            if (pair.priceChange.isNotEmpty()){
-                value = pair.priceChange[currentInterval]!! //fixme npe coinbase
+            if (pair.priceChange.isNotEmpty() && pair.priceChange[currentInterval] != null){
+                value = pair.priceChange[currentInterval]!!
                 change = value.toNumeric(2)
                 if (abs(change.toDouble()) < 0.01) change = "0.0"
                 holder.linearLayout.findViewById<TextView>(R.id.rec_cur_change).text = if (value == Double.MAX_VALUE) "?" else "$change%"

@@ -55,7 +55,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
             3 -> R.drawable.coinbase
             else -> 1
         }
-        holder.linearLayout.findViewById<ImageView>(R.id.cur_exchanges_logo).setImageDrawable(ResourcesCompat.getDrawable( //fixme add coinbase
+        holder.linearLayout.findViewById<ImageView>(R.id.cur_exchanges_logo).setImageDrawable(ResourcesCompat.getDrawable( //fixme add huobi
             app.resources,
             res,
             null
