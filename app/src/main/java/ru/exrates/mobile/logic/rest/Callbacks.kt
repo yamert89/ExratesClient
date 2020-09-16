@@ -11,9 +11,7 @@ import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.logE
 import ru.exrates.mobile.logic.logT
 import ru.exrates.mobile.presenters.*
-import ru.exrates.mobile.view.CurrencyActivity
 import ru.exrates.mobile.view.ExratesActivity
-import ru.exrates.mobile.view.MainActivity
 import ru.exrates.mobile.view.dialogs.ConnectionFailed
 import java.net.SocketTimeoutException
 
@@ -61,7 +59,12 @@ class OneExchangeCallback(activity: ExratesActivity, presenter: Presenter) : ExC
         val ex = response.body()!!
         when(ex.status){
             ClientCodes.SUCCESS -> mainFunc(ex, presenter::updateExchangeData)
-            ClientCodes.EXCHANGE_NOT_ACCESSIBLE -> activity.toast("Server of ${ex.name} is not responding")
+            ClientCodes.EXCHANGE_NOT_ACCESSIBLE -> {
+                activity.toast("Server of ${ex.name} is not responding")
+                presenter.handleError {
+                    it.inactiveExchanges.add(ex.name)
+                }
+            }
             else -> logE("unknown resp status ${ex.status}")
         }
     }

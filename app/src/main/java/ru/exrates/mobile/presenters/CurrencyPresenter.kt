@@ -1,19 +1,14 @@
 package ru.exrates.mobile.presenters
 
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.processNextEventInCurrentThread
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.SelectedExchange
-import ru.exrates.mobile.logic.rest.RestModel
 import ru.exrates.mobile.logic.structures.IntervalComparator
 import ru.exrates.mobile.view.CurrencyActivity
 import ru.exrates.mobile.view.ExratesActivity
-import ru.exrates.mobile.view.MainActivity
-import ru.exrates.mobile.view.graph.GraphFactory
 import ru.exrates.mobile.view.viewAdapters.ExchangesAdapter
 import java.util.*
 
@@ -55,7 +50,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
         else restModel.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
 
-        if (currentNameListsIsNull()) throw NullPointerException("current data is null")
+        if (currentNameListsIsEmpty()) throw NullPointerException("current data is null")
 
         selectedExchange.listener = {
             //val historyAdapter = historyPeriodSpinner.adapter as ArrayAdapter<String>

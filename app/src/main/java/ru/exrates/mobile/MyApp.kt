@@ -44,6 +44,8 @@ class MyApp : Application(){
         private set
 
     val om = exRates.om
+
+    var inactiveExchanges: MutableList<String> = exRates.inactiveExchanges
 }
 
 class ExRates{
@@ -53,6 +55,7 @@ class ExRates{
     var currentCur2: String = "BTC"
     var exchangeNamesList: MutableMap<Int, ExchangeNamesObject> = mutableMapOf()
     var currentInterval: String = ""
+    var inactiveExchanges = mutableListOf<String>()
     lateinit var restService: RestService
     val om = ObjectMapper()
     val ip = "192.168.0.103"

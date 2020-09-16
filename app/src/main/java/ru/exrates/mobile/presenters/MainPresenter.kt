@@ -226,6 +226,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         mainActivity.updateGraph(cur)
     }
 
+
     /*
      *******************************************************************************
      * Private methods

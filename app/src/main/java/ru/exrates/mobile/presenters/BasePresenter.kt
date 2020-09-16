@@ -36,7 +36,11 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
         logD("Pair data updated...")
     }
 
-    fun currentNameListsIsNull(): Boolean = app.exchangeNamesList == null
+    override fun handleError(func: (MyApp) -> Unit){
+        func(app)
+    }
+
+    fun currentNameListsIsEmpty(): Boolean = app.exchangeNamesList.isEmpty()
 
     fun currentDataIsNull(): Boolean = app.currentExchange == null || app.currentPairInfo == null
 

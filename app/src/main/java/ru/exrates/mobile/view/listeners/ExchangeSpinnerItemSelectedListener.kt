@@ -32,6 +32,10 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
         if (app.exchangeNamesList.isEmpty() || parent == null || parent.count < 2) return
         presenter.updateExIdx(position)
         val exchName = parent.getItemAtPosition(position)
+        if (app.inactiveExchanges.contains(exchName)) {
+            mainActivity.toast("Exchange $exchName not accessible")
+            return
+        }
         val exId = app.exchangeNamesList.values.find { it.name == exchName }?.id ?: throw IllegalArgumentException("ex id not found in exchangeNamesList with $exchName ex name")
         startActivity(exId)
     }

@@ -29,7 +29,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         exId = storage.getValue(SAVED_EXID, 1)
         currentInterval = storage.getValue(CURRENT_INTERVAL, app.currentPairInfo?.find { it.exId == exId }?.historyPeriods?.get(0)
             ?: "1h")
-        if (currentNameListsIsNull()) throw NullPointerException("current data is null")
+        if (currentNameListsIsEmpty()) throw NullPointerException("current data is null")
 
         restModel.getActualExchange(ExchangePayload(exId, currentInterval, arrayOf()))
         exchangeActivity.setInterval(currentInterval)
