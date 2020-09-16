@@ -47,7 +47,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
         if (pair.exId == selectedExchange.id) holder.linearLayout.setBackgroundResource(R.drawable.selected_item)
         holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_price).text = pair.price.toNumeric()
         holder.linearLayout.findViewById<TextView>(R.id.cur_exchanges_change).text =
-            if (pair.priceChange[interval] == null) "no data" else pair.priceChange[interval].toString() + "%"
+            if (pair.priceChange[interval] == null || pair.priceChange[interval] == Double.MAX_VALUE) "?" else pair.priceChange[interval].toString() + "%"
         if (pair.exId == selectedExchange.id) selectedRow = holder.linearLayout
         val res = when(pair.exId){
             1 -> R.drawable.binance
