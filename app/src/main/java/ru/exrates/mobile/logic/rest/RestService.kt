@@ -43,4 +43,7 @@ interface RestService {
 
     @POST("rest/dynamics")
     fun getPriceChangeBySingleInterval(@Body curs: ExchangePayload) : Call<CursPeriod>
+
+    @GET("rest/checkmessages")
+    fun check(@Query("versionToken") versionToken: String): Call<Pair<Int, String>>
 }

@@ -65,6 +65,11 @@ class RestModel(private val app: MyApp,
         app.restService.getPriceHistory(c1, c2, exchId, historyinterval, truncateLimit(limit)).enqueue(HistoryCallback(activity, presenter))
     }
 
+    fun checkMessages(versionToken: String) {
+        app.restService.check(versionToken).enqueue(CheckCallback(activity, presenter))
+    }
+
+
     private fun truncateLimit(limit: Int): Int{
         if (app.currentInterval.isEmpty()) return limit
         return when(app.currentInterval.last()){
@@ -73,6 +78,7 @@ class RestModel(private val app: MyApp,
             else -> limit
         }
     }
+
 
 
 }
