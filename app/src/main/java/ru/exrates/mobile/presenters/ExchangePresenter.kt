@@ -81,11 +81,11 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     private fun updateCurNames(exId: Int){
         cursAdapter.clear()
-        cursAdapter.addAll(listOf(EMPTY_CUR_ITEM).plus(app.exchangeNamesList!!.get(exId)!!.pairs))
+        cursAdapter.addAll(listOf(EMPTY_CUR_ITEM).plus(app.exchangeNamesList[exId]!!.pairs))
         cursAdapter.notifyDataSetChanged()
     }
 
-    fun initPairsAdapt(exchange: Exchange){
+    private fun initPairsAdapt(exchange: Exchange){
         restModel.getPriceChange(exchange)
         val pairsOfAdapter = if(currentDataIsNull()) mutableListOf() else
             if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.toMutableList() //todo base filtering on server

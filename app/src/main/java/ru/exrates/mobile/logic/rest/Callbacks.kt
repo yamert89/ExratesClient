@@ -89,6 +89,7 @@ class OnePairCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
         when(pair.status){
             ClientCodes.SUCCESS -> mainFunc(pair, presenter::addPair)
             ClientCodes.EXCHANGE_NOT_ACCESSIBLE -> activity.toast("Server of ${pair.exchangeName} is not responding")
+            ClientCodes.CURRENCY_NOT_FOUND -> activity.toast("Currency pair ${pair.symbol} not unavailable")
             else -> logE("unknown resp status ${pair.status}")
         }
 
@@ -122,7 +123,13 @@ class HistoryCallback(activity: ExratesActivity, presenter: Presenter) : ExCallb
         //activity as CurrencyActivity
         presenter as CurrencyPresenter
         if (response.code() == 404) mainFunc(listOf(), presenter::updateHistory)
-        if (response.body()?.size == 2 && response.body()!![0] == ClientCodes.EXCHANGE_NOT_ACCESSIBLE.toDouble()) activity.toast("Server of ${activity.app.exchangeNamesList[response.body()!![1].toInt()]} is not responding")
+        if (response.body()?.size == 2){
+            if (response.body()!![0] == ClientCodes.EXCHANGE_NOT_ACCESSIBLE.toDouble())
+                activity.toast("Server of ${activity.app.exchangeNamesList[response.body()!![1].toInt()]} is not responding")
+            if (response.body()!![0] == ClientCodes.CURRENCY_NOT_FOUND.toDouble())
+                mainFunc(listOf(), presenter::updateHistory)
+        }
+
         else mainFunc(response.body()!!, presenter::updateHistory)
     }
 
