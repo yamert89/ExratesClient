@@ -1,6 +1,7 @@
 package ru.exrates.mobile.presenters
 
 import android.widget.ArrayAdapter
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.*
@@ -234,6 +235,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
     private suspend fun firstLoad(): Boolean{
         var res = true
         mainActivity.startProgress()
+        mainActivity.firstNotice()
         val job = GlobalScope.launch(Dispatchers.IO){
             try {
                 logT("before request")
@@ -351,6 +353,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
 
     fun getSearchAdapter(): ArrayAdapter<String>{
         if (!this::searchAdapter.isInitialized) searchAdapter = ArrayAdapter<String>(mainActivity, android.R.layout.simple_spinner_item )
+        searchAdapter.addAll(getListWithAllPairs(app.exchangeNamesList))
         return searchAdapter
     }
 

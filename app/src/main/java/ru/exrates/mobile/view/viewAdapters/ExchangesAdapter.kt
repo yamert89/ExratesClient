@@ -53,7 +53,8 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
             1 -> R.drawable.binance
             2 -> R.drawable.p2pb2b
             3 -> R.drawable.coinbase
-            else -> 1
+            4 -> R.drawable.huobi
+            else -> throw IllegalStateException("resource for ex id ${pair.exId} not found")
         }
         holder.linearLayout.findViewById<ImageView>(R.id.cur_exchanges_logo).setImageDrawable(ResourcesCompat.getDrawable( //fixme add huobi
             app.resources,

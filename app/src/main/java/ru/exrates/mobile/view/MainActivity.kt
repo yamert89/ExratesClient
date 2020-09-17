@@ -166,6 +166,9 @@ class MainActivity : ExratesActivity() {
         super.startProgress()
         logT("Snack started..")
         print(System.currentTimeMillis())
+    }
+
+    fun firstNotice(){
         Snackbar.make(currenciesRecyclerView, "Первичная загрузка данных, подождите", Snackbar.LENGTH_LONG).show()
     }
 

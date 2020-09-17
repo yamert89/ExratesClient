@@ -61,7 +61,8 @@ class ExchangeSpinnerItemSelectedListener(private val mainActivity: MainActivity
         1 -> R.drawable.binance
         2 -> R.drawable.p2pb2b
         3 -> R.drawable.coinbase
-        else -> R.drawable.binance
+        4 -> R.drawable.huobi
+        else -> throw IllegalStateException("resource for exId $exId not found")
     }
 
 
