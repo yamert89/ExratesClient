@@ -90,8 +90,7 @@ class CurrencyActivity : ExratesActivity() {
             //currencyIntervalValue.text = intervals.first()
 
             currencyInterval.setOnClickListener {
-                currencyIntervalValue.text = presenter.clickOnInterval()
-
+                currencyIntervalValue.text = presenter.clickOnInterval().cropInterval()
             }
 
         }catch (e: Exception){

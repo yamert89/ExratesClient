@@ -46,7 +46,6 @@ class MainActivity : ExratesActivity() {
         try {
             logD("START MAIN ACTIVITY ")
             setContentView(R.layout.activity_main)
-
             currencyName = findViewById(R.id.main_currency_spinner)
             currencyPrice = findViewById(R.id.main_cur_price)
             exchangeName = findViewById(R.id.main_exch_spinner)
