@@ -5,7 +5,6 @@ import ru.exrates.mobile.logic.logD
 data class Exchange(val exId: Int, val name: String, val pairs: MutableList<CurrencyPair>,
                     val changePeriods: List<String>,
                     val historyPeriods: List<String>,
-                    val showHidden: Boolean = true,
                     val status: Int
                     ): java.io.Serializable{
 
@@ -27,7 +26,6 @@ data class Exchange(val exId: Int, val name: String, val pairs: MutableList<Curr
         result = 31 * result + pairs.hashCode()
         result = 31 * result + changePeriods.hashCode()
         result = 31 * result + historyPeriods.hashCode()
-        result = 31 * result + showHidden.hashCode()
         return result
     }
 

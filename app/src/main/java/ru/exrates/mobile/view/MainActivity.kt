@@ -25,7 +25,7 @@ import ru.exrates.mobile.presenters.MainPresenter
 import ru.exrates.mobile.view.prefs.SettingsActivity
 
 class MainActivity : ExratesActivity() {
-    //TODO check api version
+
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
