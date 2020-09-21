@@ -18,7 +18,6 @@ import ru.exrates.mobile.presenters.CurrencyPresenter
 
 class CurrencyActivity : ExratesActivity() {
     private lateinit var currencyName: TextView
-    private lateinit var currencyInterval: Button
     private lateinit var currencyIntervalValue: TextView
     private lateinit var anyChartView: LineChartView
     //private lateinit var currencyExchange: TextView
@@ -28,6 +27,7 @@ class CurrencyActivity : ExratesActivity() {
     private lateinit var historyPeriodSpinner: Spinner
     private lateinit var root: ConstraintLayout
     private lateinit var curIco : ImageView
+    private lateinit var seekBar: SeekBar
 
     private lateinit var presenter: CurrencyPresenter
 
@@ -42,7 +42,7 @@ class CurrencyActivity : ExratesActivity() {
             app = this.application as MyApp
             //currencyExchange = findViewById(R.id.cur_exchange)
             currencyName = findViewById(R.id.cur_name)
-            currencyInterval = findViewById(R.id.cur_interval)
+            seekBar = findViewById(R.id.cur_seekBar)
             currencyIntervalValue = findViewById(R.id.cur_intervalValue)
             progressLayout = findViewById(R.id.progress)
             historyPeriodSpinner = findViewById(R.id.cur_history_period)
@@ -89,9 +89,16 @@ class CurrencyActivity : ExratesActivity() {
 
             //currencyIntervalValue.text = intervals.first()
 
-            currencyInterval.setOnClickListener {
-                currencyIntervalValue.text = presenter.clickOnInterval().cropInterval()
-            }
+            seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                     setInterval(presenter.changeInterval(progress))
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+
+            })
 
         }catch (e: Exception){
             Log.d(null, "Current activity start failed", e)
@@ -135,5 +142,7 @@ class CurrencyActivity : ExratesActivity() {
         }
 
     }
+
+    fun setSeekBarRange(size: Int) = seekBar.run { max = size }
 
 }
