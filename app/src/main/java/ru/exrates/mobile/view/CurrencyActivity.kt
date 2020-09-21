@@ -109,7 +109,7 @@ class CurrencyActivity : ExratesActivity() {
     fun selectHistory(idx: Int) = historyPeriodSpinner.setSelection(idx)
 
     fun setInterval(value: String){
-        currencyIntervalValue.text = value
+        currencyIntervalValue.text = value.cropInterval()
     }
 
     fun updateGraph(list: List<Double>, currentGraphInterval: String){
