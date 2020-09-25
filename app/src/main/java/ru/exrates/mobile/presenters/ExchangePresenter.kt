@@ -87,8 +87,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
     private fun initPairsAdapt(exchange: Exchange){
         restModel.getPriceChange(exchange)
-        val pairsOfAdapter = if(currentDataIsNull()) mutableListOf() else
-            if (app.currentExchange!!.showHidden) app.currentExchange!!.pairs else app.currentExchange!!.pairs.toMutableList() //todo base filtering on server
+        val pairsOfAdapter = if(currentDataIsNull()) mutableListOf() else app.currentExchange!!.pairs
         pairsAdapter = PairsAdapter(
             pairsOfAdapter,
             currentInterval,
@@ -155,24 +154,11 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
 
 
     fun selectCurItem(position: Int){
-
-        /*val pairNames = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!.pairs.map {
-            val curs = parseSymbol(it)
-            "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
-        }.toMutableList()*/
         logD("Selecting cur item")
-        //val pairNames = app.currentExchange!!.pairs.map { it.symbol }.toMutableList()
         val curs = app.exchangeNamesList.iterator().next().value.getSplitedCurNames(cursAdapter.getItem(position)!!)
         if(pairsAdapter.dataPairs.any { it.baseCurrency == curs.first && it.quoteCurrency == curs.second }) return
         exchangeActivity.startProgress()
-        //val newCur = "${curs.first}${app.currentExchange!!.delimiter}${curs.second}"
-        //if (!pairNames.contains(newCur)) pairNames.add(newCur)
         restModel.addOnePair(curs.first, curs.second, app.currentExchange!!.exId, currentInterval)
-        //restModel.getActualExchange(ExchangePayload(app.currentExchange!!.exId, currentInterval, pairNames.toTypedArray())) //todo replace with one pair req
 
     }
-
-
-
-
 }

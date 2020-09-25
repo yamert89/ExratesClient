@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.R
 import ru.exrates.mobile.logic.EXTRA_EXCHANGE_ICO
+import ru.exrates.mobile.logic.cropInterval
 import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.presenters.ExchangePresenter
 import ru.exrates.mobile.view.listeners.CurNamesSpinnerItemSelectedListener
@@ -73,7 +74,7 @@ class ExchangeActivity : ExratesActivity() {
     fun setSeekBarRange(numberOfPeriods: Int) = with(seekBar){max = numberOfPeriods}
 
     fun setInterval(value: String){
-        intervalValue.text = value
+        intervalValue.text = value.cropInterval()
     }
 
     fun setPairsAdapter(pairsAdapter: PairsAdapter){

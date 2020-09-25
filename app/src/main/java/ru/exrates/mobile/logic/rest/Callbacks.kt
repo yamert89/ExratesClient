@@ -150,3 +150,11 @@ class CursPeriodCallback(activity: ExratesActivity, presenter: Presenter) : ExCa
         logE("FAILED curs period request")
     }
 }
+
+class CheckCallback(activity: ExratesActivity, presenter: Presenter) : ExCallback<Pair<Int, String>>(activity, presenter){
+    override fun onResponse(call: Call<Pair<Int, String>>, response: Response<Pair<Int, String>>) {
+        super.onResponse(call, response)
+        presenter as InitPresenter
+        mainFunc(response.body()!!, presenter::showMessage)
+    }
+}

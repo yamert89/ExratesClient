@@ -124,6 +124,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
         app.currentPairInfo!!.forEach {
             intervals.addAll(it.historyPeriods!!.subtract(intervals))
         }
+        curActivity.setSeekBarRange(intervals.size - 1)
         val interval = intervals.first()
         currentInterval = interval
 
@@ -214,20 +215,14 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
         currName2 = cur2
     }
 
-    fun clickOnInterval(): String{
-        if (app.currentPairInfo == null) return ""
-        val interval = if(currentDataIsNull()) app.currentPairInfo?.get(0)!!.historyPeriods?.get(0)!! else
-            intervals.higher(currentInterval)
-                ?: app.currentPairInfo!![0].priceChange.firstKey()
-
-        currentInterval = interval
+    fun changeInterval(progress: Int): String {
+        val newInterval = intervals.toTypedArray()[progress]
+        currentInterval = newInterval
         val adapter = exchangesAdapter as ExchangesAdapter
         adapter.interval = currentInterval
         adapter.notifyDataSetChanged()
-        return interval
+        return newInterval
     }
-
-
 
 
 }

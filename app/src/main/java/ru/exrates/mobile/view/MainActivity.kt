@@ -25,7 +25,7 @@ import ru.exrates.mobile.presenters.MainPresenter
 import ru.exrates.mobile.view.prefs.SettingsActivity
 
 class MainActivity : ExratesActivity() {
-    //TODO check api version
+
     private lateinit var currencyName: Spinner
     private lateinit var currencyPrice: TextView
     private lateinit var exchangeName: Spinner
@@ -46,7 +46,6 @@ class MainActivity : ExratesActivity() {
         try {
             logD("START MAIN ACTIVITY ")
             setContentView(R.layout.activity_main)
-
             currencyName = findViewById(R.id.main_currency_spinner)
             currencyPrice = findViewById(R.id.main_cur_price)
             exchangeName = findViewById(R.id.main_exch_spinner)

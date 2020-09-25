@@ -32,19 +32,20 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="24dp"
             android:text="Currency"
-            android:textSize="20sp"
+            android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@+id/cur_ico"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/cur_interval"
-            android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:layout_marginTop="16dp"
-            android:text="Interval"
-            app:layout_constraintEnd_toStartOf="@+id/cur_intervalValue"
-            app:layout_constraintHorizontal_bias="0.888"
-            app:layout_constraintStart_toStartOf="parent"
+        <SeekBar
+            android:id="@+id/cur_seekBar"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="200dp"
+            android:layout_height="15dp"
+            android:layout_marginTop="32dp"
+            android:max="2"
+            android:min="0"
+            android:progress="0"
+            app:layout_constraintStart_toEndOf="@id/cur_name"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

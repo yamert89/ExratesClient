@@ -80,6 +80,13 @@ fun String.toSafetyFloat(): Float{
     }
 }
 
+fun String.cropInterval(): String{
+    if (length < 4) return this
+    val regex = "(\\d{1,3})(\\D{1,5})".toRegex()
+    val match = regex.matchEntire(this)!!
+    return match.groups[1]!!.value + match.groups[2]!!.value.substring(0, 1)
+}
+
 
 
 
