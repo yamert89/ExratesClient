@@ -15,6 +15,9 @@ class InitPresenter(app: MyApp): BasePresenter(app) {
         restModel.checkMessages(clientToken)
     }
 
+    /*
+    * Callback
+    */
     fun showMessage(response: Pair<Int, String>){
         when(response.first){
             ClientCodes.CLIENT_NEEDS_UPDATE ->{

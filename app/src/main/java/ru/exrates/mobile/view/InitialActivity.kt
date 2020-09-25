@@ -10,11 +10,13 @@ import ru.exrates.mobile.presenters.InitPresenter
 class InitialActivity: ExratesActivity() {
 
 
-    lateinit var presenter: InitPresenter
+    private lateinit var presenter: InitPresenter
+    private var alreadyLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.initial)
+        alreadyLoaded = true
         supportActionBar!!.hide()
         progressLayout = ConstraintLayout(applicationContext)
         //progressLayout = findViewById(R.id.progress)
@@ -24,6 +26,6 @@ class InitialActivity: ExratesActivity() {
 
     override fun onResume() {
         super.onResume()
-        presenter.resume()
+        if (!alreadyLoaded) presenter.resume()
     }
 }
