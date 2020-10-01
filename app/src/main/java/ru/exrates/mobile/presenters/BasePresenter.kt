@@ -5,7 +5,9 @@ import ru.exrates.mobile.data.Storage
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.logic.rest.RestModel
+import ru.exrates.mobile.logic.rest.ActivityRestModel
+import ru.exrates.mobile.logic.rest.BaseActivityRestModel
+import ru.exrates.mobile.logic.rest.MockActivityRestModel
 import ru.exrates.mobile.view.ExratesActivity
 import ru.exrates.mobile.view.viewAdapters.PairsAdapter
 import java.util.*
@@ -15,7 +17,7 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
     var activity: ExratesActivity? = null
     val storage = Storage(app.baseContext, app.om)
     var timer: Timer = Timer()
-    lateinit var restModel: RestModel
+    lateinit var activityRestModel: BaseActivityRestModel
     protected lateinit var pairsAdapter: PairsAdapter
 
     fun pairsAdapterIsInitialized() = this::pairsAdapter.isInitialized
@@ -97,7 +99,8 @@ abstract class BasePresenter(val app: MyApp) : Presenter{
 
     override fun attachView(view: ExratesActivity) {
         activity = view
-        restModel = RestModel(app, view, this)
+        activityRestModel = if (app.offlineMode) MockActivityRestModel(app, view, this)
+        else ActivityRestModel(app, view, this)
     }
 
     override fun detachView() {

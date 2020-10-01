@@ -2,6 +2,7 @@ package ru.exrates.mobile.presenters
 
 import android.content.Intent
 import ru.exrates.mobile.MyApp
+import ru.exrates.mobile.logic.logD
 import ru.exrates.mobile.logic.rest.ClientCodes
 import ru.exrates.mobile.view.MainActivity
 import ru.exrates.mobile.view.dialogs.ServerMessage
@@ -12,7 +13,7 @@ class InitPresenter(app: MyApp): BasePresenter(app) {
     override fun resume() {
         super.resume()
         if (needsClose) activity!!.finish()
-        restModel.checkMessages(clientToken)
+        activityRestModel.checkMessages(clientToken)
     }
 
     /*
@@ -32,6 +33,8 @@ class InitPresenter(app: MyApp): BasePresenter(app) {
                 ServerMessage(this, response.second).show(activity!!.supportFragmentManager, "serverMessage")
             }
             ClientCodes.CLIENT_NOTHING -> activity!!.startActivity(Intent(activity, MainActivity::class.java))
+
         }
+        logD("End show")
     }
 }

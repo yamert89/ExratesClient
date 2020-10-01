@@ -1,12 +1,10 @@
 package ru.exrates.mobile.presenters
 
 import android.widget.ArrayAdapter
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import ru.exrates.mobile.MyApp
 import ru.exrates.mobile.logic.*
 import ru.exrates.mobile.logic.entities.CurrencyPair
-import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.entities.json.ExchangePayload
 import ru.exrates.mobile.view.ExratesActivity
@@ -82,13 +80,13 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                             exNames = exNames.plus(app.currentExchange!!.pairs.map { app.exchangeNamesList.iterator().next().value.getSymbol(it.baseCurrency, it.quoteCurrency) })
                         }
 
-                        restModel.getActualExchange(
+                        activityRestModel.getActualExchange(
                             ExchangePayload(
                                 exId,
                                 app.currentInterval,
                                 exNames)
                         )
-                        restModel.getActualPair(cur1, cur2, "1h",
+                        activityRestModel.getActualPair(cur1, cur2, "1h",
                             CURRENCY_HISTORIES_MAIN_NUMBER
                         )
                     }
@@ -113,7 +111,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                 listsReq.join()
                 if (!flag) {
                     activity?.toast("Не удалось подключиться к серверу. Проверте интернет подключение и перезапустите приложение")
-                }else restModel.ping()
+                }else activityRestModel.ping()
 
 
 
@@ -162,9 +160,9 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
                         withContext(Dispatchers.IO){
                             try {
                                 logD("rest start")
-                                restModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
+                                activityRestModel.getActualExchange(ExchangePayload(defExId, app.currentInterval, emptyArray()))
                                 val curs = defExNOb!!.getSplitedCurNames(allPairs[0])
-                                restModel.getActualPair(
+                                activityRestModel.getActualPair(
                                     curs.first, curs.second,
                                     CURRENCY_HISTORIES_MAIN_NUMBER
                                 )
@@ -239,7 +237,7 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         val job = GlobalScope.launch(Dispatchers.IO){
             try {
                 logT("before request")
-                restModel.getLists()
+                activityRestModel.getLists()
             }catch (e: Exception){
                 logE("exception")
                 res = false
@@ -298,12 +296,12 @@ class MainPresenter (app: MyApp) : BasePresenter(app){
         logT("pairs: " + app.currentExchange!!.pairs
             .map { it.symbol }.toTypedArray().joinToString())
         val namesObject : ExchangeNamesObject = app.exchangeNamesList.get(app.currentExchange!!.exId)!!
-        restModel.getActualExchange(ExchangePayload(
+        activityRestModel.getActualExchange(ExchangePayload(
             app.currentExchange!!.exId,
             app.currentInterval,
             app.currentExchange!!.pairs.map {namesObject.getSymbol(it.baseCurrency, it.quoteCurrency) }.toTypedArray().plus(arrayOf(app.currentCur1 + app.currentCur2))
         ))
-        restModel.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
+        activityRestModel.getActualPair(app.currentPairInfo!![0].baseCurrency , app.currentPairInfo!![0].quoteCurrency, "1h",
             CURRENCY_HISTORIES_MAIN_NUMBER
         )
     }

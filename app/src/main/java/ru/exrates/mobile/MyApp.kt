@@ -11,7 +11,6 @@ import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.Exchange
 import ru.exrates.mobile.logic.entities.json.ExchangeNamesObject
 import ru.exrates.mobile.logic.rest.RestService
-import ru.exrates.mobile.presenters.BasePresenter
 import java.time.Duration
 
 class MyApp : Application(){
@@ -43,6 +42,9 @@ class MyApp : Application(){
     var restService: RestService = exRates.restService
         private set
 
+    var offlineMode: Boolean = exRates.offlineMode
+        private set
+
     val om = exRates.om
 
     var inactiveExchanges: MutableList<String> = exRates.inactiveExchanges
@@ -59,6 +61,7 @@ class ExRates{
     lateinit var restService: RestService
     val om = ObjectMapper()
     val ip = "192.168.0.103"
+    val offlineMode = true
     // val ip = "192.168.43.114"
     //val ip = "192.168.1.72"
     init {

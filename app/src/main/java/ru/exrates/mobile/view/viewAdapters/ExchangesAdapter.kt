@@ -10,20 +10,21 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.exrates.mobile.*
 import ru.exrates.mobile.logic.CURRENCY_HISTORIES_CUR_NUMBER
-import ru.exrates.mobile.logic.rest.RestModel
+import ru.exrates.mobile.logic.rest.ActivityRestModel
 import ru.exrates.mobile.logic.entities.CurrencyPair
 import ru.exrates.mobile.logic.entities.SelectedExchange
 import ru.exrates.mobile.logic.logD
+import ru.exrates.mobile.logic.rest.BaseActivityRestModel
 import ru.exrates.mobile.logic.toNumeric
 /**
  * Adapter for exchanges spinner on main activity
  * @param pairsByExchanges list of currency pair
- * @param restModel restModel from presenter
+ * @param activityRestModel restModel from presenter
  * @param app this app
  * @param interval curreny change interval
  * @param selectedExchange selected exchange*/
 class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
-                       private val restModel: RestModel,
+                       private val activityRestModel: BaseActivityRestModel,
                        private val app: MyApp,
                        var interval: String,
                        val selectedExchange: SelectedExchange ): RecyclerView.Adapter<ExchangesAdapter.ExchangeViewHolder>() {
@@ -63,7 +64,7 @@ class ExchangesAdapter(val pairsByExchanges: MutableList<CurrencyPair>,
         ))
         holder.linearLayout.setOnClickListener {
             logD("old selected row: $selectedRow, selected item id: ${it.id}")
-            restModel.getPriceHistory(pair.baseCurrency, pair.quoteCurrency, pair.exId, interval,
+            activityRestModel.getPriceHistory(pair.baseCurrency, pair.quoteCurrency, pair.exId, interval,
                 CURRENCY_HISTORIES_CUR_NUMBER
             )
             if (it == selectedRow) return@setOnClickListener

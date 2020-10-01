@@ -21,6 +21,7 @@
         android:id="@+id/main_autoComplete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:translationX="500dp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@+id/main_currency_spinner"
         app:layout_constraintHorizontal_bias="0.199"

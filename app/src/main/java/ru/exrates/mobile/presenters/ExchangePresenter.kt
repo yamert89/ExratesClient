@@ -31,7 +31,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
             ?: "1h")
         if (currentNameListsIsEmpty()) throw NullPointerException("current data is null")
 
-        restModel.getActualExchange(ExchangePayload(exId, currentInterval, arrayOf()))
+        activityRestModel.getActualExchange(ExchangePayload(exId, currentInterval, arrayOf()))
         exchangeActivity.setInterval(currentInterval)
 
 
@@ -86,7 +86,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     }
 
     private fun initPairsAdapt(exchange: Exchange){
-        restModel.getPriceChange(exchange)
+        activityRestModel.getPriceChange(exchange)
         val pairsOfAdapter = if(currentDataIsNull()) mutableListOf() else app.currentExchange!!.pairs
         pairsAdapter = PairsAdapter(
             pairsOfAdapter,
@@ -106,7 +106,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
     override fun task() {
         if (currentDataIsNull()) throw NullPointerException("current data in task is null")
         val delimiter = app.exchangeNamesList!!.get(app.currentExchange!!.exId)!!.delimiter
-        restModel.getActualExchange(
+        activityRestModel.getActualExchange(
             ExchangePayload(
                 app.currentExchange!!.exId,
                 currentInterval,
@@ -158,7 +158,7 @@ class ExchangePresenter(app: MyApp) : BasePresenter(app){
         val curs = app.exchangeNamesList.iterator().next().value.getSplitedCurNames(cursAdapter.getItem(position)!!)
         if(pairsAdapter.dataPairs.any { it.baseCurrency == curs.first && it.quoteCurrency == curs.second }) return
         exchangeActivity.startProgress()
-        restModel.addOnePair(curs.first, curs.second, app.currentExchange!!.exId, currentInterval)
+        activityRestModel.addOnePair(curs.first, curs.second, app.currentExchange!!.exId, currentInterval)
 
     }
 }

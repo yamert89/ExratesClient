@@ -5,17 +5,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import kotlinx.coroutines.GlobalScope
 import ru.exrates.mobile.MyApp
-import ru.exrates.mobile.logic.rest.RestModel
-import ru.exrates.mobile.data.Storage
 import ru.exrates.mobile.logic.*
-import ru.exrates.mobile.logic.entities.CurrencyPair
-import ru.exrates.mobile.logic.entities.Exchange
-import ru.exrates.mobile.presenters.BasePresenter
-import ru.exrates.mobile.presenters.MainPresenter
-import ru.exrates.mobile.presenters.Presenter
-import java.util.*
 
 abstract class ExratesActivity : AppCompatActivity() {
     lateinit var app: MyApp

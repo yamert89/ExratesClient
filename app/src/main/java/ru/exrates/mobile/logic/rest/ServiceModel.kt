@@ -5,7 +5,7 @@ import ru.exrates.mobile.services.MainService
 import ru.exrates.mobile.view.prefs.NotificationPreferenceDialogFragment
 import ru.exrates.mobile.view.prefs.ServiceCallbackReceiver
 
-class ServiceModel(private val restService: RestService, private val receiver: ServiceCallbackReceiver) {
+class ServiceModel(private val restService: RestService, private val receiver: ServiceCallbackReceiver) : RestModel{
 
     fun getPair(c1: String, c2: String, limit: Int){
         if (receiver !is MainService) return

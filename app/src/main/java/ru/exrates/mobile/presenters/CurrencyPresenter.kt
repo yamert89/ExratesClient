@@ -46,8 +46,8 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
        /* }*/
 
 
-        if (currentInterval == "") restModel.getActualPair(currName1, currName2, CURRENCY_HISTORIES_CUR_NUMBER)
-        else restModel.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
+        if (currentInterval == "") activityRestModel.getActualPair(currName1, currName2, CURRENCY_HISTORIES_CUR_NUMBER)
+        else activityRestModel.getActualPair(currName1, currName2, currentGraphInterval, CURRENCY_HISTORIES_CUR_NUMBER)
 
 
         if (currentNameListsIsEmpty()) throw NullPointerException("current data is null")
@@ -155,7 +155,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
 
     override fun task() {
         logD("task cur activ started with cur1: ${app.currentCur1}, cur2: ${app.currentCur2}, curGraphInterval: $currentGraphInterval")
-        restModel.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval,
+        activityRestModel.getActualPair(app.currentCur1, app.currentCur2, currentGraphInterval,
             CURRENCY_HISTORIES_CUR_NUMBER
         )
     }
@@ -185,7 +185,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
     fun getExchAdapter(): ExchangesAdapter{
          exchangesAdapter = ExchangesAdapter(
              app.currentPairInfo ?: mutableListOf(),
-             restModel,
+             activityRestModel,
              app,
              app.currentPairInfo?.get(0)?.historyPeriods?.get(0) ?: "1h",
              selectedExchange
@@ -202,7 +202,7 @@ class CurrencyPresenter(app: MyApp) : BasePresenter(app){
         val interval = historyAdapter.getItem(position)
         currentGraphInterval = interval ?: throw IllegalArgumentException("interval $interval not found")
         currentGraphIntervalIdx = position
-        restModel.getPriceHistory(currName1, currName2, selectedExchange.id, interval,
+        activityRestModel.getPriceHistory(currName1, currName2, selectedExchange.id, interval,
             CURRENCY_HISTORIES_CUR_NUMBER
         )
         val key = "$CURRENT_GRAPH_INTERVAL_IDX${selectedExchange.id}${app.currentPairInfo!![0].symbol}"

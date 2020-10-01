@@ -11,12 +11,12 @@ class InitialActivity: ExratesActivity() {
 
 
     private lateinit var presenter: InitPresenter
-    private var alreadyLoaded = false
+    private var alreadyLoaded = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.initial)
-        alreadyLoaded = true
+        //alreadyLoaded = true
         supportActionBar!!.hide()
         progressLayout = ConstraintLayout(applicationContext)
         //progressLayout = findViewById(R.id.progress)
@@ -26,6 +26,6 @@ class InitialActivity: ExratesActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (!alreadyLoaded) presenter.resume()
+        /*if (!alreadyLoaded)*/ presenter.resume()
     }
 }

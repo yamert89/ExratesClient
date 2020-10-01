@@ -1,8 +1,12 @@
 package ru.exrates.mobile.view.listeners
 
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.view.View
 import android.widget.*
+import androidx.core.animation.doOnEnd
+import androidx.core.view.marginStart
 
 
 class SearchButtonClickListener(private val autoCompleteTextView: AutoCompleteTextView,
@@ -37,16 +41,31 @@ class SearchButtonClickListener(private val autoCompleteTextView: AutoCompleteTe
     private fun showSearch(){
         autoCompleteTextView.visibility = View.VISIBLE
         spinner.visibility = View.INVISIBLE
-        goTo.isEnabled = false //todo animation or shadowing
+        goTo.isEnabled = false
+       /* ObjectAnimator.ofObject(spinner, "layout_marginStart", 0).apply {
+            duration = 1000
+            start()
+        }*/
+        ObjectAnimator.ofFloat(autoCompleteTextView, "translationX", 0f).apply {
+            duration = 500
+            start()
+        }
         activated = true
     }
 
     private fun hideSearch(){
+        ObjectAnimator.ofFloat(autoCompleteTextView, "translationX", 500f).apply {
+            duration = 500
+            start()
+            doOnEnd {
+                autoCompleteTextView.visibility = View.INVISIBLE
+                spinner.visibility = View.VISIBLE
+                activated = false
+                goTo.isEnabled = true
+            }
+        }
 
-        autoCompleteTextView.visibility = View.INVISIBLE
-        spinner.visibility = View.VISIBLE
-        activated = false
-        goTo.isEnabled = true
+
 
         /*val activity = (context as ContextWrapper).baseContext as Activity
 
